@@ -140,6 +140,16 @@ $aModule = [
         ['name' => 'klarnaaccount', 'type' => 'str', 'value' => '', 'group' => null],
 
     ],
+    'templates' => [
+        'accordion_section.tpl'                => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/accordion_section.tpl',
+        'fatchip_computop_apilog.tpl'           => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_apilog.tpl',
+        'fatchip_computop_apilog_list.tpl'                      => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_apilog_list.tpl',
+        'fatchip_computop_apilog_main.tpl'               => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_apilog_main.tpl',
+        'fatchip_computop_form_field.tpl'          => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_form_field.tpl',
+        'fatchip_computop_json.tpl'          => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_json.tpl',
+        'fatchip_computop_payments_config.tpl'          => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_payments_config.tpl',
+
+    ],
     'events'      => [
         'onActivate'   => 'Fatchip\ComputopPayments\Core\Events::onActivate',
         'onDeactivate' => 'Fatchip\ComputopPayments\Core\Events::onDeactivate',

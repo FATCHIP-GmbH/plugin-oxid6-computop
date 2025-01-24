@@ -1,17 +1,17 @@
 {
-    "name": "fatchip-gmbh/computop-payments-ox7",
+    "name": "fatchip-gmbh/computop-payments-ox6",
     "description": "Computop payments module for OXID",
     "type": "oxideshop-module",
     "keywords": ["oxid", "modules", "computop"],
     "license": "proprietary",
     "support": {
-        "source": "https://github.com/FATCHIP-GmbH/plugin-oxid7-computop",
+        "source": "https://github.com/FATCHIP-GmbH/plugin-oxid6-computop",
         "issues": "https://www.fatchip.de"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "conflicts": {
-        "oxid-esales/oxideshop-ce": "< 7.0"
+        "oxid-esales/oxideshop-ce": "< 6.3"
     },
     "archive": {
         "exclude": ["/resources"]
