@@ -1,110 +1,100 @@
-{% include "headitem.html.twig" with {title: "fatchip_computop"} %}
-{% set sModuleId = '@' ~ constant('\\Fatchip\\ComputopPayments\\Core\\Constants::MODULE_ID') %}
+[{include file="headitem.tpl" title="fatchip_computop"}]
+[{assign var="sModuleId" value='fatchip_computop_payments'}]
+[{assign var="sModuleUrl" value=$oViewConf->getModuleUrl('fatchip_computop_payments')}]
 
 <div id="content" class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>{{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT" }) }}</h1>
+            <h1>[{oxmultilang ident="FATCHIP_COMPUTOP_PAYMENT"}]</h1>
 
-            <div class="alert alert-{% if Errors.fatchip_computop_error %}danger{% else %}success{% endif %} mb-3" role="alert">
-                {% if Errors.fatchip_computop_error %}
-                    {{ translate({ ident: "FATCHIP_COMPUTOP_ERR_CONF_INVALID" }) }}:
-                    <ul class="list-unstyled">
-                        {% for key, oEr in Errors.fatchip_computop_error %}
-                            <li>{{ oEr.getOxMessage()|raw }}</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    {{ translate({ ident: "FATCHIP_COMPUTOP_CONF_VALID" }) }}
-                {% endif %}
+            <div class="alert alert-[{if $Errors.fatchip_computop_error}]danger[{else}]success[{/if}] mb-3" role="alert">
+                [{if $Errors.fatchip_computop_error}]
+                [{oxmultilang ident="FATCHIP_COMPUTOP_ERR_CONF_INVALID"}]:
+                <ul class="list-unstyled">
+                    [{foreach from=$Errors.fatchip_computop_error key=key item=oEr}]
+                    [{assign var="errorMessage" value=$oEr->getOxMessage()->getRawValue}]
+                    <li>[{$errorMessage }]</li>
+                    [{/foreach}]
+                </ul>
+                [{else}]
+                [{oxmultilang ident="FATCHIP_COMPUTOP_CONF_VALID"}]
+                [{/if}]
             </div>
-            {% if oView.getIdealUpdateSuccess() is null %}
-                {# No action when getIdealUpdateSuccess() is null (initial state) #}
-            {% else %}
-                <div class="alert alert-{{ oView.getIdealUpdateSuccess() ? 'success' : 'danger' }} mb-3" role="alert">
-                    {{ translate({ ident: oView.getIdealUpdateSuccess() ? "FATCHIP_COMPUTOP_IDEAL_ISSUERS" : "FATCHIP_COMPUTOP_IDEAL_ISSUERS_ERROR" }) }}
-                </div>
-            {% endif %}
+
+            [{if $oView->getIdealUpdateSuccess() === null}]
+            [{* No action when getIdealUpdateSuccess() is null (initial state) *}]
+            [{else}]
+            <div class="alert alert-[{if $oView->getIdealUpdateSuccess()}]success[{else}]danger[{/if}] mb-3" role="alert">
+                [{if $oView->getIdealUpdateSuccess()}]
+                [{assign var="idealMessage" value="FATCHIP_COMPUTOP_IDEAL_ISSUERS"}]
+                [{else}]
+                [{assign var="idealMessage" value="FATCHIP_COMPUTOP_IDEAL_ISSUERS_ERROR"}]
+                [{/if}]
+
+                [{oxmultilang ident=$idealMessage}]            </div>
+            [{/if}]
         </div>
     </div>
 
-    <form action="{{ oViewConf.getSelfLink()|raw }}" method="post" class="panel-group" id="accordion">
-        {{ oViewConf.getHiddenSid()|raw }}
-        <input type="hidden" name="cl" value="{{ oViewConf.getActiveClassName() }}">
+    <form action="[{$oViewConf->getSelfLink() }]" method="post" class="panel-group" id="accordion">
+        [{ $oViewConf->getHiddenSid() }]
+        <input type="hidden" name="cl" value="[{$oViewConf->getActiveClassName() }]">
         <input type="hidden" name="fnc" value="save">
 
-        {# General Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingGeneral',
-            'collapseId': 'collapseGeneral',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_GENERAL_SETTINGS" }),
-            'formFields': generalFormFields,
-            'currentBlock': 'general',
-            'expanded': false
-        } %}
+        [{* General Settings *}]
+        [{capture assign="generalSettingsTitle"}][{oxmultilang ident="FATCHIP_COMPUTOP_GENERAL_SETTINGS"}][{/capture}]
 
-        {# Credit Card Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingCreditCard',
-            'collapseId': 'collapseCreditCard',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_CREDIT_CARD_SETTINGS" }),
-            'formFields': creditCardFormFields,
-            'currentBlock': 'creditcard'
-        } %}
+        [{include file="accordion_section.tpl"
+        headingId='headingGeneral'
+        collapseId='collapseGeneral'
+        title=$generalSettingsTitle
+        formFields=$generalFormFields
+        currentBlock='general'
+        expanded=false
+        }]
 
-        {# iDEAL Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingIdeal',
-            'collapseId': 'collapseIdeal',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_IDEAL_SETTINGS" }),
-            'formFields': idealFormFields,
-            'currentBlock': 'ideal'
-        } %}
+        [{* Credit Card Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_CREDIT_CARD_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_CREDIT_CARD_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingCreditCard' collapseId='collapseCreditCard'
+        title=$FATCHIP_COMPUTOP_CREDIT_CARD_SETTINGS
+        formFields=$creditCardFormFields currentBlock='creditcard' }]
 
-        {# PayPal Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingPayPal',
-            'collapseId': 'collapsePayPal',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_PAYPAL_SETTINGS" }),
-            'formFields': payPalFormFields,
-            'currentBlock': 'paypal'
-        } %}
+        [{* iDEAL Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_IDEAL_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_IDEAL_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingIdeal' collapseId='collapseIdeal'
+        title=$FATCHIP_COMPUTOP_IDEAL_SETTINGS
+        formFields=$idealFormFields currentBlock='ideal' }]
 
-        {# PayPalExpress Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingPayPalExpress',
-            'collapseId': 'collapsePayPalExpress',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_PAYPALEXPRESS_SETTINGS" }),
-            'formFields': payPalExpressFormFields,
-            'currentBlock': 'paypalExpress'
-        } %}
+        [{* PayPal Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingPayPal' collapseId='collapsePayPal'
+        title=$FATCHIP_COMPUTOP_PAYPAL_SETTINGS
+        formFields=$payPalFormFields currentBlock='paypal' }]
 
-        {# Direct Debit (Lastschrift) Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingLastschrift',
-            'collapseId': 'collapseLastschrift',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS" }),
-            'formFields': lastschriftFormFields,
-            'currentBlock': 'lastschrift'
-        } %}
+        [{* PayPal Express Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingPayPalExpress' collapseId='collapsePayPalExpress'
+        title=$FATCHIP_COMPUTOP_PAYPAL_SETTINGS
+        formFields=$payPalExpressFormFields currentBlock='paypalExpress' }]
 
-        {# Amazon Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingAmazon',
-            'collapseId': 'collapseAmazon',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_AMAZON_SETTINGS" }),
-            'formFields': amazonFormFields,
-            'currentBlock': 'amazon'
-        } %}
+        [{* Direct Debit (Lastschrift) Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingLastschrift' collapseId='collapseLastschrift'
+        title=$FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS
+        formFields=$lastschriftFormFields currentBlock='lastschrift' }]
 
-        {# Klarna Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingKlarna',
-            'collapseId': 'collapseKlarna',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_KLARNA_SETTINGS" }),
-            'formFields': klarnaFormFields,
-            'currentBlock': 'klarna'
-        } %}
+        [{* Amazon Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_AMAZON_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_AMAZON_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingAmazon' collapseId='collapseAmazon'
+        title=$FATCHIP_COMPUTOP_AMAZON_SETTINGS
+        formFields=$amazonFormFields currentBlock='amazon' }]
+
+        [{* Klarna Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_KLARNA_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_KLARNA_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingKlarna' collapseId='collapseKlarna'
+        title=$FATCHIP_COMPUTOP_KLARNA_SETTINGS
+        formFields=$klarnaFormFields currentBlock='klarna' }]
+
         <br />
         <div class="form-group row mt-3">
             <div class="col-md-12 text-center">
@@ -113,4 +103,5 @@
         </div>
     </form>
 </div>
-{% include "bottomitem.html.twig" %}
+
+[{include file="bottomitem.tpl"}]

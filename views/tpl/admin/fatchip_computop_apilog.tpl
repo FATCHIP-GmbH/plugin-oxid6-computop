@@ -2,15 +2,15 @@
 
 <html>
 <head>
-    <title>{{ translate({ ident: "GENERAL_ADMIN_TITLE" }) }}</title>
+    <title>[{oxmultilang ident="GENERAL_ADMIN_TITLE"}]</title>
 </head>
-<link rel="stylesheet" href="{{ oViewConf.getResourceUrl() }}main.css">
+<link rel="stylesheet" href="[{$oViewConf->getResourceUrl() }]main.css">
 
 
 <!-- frames -->
-<frameset  rows="40%,*" border="0" onload="top.loadEditFrame('{{ oViewConf.getSelfLink()|raw }}&{{  editurl  }}{% if oxid  %}&oxid={{ oxid }}{% endif %}');">
+<frameset rows="40%,*" border="0" onload="top.loadEditFrame('[{$oViewConf->getSelfLink()|raw }]&[{$editurl}][{if $oxid}]&oxid=[{$oxid}][{/if}]');">
 
-    <frame src="{{ oViewConf.getSelfLink()|raw }}&{{  listurl  }}{% if oxid  %}&oxid={{ oxid }}{% endif %}" name="list" id="list" frameborder="0" scrlolling="auto" noresize marginwidth="0" marginheight="0">
+    <frame src="[{$oViewConf->getSelfLink()|raw}]&[{$listurl }][{if $oxid}]&oxid=[{$oxid}][{/if}]" name="list" id="list" frameborder="0" scrolling="auto" noresize marginwidth="0" marginheight="0">
 
     <frame src="" name="edit" id="edit" frameborder="0" scrolling="auto" noresize marginwidth="0" marginheight="0">
 </frameset>

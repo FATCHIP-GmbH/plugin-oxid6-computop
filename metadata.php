@@ -60,7 +60,7 @@ $aModule = [
                 <p><b>Using Computop Payments</b><br><br>To use Computop Payments via the plugin, you need a contract with Computop. Please contact the Computop sales department at https://www.computop.com/de/. If you are already a customer, please contact your account manager directly. You will then receive your access data with which you can put the plugin into operation.</p>
                 <p><b>Support</b><br><br>Personal support via e-mail to <a href="mailto:helpdesk@computop.com">helpdesk@computop.com</a></p>',
     ],
-    'thumbnail'   => 'img/computop_logo.png',
+    'thumbnail'   => 'assets/img/computop_logo.png',
     'version'     => '1.0.0',
     'author'      => 'Fatchip-GmbH',
     'url'         => 'https://www.fatchip.de/',
@@ -102,6 +102,13 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'redirect' => FatchipComputopRedirect::class
     ],
     'blocks'      => [
+
+        // Admin back-end
+        [
+            'template' => 'headitem.tpl',
+            'block'    => 'admin_headitem_inccss',
+            'file'     => 'views/tpl/admin/blocks/headitem.tpl'
+        ],
     ],
     'settings'    => [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
@@ -141,13 +148,13 @@ $aModule = [
 
     ],
     'templates' => [
-        'accordion_section.tpl'                => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/accordion_section.tpl',
-        'fatchip_computop_apilog.tpl'           => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_apilog.tpl',
-        'fatchip_computop_apilog_list.tpl'                      => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_apilog_list.tpl',
-        'fatchip_computop_apilog_main.tpl'               => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_apilog_main.tpl',
-        'fatchip_computop_form_field.tpl'          => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_form_field.tpl',
-        'fatchip_computop_json.tpl'          => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_json.tpl',
-        'fatchip_computop_payments_config.tpl'          => 'fatchip-gmbh/computop_payments/views/views/tpl/admin/fatchip_computop_payments_config.tpl',
+        'accordion_section.tpl'                => 'fatchip-gmbh/computop_payments/views/tpl/admin/accordion_section.tpl',
+        'fatchip_computop_apilog.tpl'           => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog.tpl',
+        'fatchip_computop_apilog_list.tpl'                      => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog_list.tpl',
+        'fatchip_computop_apilog_main.tpl'               => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog_main.tpl',
+        'fatchip_computop_form_field.tpl'          => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_form_field.tpl',
+        'fatchip_computop_json.tpl'          => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_json.tpl',
+        'fatchip_computop_payments_config.tpl'          => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_payments_config.tpl',
 
     ],
     'events'      => [

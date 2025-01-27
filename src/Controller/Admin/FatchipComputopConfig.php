@@ -50,7 +50,7 @@ class FatchipComputopConfig extends AdminController
     public function __construct()
     {
         parent::__construct();
-        $this->_sThisTemplate = '@fatchip_computop_payments/admin/fatchip_computop_payments_config';
+        $this->_sThisTemplate = 'fatchip_computop_payments_config.tpl';
     }
 
     /**

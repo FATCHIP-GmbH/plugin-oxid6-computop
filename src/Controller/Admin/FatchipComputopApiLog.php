@@ -35,6 +35,6 @@ use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
  */
 class FatchipComputopApiLog extends AdminController
 {
-    protected $_sThisTemplate = '@fatchip_computop_payments/admin/' . Constants::TEMPLATE_PREFIX . 'apilog';
+    protected $_sThisTemplate = 'fatchip_computop_apilog.tpl';
 
 }

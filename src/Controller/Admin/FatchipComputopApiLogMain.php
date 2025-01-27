@@ -12,7 +12,7 @@ class FatchipComputopApiLogMain extends AdminDetailsController
      *
      * @var string
      */
-    protected $_sThisTemplate = '@fatchip_computop_payments/admin/fatchip_computop_apilog_main';
+    protected $_sThisTemplate = 'fatchip_computop_apilog_main.tpl';
 
     /**
      * @var RequestLog

@@ -31,5 +31,5 @@ class FatchipComputopApiLogList extends AdminListController
      * Current class template name
      * @var string
      */
-    protected $_sThisTemplate = '@fatchip_computop_payments/admin/fatchip_computop_apilog_list';
+    protected $_sThisTemplate = 'fatchip_computop_apilog_list.tpl';
 }

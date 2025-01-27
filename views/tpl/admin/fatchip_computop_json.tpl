@@ -1,1 +1,1 @@
-{{ jsonResponse|raw }}
+[{$jsonResponse|raw }]

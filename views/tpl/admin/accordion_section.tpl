@@ -20,17 +20,17 @@
     }
 </script>
 <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="[{ $headingId }]">
+    <div class="panel-heading" role="tab" id="[{$headingId}]">
         <h4 class="panel-title">
-            <a class="[{if !$expanded}]collapsed[{/if}]" data-toggle="collapse" data-parent="#accordion" href="#[{$collapseId }]" aria-expanded="[{if $expanded}]true[{else}]false[{/if}]" aria-controls="[{ $collapseId }]">
-                [{ $title }]
+            <a class="[{if !$expanded}]collapsed[{/if}]" data-toggle="collapse" data-parent="#accordion" href="#[{$collapseId}]" aria-expanded="[{if $expanded}]true[{else}]false[{/if}]" aria-controls="[{$collapseId}]">
+                [{$title}]
             </a>
         </h4>
     </div>
-    <div id="[{ $collapseId }]" class="panel-collapse collapse [{if $expanded}]in[{/if}]" role="tabpanel" aria-labelledby="[{ $headingId }]">
+    <div id="[{$collapseId}]" class="panel-collapse collapse [{if $expanded}]in[{/if}]" role="tabpanel" aria-labelledby="[{$headingId }]">
         <div class="panel-body">
             [{foreach from=$formFields key=item item=value}]
-                [{include file=$sModuleId|cat:'/admin/fatchip_computop_form_field.html.tpl' value=$value currentBlock=$currentBlock}]
+             [{include file="fatchip_computop_form_field.tpl" value=$value currentBlock=$currentBlock}]
             [{/foreach}]
         </div>
     </div>
