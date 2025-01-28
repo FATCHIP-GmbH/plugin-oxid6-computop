@@ -8,9 +8,9 @@
 
 
 <!-- frames -->
-<frameset rows="40%,*" border="0" onload="top.loadEditFrame('[{$oViewConf->getSelfLink()|raw }]&[{$editurl}][{if $oxid}]&oxid=[{$oxid}][{/if}]');">
+<frameset rows="40%,*" border="0" onload="top.loadEditFrame('[{$oViewConf->getSelfLink() }]&[{$editurl}][{if $oxid}]&oxid=[{$oxid}][{/if}]');">
 
-    <frame src="[{$oViewConf->getSelfLink()|raw}]&[{$listurl }][{if $oxid}]&oxid=[{$oxid}][{/if}]" name="list" id="list" frameborder="0" scrolling="auto" noresize marginwidth="0" marginheight="0">
+    <frame src="[{$oViewConf->getSelfLink()}]&[{$listurl }][{if $oxid}]&oxid=[{$oxid}][{/if}]" name="list" id="list" frameborder="0" scrolling="auto" noresize marginwidth="0" marginheight="0">
 
     <frame src="" name="edit" id="edit" frameborder="0" scrolling="auto" noresize marginwidth="0" marginheight="0">
 </frameset>

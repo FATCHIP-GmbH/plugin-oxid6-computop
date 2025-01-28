@@ -12,14 +12,14 @@
     {
         top.reloadEditFrame();
         [{if $updatelist == 1}]
-        top.oxid.admin.updateList('[{ $oxid }]');
+        top.oxid.admin.updateList('[{$oxid}]');
         [{/if}]
     }
     //-->
 </script>
 
 <div id="liste">
-    <form name="search" id="search" action="[{$oViewConf->getSelfLink()|raw }]" method="post">
+    <form name="search" id="search" action="[{$oViewConf->getSelfLink() }]" method="post">
         [{include file="_formparams.tpl" cl="fatchip_computop_apilog_list" lstrt=$lstrt actedit=$actedit oxid=$oxid fnc="" language=$actlang editlanguage=$actlang}]
         <table cellspacing="0" cellpadding="0" border="0" width="100%">
             <colgroup>
@@ -95,40 +95,40 @@
                 [{else}]
                 [{assign var="listclass" value="listitem"|cat:$blWhite}]
                 [{/if}]
-                [{if $listitem.getId() == $oxid}]
+                [{if $listitem->getId() == $oxid}]
                 [{assign var="listclass" value="listitem4"}]
                 [{/if}]
-                <td valign="top" class="[{ $listclass }]" height="15">
+                <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
                         <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass }]">
                             [{$listitem.fatchip_computop_api_log__creation_date->value }]
                         </a>
                     </div>
                 </td>
-                <td valign="top" class="[{ $listclass }]" height="15">
+                <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{ $listitem.fatchip_computop_api_log__oxid->value }]');" class="[{ $listclass }]">
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value}]');" class="[{$listclass}]">
                             [{$listitem.fatchip_computop_api_log__trans_id->value }]
                         </a>
                     </div>
                 </td>
-                <td valign="top" class="[{ $listclass }]" height="15">
+                <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{ $listclass }]">
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
                             [{$listitem.fatchip_computop_api_log__pay_id->value }]
                         </a>
                     </div>
                 </td>
-                <td valign="top" class="[{ $listclass }]" height="15">
+                <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{ $listclass }]">
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
                             [{$listitem.fatchip_computop_api_log__request->value }]
                         </a>
                     </div>
                 </td>
-                <td valign="top" class="[{ $listclass }]" height="15">
+                <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{ $listclass }]">
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
                             [{$listitem.fatchip_computop_api_log__payment_name->value }]
                         </a>
                     </div>

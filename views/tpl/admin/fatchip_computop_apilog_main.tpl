@@ -60,12 +60,12 @@
     }
 </style>
 
-<form name="transfer" id="transfer" action="[{$oViewConf->getSelfLink()|raw }]" method="post">
-    [{ $oViewConf->getHiddenSid()|raw }]
+<form name="transfer" id="transfer" action="[{$oViewConf->getSelfLink() }]" method="post">
+    [{$oViewConf->getHiddenSid()}]
     <input type="hidden" name="oxid" value="[{$oxid }]">
     <input type="hidden" name="oxidCopy" value="[{$oxid }]">
     <input type="hidden" name="cl" value="fatchip_computop_apilog_main">
-    <input type="hidden" name="editlanguage" value="[{$editlanguage }]">
+    <input type="hidden" name="editlanguage" value="[{$editlanguage}]">
 </form>
 
 [{if $edit}]
@@ -78,7 +78,7 @@
             <td id="editval_computop__response">
                 [{if $requestDetails != false}]
                 <h2>Request Details</h2>
-                <andypf-json-viewer data='[{ $requestDetails }]' indent="2"
+                <andypf-json-viewer data='[{$requestDetails}]' indent="2"
                                     expanded="false"
                                     theme="default-light"
                                     show-data-types="true"
@@ -94,7 +94,7 @@
                 [{if $responseDetails != false}]
                 <h2>Response Details</h2>
                 <pre class="prettyprint language-js"><code></code></pre>
-                <andypf-json-viewer data='[{ $responseDetails }]' indent="2"
+                <andypf-json-viewer data='[{$responseDetails}]' indent="2"
                                     expanded="false"
                                     theme="default-light"
                                     show-data-types="true"
