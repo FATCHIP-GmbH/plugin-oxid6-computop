@@ -23,7 +23,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
      *
      * @var string
      */
-    protected $_sTemplate = "@fatchip_computop_payments/fatchip_computop_order_settings";
+    protected $_sTemplate = "fatchip_computop_order_settings.tpl";
 
     /**
      * Order object

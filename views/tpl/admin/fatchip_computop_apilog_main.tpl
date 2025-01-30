@@ -2,9 +2,9 @@
 
 [{if $readonly}]
     [{assign var="readonly" value="readonly disabled"}]
-    [{else}]
+[{else}]
     [{assign var="readonly" value=""}]
-    [{/if}]
+[{/if}]
 
 [{assign var="edit" value=$oView->getEdit()}]
 <style>
@@ -44,6 +44,7 @@
     tr.response {
         margin-bottom: 29px;
     }
+
     .request, .response {
         border: 1px solid #A9A9A9;
         padding-left: 15px;
@@ -51,6 +52,7 @@
         width: 1600px;
         margin: 0 18px 20px 24px;
     }
+
     .linebox {
         border: 1px solid #A9A9A9;
         margin-bottom: 15px;
@@ -60,10 +62,9 @@
     }
 </style>
 
-<form name="transfer" id="transfer" action="[{$oViewConf->getSelfLink() }]" method="post">
+<form name="transfer" id="transfer" action="[{$oViewConf->getSelfLink()}]" method="post">
     [{$oViewConf->getHiddenSid()}]
-    <input type="hidden" name="oxid" value="[{$oxid }]">
-    <input type="hidden" name="oxidCopy" value="[{$oxid }]">
+    <input type="hidden" name="oxid" value="[{$oxid}]">
     <input type="hidden" name="cl" value="fatchip_computop_apilog_main">
     <input type="hidden" name="editlanguage" value="[{$editlanguage}]">
 </form>

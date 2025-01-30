@@ -1,4 +1,6 @@
-{% capture append = "oxidBlock_content" %}
+[{capture append="oxidBlock_content"}]
+    [{* Ordering steps *}]
+    [{include file="page/checkout/inc/steps.tpl" active=4}]
     <style>
         .iframe-container {
             display: flex;
@@ -13,11 +15,10 @@
             height: 80% !important;
         }
     </style>
-    {# ordering steps #}
-    {% include "page/checkout/inc/steps.html.twig" with {active: 4} %}
+
     <div style="clear:both;"></div>
-    <div class="iframe-container ">
-    <iframe src="{{ oView.getIframeUrl() }}" style="width:100%; height:750px;" frameBorder="0" allow="payment"></iframe>
+    <div class="iframe-container">
+        <iframe src="[{$oView->getIframeUrl()}]" style="width:100%; height:750px;" frameborder="0" allow="payment"></iframe>
     </div>
-{% endcapture %}
-{% include "layout/page.html.twig" %}
+[{/capture}]
+[{include file="layout/page.tpl" title=$template_title location=$template_title}]

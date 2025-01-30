@@ -12,12 +12,12 @@ use OxidEsales\Eshop\Core\Session;
 
 class FatchipComputopRedirect extends FatchipComputopPayments
 {
-    protected $_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_redirect_return';
+    protected $_sThisTemplate = 'fatchip_computop_redirect_return.tpl';
 
     public function init()
     {
         ini_set('session.cookie_samesite', 'None');
-        ini_set('session.cookie_secure', true);
+      //  ini_set('session.cookie_secure', true);
         parent::init();
     }
 

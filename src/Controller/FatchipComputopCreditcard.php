@@ -41,7 +41,8 @@ class FatchipComputopCreditcard extends FrontendController
      *
      * @var string
      */
-    protected $_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
+    protected $_sThisTemplate = 'fatchip_computop_iframe.tpl';
+    protected $_blIsOrderStep = true;
 
     protected $fatchipComputopConfig;
     protected $fatchipComputopSession;
@@ -94,14 +95,14 @@ class FatchipComputopCreditcard extends FrontendController
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
         if ($response !== null && $this->fatchipComputopConfig['creditCardMode'] === 'SILENT' ) {
-            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
+            $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
         } else {
-            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
+            $this->_sThisTemplate = 'fatchip_computop_iframe.tpl';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME' && ($response !== null && $response->getStatus() === 'AUTHORIZED')) {
-                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
+                $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
             }
             else if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
+                $this->_sThisTemplate = 'fatchip_computop_iframe.tpl';
             }
             else {
                 return parent::render();
@@ -138,7 +139,7 @@ class FatchipComputopCreditcard extends FrontendController
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
         if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
+            $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
         } else {
         }
     }

@@ -172,34 +172,34 @@ class Order extends Order_parent
     {
         switch ($orderStatus) {
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID":
-                $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
-                $this->setFieldData('oxpaid', date('Y-m-d H:i:s'));
-                $this->setFieldData('oxtransstatus', 'OK');
+                $this->_setFieldData('oxfolder', 'ORDERFOLDER_NEW');
+                $this->_setFieldData('oxpaid', date('Y-m-d H:i:s'));
+                $this->_setFieldData('oxtransstatus', 'OK');
                 if (!empty($data)) {
-                    $this->setFieldData('fatchip_computop_amount_captured', $data['captureAmount']);
-                    $this->setFieldData('fatchip_computop_remark', 'Payment Completed');
+                    $this->_setFieldData('fatchip_computop_amount_captured', $data['captureAmount']);
+                    $this->_setFieldData('fatchip_computop_remark', 'Payment Completed');
                 }
                 $this->save();
                 break;
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED":
-                $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
-                $this->setFieldData('oxtransstatus', 'OK');
+                $this->_setFieldData('oxfolder', 'ORDERFOLDER_NEW');
+                $this->_setFieldData('oxtransstatus', 'OK');
                 $this->save();
                 break;
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED":
-                $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
-                $this->setFieldData('oxtransstatus', 'OK');
+                $this->_setFieldData('oxfolder', 'ORDERFOLDER_NEW');
+                $this->_setFieldData('oxtransstatus', 'OK');
                 if (!empty($data)) {
-                    $this->setFieldData('fatchip_computop_remark', 'Auth OK  Capture pending');
+                    $this->_setFieldData('fatchip_computop_remark', 'Auth OK  Capture pending');
                 }
                 $this->save();
                 break;
 
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_REVIEW_NECESSARY":
-                $this->setFieldData('oxtransstatus', 'NOT_FINISHED');
-                $this->setFieldData('oxfolder', 'ORDERFOLDER_PROBLEMS');
+                $this->_setFieldData('oxtransstatus', 'NOT_FINISHED');
+                $this->_setFieldData('oxfolder', 'ORDERFOLDER_PROBLEMS');
                 if (!empty($data)) {
-                    $this->setFieldData(
+                    $this->_setFieldData(
                         'fatchip_computop_remark',
                         'Code: ' . $data['errorCode'] . '-' . $data['errorMessage']
                     );
@@ -438,7 +438,7 @@ class Order extends Order_parent
         $orderNumberCut = substr($orderNumber, 0, $orderNumberLength);
         $newOrdernumber = $orderPrefix.$orderNumberCut.$orderSuffix;
 
-        $this->setFieldData('oxordernr', $newOrdernumber);
+        $this->_setFieldData('oxordernr', $newOrdernumber);
         $this->save();
 
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
@@ -468,11 +468,11 @@ class Order extends Order_parent
         $mandateId = $response->getMandateid();
 
 
-        $this->setFieldData('fatchip_computop_payid', $payID);
-        $this->setFieldData('fatchip_computop_transid', $transID);
-        $this->setFieldData('fatchip_computop_xid', $xID);
-        $this->setFieldData('fatchip_computop_creditcard_schemereferenceid', $schemeRefId);
-        $this->setFieldData('fatchip_computop_lastschrift_mandateid', $mandateId);
+        $this->_setFieldData('fatchip_computop_payid', $payID);
+        $this->_setFieldData('fatchip_computop_transid', $transID);
+        $this->_setFieldData('fatchip_computop_xid', $xID);
+        $this->_setFieldData('fatchip_computop_creditcard_schemereferenceid', $schemeRefId);
+        $this->_setFieldData('fatchip_computop_lastschrift_mandateid', $mandateId);
         $this->save();
     }
 
@@ -907,18 +907,20 @@ class Order extends Order_parent
     {
         $moduleVersion = '';
 
-        $shopConfiguration = ContainerFacade::get(ShopConfigurationDaoBridgeInterface::class)->get();
-
         try {
-            $moduleConfig = $shopConfiguration->getModuleConfiguration('fatchip_computop_payments');
-            $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
-        } catch (ModuleConfigurationNotFoundException $e) {
-            Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
+            $moduleConfig = Registry::getConfig()->getShopConfVar('aModules', null, 'module:fatchip_computop_payments');
+            if (isset($moduleConfig['fatchip_computop_payments'])) {
+                $moduleVersion = 'ModuleVersion: ' . $moduleConfig['fatchip_computop_payments'];
+            } else {
+                Registry::getLogger()->error('ModuleConfig not found for fatchip_computop_payments.');
+            }
+        } catch (Exception $e) {
+            Registry::getLogger()->error('ModuleConfig fetch error: ' . $e->getMessage());
         }
 
-        $activeShop = $this->fatchipComputopShopConfig->getActiveShop();
-        $shopName = $activeShop->getFieldData('oxname');
-        $shopVersion = $activeShop->getFieldData('oxversion');
+        $activeShop = Registry::getConfig()->getActiveShop();
+        $shopName = $activeShop->oxshops__oxname->value;
+        $shopVersion = $activeShop->oxshops__oxversion->value;
 
         return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
     }
@@ -1181,10 +1183,10 @@ class Order extends Order_parent
         $this->load($orderId);
 
         // payment information
-        $oUserPayment = $this->setPayment($oBasket->getPaymentId());
+        $oUserPayment = $this->_setPayment($oBasket->getPaymentId());
 
         if (!isset($this->oxorder__oxordernr->value) || !$this->oxorder__oxordernr->value) {
-            $this->setNumber();
+            $this->_setNumber();
         } else {
             oxNew(\OxidEsales\Eshop\Core\Counter::class)->update($this->getCounterIdent(), $this->oxorder__oxordernr->value);
         }
@@ -1194,31 +1196,31 @@ class Order extends Order_parent
 
         //#4005: Order creation time is not updated when order processing is complete
         if (!$blRecalculatingOrder) {
-            $this->updateOrderDate();
+            $this->_updateOrderDate();
         }
 
         // updating order trans status (success status)
-        $this->setOrderStatus('OK');
+        $this->_setOrderStatus('OK');
 
         // store orderid
         $oBasket->setOrderId($this->getId());
 
         // updating wish lists
-        $this->updateWishlist($oBasket->getContents(), $oUser);
+        $this->_updateWishlist($oBasket->getContents(), $oUser);
 
         // updating users notice list
-        $this->updateNoticeList($oBasket->getContents(), $oUser);
+        $this->_updateNoticeList($oBasket->getContents(), $oUser);
 
         // marking vouchers as used and sets them to $this->_aVoucherList (will be used in order email)
         // skipping this action in case of order recalculation
         if (!$blRecalculatingOrder) {
-            $this->markVouchers($oBasket, $oUser);
+            $this->_markVouchers($oBasket, $oUser);
         }
 
         // send order by email to shop owner and current user
         // skipping this action in case of order recalculation
         if (!$blRecalculatingOrder) {
-            $iRet = $this->sendOrderByEmail($oUser, $oBasket, $oUserPayment);
+            $iRet = $this->_sendOrderByEmail($oUser, $oBasket, $oUserPayment);
         } else {
             $iRet = self::ORDER_STATE_OK;
         }

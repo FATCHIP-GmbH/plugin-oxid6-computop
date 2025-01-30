@@ -1,11 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-<head>
-    <title>[{oxmultilang ident="GENERAL_ADMIN_TITLE"}]</title>
-</head>
-<link rel="stylesheet" href="[{$oViewConf->getResourceUrl() }]main.css">
+[{include file="headitem.tpl" title="GENERAL_ADMIN_TITLE"|oxmultilangassign box="list"}]
+[{assign var="where" value=$oView->getListFilter()}]
 
-<!-- frames -->
+[{if $readonly}]
+    [{assign var="readonly" value="readonly disabled"}]
+    [{else}]
+    [{assign var="readonly" value=""}]
+    [{/if}]
+
 <script type="text/javascript">
     <!--
     window.onload = function ()
@@ -65,8 +66,15 @@
                         </div>
                     </div>
                 </td>
-                <input class="listedit" type="submit" name="submitit" value="[{oxmultilang ident="GENERAL_SEARCH"}]">
-            </tr>
+                <td valign="top" class="listfilter" align="left">
+                    <div class="r1">
+                        <div class="b1">
+                            <div class="find">
+                                <input class="listedit" type="submit" name="submitit" value="[{oxmultilang ident="GENERAL_SEARCH"}]" onClick="Javascript:document.search.lstrt.value=0;">
+                            </div>
+                        </div>
+                    </div>
+                </td>            </tr>
             <tr>
                 <td class="listheader first" height="15" width="30">
                     <a href="Javascript:top.oxid.admin.setSorting( document.search, 'fatchip_computop_api_log', 'creation_date', 'desc');document.search.submit();" class="listheader">creation_date</a>
@@ -90,51 +98,52 @@
             [{assign var="_cnt" value=$_cnt+1}]
             <tr id="row.[{$_cnt}]">
                 [{block name="fatchip_computop_requestlog_list_item"}]
-                [{if $listitem.blacklist == 1}]
-                [{assign var="listclass" value="listitem3"}]
+                [{if $listitem->blacklist == 1}]
+                [{assign var="listclass" value=listitem3}]
                 [{else}]
-                [{assign var="listclass" value="listitem"|cat:$blWhite}]
+                [{assign var="listclass" value=listitem$blWhite}]
                 [{/if}]
                 [{if $listitem->getId() == $oxid}]
-                [{assign var="listclass" value="listitem4"}]
+                [{assign var="listclass" value=listitem4}]
                 [{/if}]
                 <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass }]">
-                            [{$listitem.fatchip_computop_api_log__creation_date->value }]
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem->fatchip_computop_api_log__oxid->value }]');" class="[{$listclass }]">
+                            [{$listitem->fatchip_computop_api_log__creation_date->value }]
                         </a>
                     </div>
                 </td>
                 <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value}]');" class="[{$listclass}]">
-                            [{$listitem.fatchip_computop_api_log__trans_id->value }]
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem->fatchip_computop_api_log__oxid->value}]');" class="[{$listclass}]">
+                            [{$listitem->fatchip_computop_api_log__trans_id->value }]
                         </a>
                     </div>
                 </td>
                 <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
-                            [{$listitem.fatchip_computop_api_log__pay_id->value }]
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem->fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
+                            [{$listitem->fatchip_computop_api_log__pay_id->value }]
                         </a>
                     </div>
                 </td>
                 <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
-                            [{$listitem.fatchip_computop_api_log__request->value }]
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem->fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
+                            [{$listitem->fatchip_computop_api_log__request->value }]
                         </a>
                     </div>
                 </td>
                 <td valign="top" class="[{$listclass}]" height="15">
                     <div class="listitemfloating">
-                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem.fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
-                            [{$listitem.fatchip_computop_api_log__payment_name->value }]
+                        <a href="Javascript:top.oxid.admin.editThis('[{$listitem->fatchip_computop_api_log__oxid->value }]');" class="[{$listclass}]">
+                            [{$listitem->fatchip_computop_api_log__payment_name->value }]
                         </a>
                     </div>
                 </td>
                 [{/block}]
             </tr>
+
             [{/foreach}]
             [{include file="pagenavisnippet.tpl" colspan="5"}]
         </table>

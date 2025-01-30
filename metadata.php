@@ -35,7 +35,6 @@ use OxidEsales\Eshop\Core\Session;
 use OxidEsales\Eshop\Core\ViewConfig as CoreViewConfig;
 
 
-
 /**
  * Metadata version
  */
@@ -45,8 +44,8 @@ $sMetadataVersion = '2.0';
  * Module information
  */
 $aModule = [
-    'id'          => 'fatchip_computop_payments',
-    'title'       => [
+    'id' => 'fatchip_computop_payments',
+    'title' => [
         'de' => 'Computop Payment Connector',
         'en' => 'Computop Payment Connector',
     ],
@@ -60,19 +59,17 @@ $aModule = [
                 <p><b>Using Computop Payments</b><br><br>To use Computop Payments via the plugin, you need a contract with Computop. Please contact the Computop sales department at https://www.computop.com/de/. If you are already a customer, please contact your account manager directly. You will then receive your access data with which you can put the plugin into operation.</p>
                 <p><b>Support</b><br><br>Personal support via e-mail to <a href="mailto:helpdesk@computop.com">helpdesk@computop.com</a></p>',
     ],
-    'thumbnail'   => 'assets/img/computop_logo.png',
-    'version'     => '1.0.0',
-    'author'      => 'Fatchip-GmbH',
-    'url'         => 'https://www.fatchip.de/',
-    'email'       => '',
-    'extend'      => [
-        CoreOrderController::class =>   FatchipComputopOrder::class,
+    'thumbnail' => 'assets/img/computop_logo.png',
+    'version' => '1.0.0',
+    'author' => 'Fatchip-GmbH',
+    'url' => 'https://www.fatchip.de/',
+    'email' => '',
+    'extend' => [
+        CoreOrderController::class => FatchipComputopOrder::class,
         CorePaymentController::class => FatchipComputopPayment::class,
         CoreOrderModel::class => ModuleOrder::class,
         CoreViewConfig::class => ModuleViewConfig::class,
         Session::class => FatchipComputopSession::class,
-
-
         // Models
         CorePaymentGateway::class => ModulePaymentGateway::class,
     ],
@@ -101,16 +98,66 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,
         Constants::GENERAL_PREFIX . 'redirect' => FatchipComputopRedirect::class
     ],
-    'blocks'      => [
+    'blocks' => [
 
         // Admin back-end
         [
             'template' => 'headitem.tpl',
-            'block'    => 'admin_headitem_inccss',
-            'file'     => 'views/tpl/admin/blocks/headitem.tpl'
+            'block' => 'admin_headitem_inccss',
+            'file' => 'views/tpl/admin/blocks/headitem.tpl'
+        ],
+        [
+            'template' => 'base.tpl',
+            'block' => 'base_js',
+            'file' => 'views/tpl/extensions/layout/base.tpl'
+        ],
+        [
+            'template' => 'summary_sidebar.tpl',
+            'block' => 'checkout_basketcontents_summary',
+            'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'
+        ],
+        [
+            'template' => 'order.tpl',
+            'block' => 'checkout_order_btn_confirm_bottom',
+            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
+        ],
+        [
+            'template' => 'order.tpl',
+            'block' => 'checkout_order_payment_method',
+            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
+        ],
+        [
+            'template' => 'order.tpl',
+            'block' => 'checkout_order_next_step_side',
+            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
+        ],
+        [
+            'template' => 'order.tpl',
+            'block' => 'checkout_order_billing_address_button',
+            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
+        ],
+        [
+            'template' => 'order.tpl',
+            'block' => 'checkout_order_shipping_address_button',
+            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
+        ],
+        [
+            'template' => 'order.tpl',
+            'block' => 'checkout_order_shipping_carrier_button',
+            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
+        ],
+        [
+            'template' => 'order.tpl',
+            'block' => 'checkout_order_payment_method_button',
+            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
+        ],
+        [
+            'template' => 'payment.tpl',
+            'block' => 'select_payment',
+            'file' => 'views/tpl/extensions/page/checkout/payment.tpl'
         ],
     ],
-    'settings'    => [
+    'settings' => [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'mac', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'blowfishPassword', 'type' => 'str', 'value' => '', 'group' => null],
@@ -148,17 +195,25 @@ $aModule = [
 
     ],
     'templates' => [
-        'accordion_section.tpl'                => 'fatchip-gmbh/computop_payments/views/tpl/admin/accordion_section.tpl',
-        'fatchip_computop_apilog.tpl'           => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog.tpl',
-        'fatchip_computop_apilog_list.tpl'                      => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog_list.tpl',
-        'fatchip_computop_apilog_main.tpl'               => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog_main.tpl',
-        'fatchip_computop_form_field.tpl'          => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_form_field.tpl',
-        'fatchip_computop_json.tpl'          => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_json.tpl',
-        'fatchip_computop_payments_config.tpl'          => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_payments_config.tpl',
+        'accordion_section.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/accordion_section.tpl',
+        'fatchip_computop_order_settings.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_order_settings.tpl',
+        'fatchip_computop_apilog.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog.tpl',
+        'fatchip_computop_apilog_list.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog_list.tpl',
+        'fatchip_computop_apilog_main.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_apilog_main.tpl',
+        'fatchip_computop_form_field.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_form_field.tpl',
+        'fatchip_computop_json.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_json.tpl',
+        'fatchip_computop_payments_config.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_payments_config.tpl',
+
+        'fatchip_computop_creditcard_iframe.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_creditcard_iframe.tpl',
+        'fatchip_computop_creditcard_silentmode.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_creditcard_silentmode.tpl',
+        'fatchip_computop_iframe.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe.tpl',
+        'fatchip_computop_iframe_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe_return.tpl',
+        'fatchip_computop_redirect_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_redirect_return.tpl',
+
 
     ],
-    'events'      => [
-        'onActivate'   => 'Fatchip\ComputopPayments\Core\Events::onActivate',
+    'events' => [
+        'onActivate' => 'Fatchip\ComputopPayments\Core\Events::onActivate',
         'onDeactivate' => 'Fatchip\ComputopPayments\Core\Events::onDeactivate',
     ]
 ];

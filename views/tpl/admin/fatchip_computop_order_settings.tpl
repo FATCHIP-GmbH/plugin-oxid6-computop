@@ -1,4 +1,4 @@
-{% include "headitem.html.twig" with {title: "GENERAL_ADMIN_TITLE"|translate} %}
+[{include file="headitem.tpl" title="`oxmultilang ident='GENERAL_ADMIN_TITLE'`"}]
 
 <script type="text/javascript">
     <!--
@@ -78,306 +78,292 @@
     }
 </style>
 
-{% if readonly %}
-    {% set readonly = "readonly disabled" %}
-{% else %}
-    {% set readonly = "" %}
-{% endif %}
+[{assign var="readonly" value=""}]
+[{if $readonly}]
+    [{assign var="readonly" value="readonly disabled"}]
+    [{/if}]
 
-<form name="transfer" id="transfer" action="{{ oViewConf.getSelfLink()|raw }}" method="post">
-    {{ oViewConf.getHiddenSid()|raw }}
-    <input type="hidden" name="oxid" value="{{ oxid }}">
+<form name="transfer" id="transfer" action="[{$oViewConf->getSelfLink()}]" method="post">
+    [{$oViewConf->getHiddenSid()}]
+    <input type="hidden" name="oxid" value="[{$oxid}]">
     <input type="hidden" name="cl" value="fatchip_computop_order_settings">
 </form>
-{% if oView.isComputopOrder() is same as(true) %}
-   {# {% if oView.wasRefundSuccessful() == true %}
+
+[{if $oView->isComputopOrder() }]
+    [{if $oView->wasRefundSuccessful()}]
         <fieldset class="refundSuccess message">
-            {{ translate({ ident: "Computop_REFUND_SUCCESSFUL" }) }}
+            [{oxmultilang ident="COMPUTOP_REFUND_SUCCESS"}]
         </fieldset>
-    {% endif %}
-    {% if oView.getErrorMessage() != false %}
-        <fieldset class="refundError message">
-            <strong>Error</strong>
-            {{ oView.getErrorMessage() }}
-        </fieldset>
-    {% endif %}
+    [{/if}]
+    [{if $oView->getErrorMessage() }]
+    <fieldset class="refundError message">
+        <strong>Error</strong>
+        [{$oView->getErrorMessage()}]
+    </fieldset>
+    [{/if}]
 
-    {% set blIsOrderRefundable = oView.isOrderRefundable() %}
-
-    {% if blIsOrderRefundable == false %}
+    [{if $oView->hasOrderVoucher()}]
         <fieldset class="refundNotice message">
-            <strong>{{ translate({ ident: "Computop_NOTICE" }) }}</strong>
-            {{ translate({ ident: "Computop_ORDER_NOT_REFUNDABLE" }) }}
+            <strong>[{oxmultilang ident="Computop_NOTICE"}]</strong>
+            [{oxmultilang ident="Computop_VOUCHERS_EXISTING"}]
         </fieldset>
-    {% endif %}
+    [{/if}]
 
-    {% if oView.hasOrderVoucher() == true %}
-        <fieldset class="refundNotice message">
-            <strong>{{ translate({ ident: "Computop_NOTICE" }) }}</strong>
-            {{ translate({ ident: "Computop_VOUCHERS_EXISTING" }) }}
-        </fieldset>
-    {% endif %} #}
-
-    {% set order = oView.getOrder() %}
-    {% set paymentType = order.getPaymentType() %}
+[{assign var="order" value=$oView->getOrder()}]
+[{assign var="paymentType" value=$order->getPaymentType()}]
 <fieldset>
-    <legend>{{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT_DETAILS" }) }}</legend>
+    <legend>[{oxmultilang ident="FATCHIP_COMPUTOP_PAYMENT_DETAILS"}]</legend>
     <table>
         <tr>
             <td class="edittext">
-                {{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT_API_LOG_PAYMENT_NAME" }) }}:
+                [{oxmultilang ident="FATCHIP_COMPUTOP_PAYMENT_API_LOG_PAYMENT_NAME"}]:
             </td>
             <td class="edittext">
-                {{ paymentType.oxpayments__oxdesc.value }}
+                [{$paymentType->oxpayments__oxdesc->value}]
             </td>
             <td class="edittext"></td>
         </tr>
         <tr>
             <td class="edittext">
-                {{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT_API_LOG_RESPONSE_TRANS_ID" }) }}:
+                [{oxmultilang ident="FATCHIP_COMPUTOP_PAYMENT_API_LOG_RESPONSE_TRANS_ID"}]:
             </td>
             <td class="edittext">
-                {{ order.oxorder__fatchip_computop_transid.value }}
+                [{$order->oxorder__fatchip_computop_transid->value}]
             </td>
             <td class="edittext"></td>
         </tr>
-        {% if order.oxorder__fatchip_computop_payid.value != "" %}
-            <tr>
-                <td class="edittext">
-                    {{ translate({ ident: "FATCHIP_COMPUTOP_ORDER_PAYID" }) }}:
-                </td>
-                <td class="edittext">
-                    {{ order.oxorder__fatchip_computop_payid.value }}
-                </td>
-                <td class="edittext"></td>
-            </tr>
-        {% endif %}
-        {#  if order.oxorder__fatchip_computop_remark.value != "" %}
-            <tr>
-                <td class="edittext">
-                    {{ translate({ ident: "FATCHIP_COMPUTOP_ORDER_REMARK" }) }}:
-                </td>
-                <td class="edittext">
-                    {{ order.oxorder__fatchip_computop_remark.value }}
-                </td>
-                <td class="edittext"></td>
-            </tr>
-        {% endif #}
-        {% set capturedAmount = order.getCapturedAmount() %}
-        {% set refundedAmount = order.getRefundedAmount() %}
-        {% set totalSum = order.oxorder__oxtotalordersum.value %}
-        {% set isDifferent = totalSum != refundedAmount %}
+        [{if $order->oxorder__fatchip_computop_payid->value }]
+        <tr>
+            <td class="edittext">
+                [{oxmultilang ident="FATCHIP_COMPUTOP_ORDER_PAYID"}]:
+            </td>
+            <td class="edittext">
+                [{$order->oxorder__fatchip_computop_payid->value}]
+            </td>
+            <td class="edittext"></td>
+        </tr>
+        [{/if}]
 
-        {% if capturedAmount != "" %}
-            <tr>
-                <td class="edittext">
-                    {{ translate({ ident: "FATCHIP_COMPUTOP_ORDER_CAPTURED_AMOUNT" }) }}:
-                </td>
-                <td class="edittext">
-                    {{ capturedAmount }}
-                </td>
-                <td class="edittext"></td>
-            </tr>
-        {% endif %}
-        {% if refundedAmount != "" %}
-            <tr>
-                <td class="edittext">
-                    {{ translate({ ident: "FATCHIP_COMPUTOP_ORDER_REFUND_AMOUNT" }) }}
-                </td>
-                <td class="edittext">
-                    {{ refundedAmount }}
-                </td>
-                <td class="edittext"></td>
-            </tr>
-        {% endif %}
+        [{assign var="capturedAmount" value=$order->getCapturedAmount()}]
+        [{assign var="refundedAmount" value=$order->getRefundedAmount()}]
+        [{assign var="totalSum" value=$order->oxorder__oxtotalordersum->value}]
 
-
+        [{if $capturedAmount }]
+        <tr>
+            <td class="edittext">
+                [{oxmultilang ident="FATCHIP_COMPUTOP_ORDER_CAPTURED_AMOUNT"}]:
+            </td>
+            <td class="edittext">
+                [{$capturedAmount}]
+            </td>
+            <td class="edittext"></td>
+        </tr>
+        [{/if}]
+        [{if $refundedAmount }]
+        <tr>
+            <td class="edittext">
+                [{oxmultilang ident="FATCHIP_COMPUTOP_ORDER_REFUND_AMOUNT"}]:
+            </td>
+            <td class="edittext">
+                [{$refundedAmount}]
+            </td>
+            <td class="edittext"></td>
+        </tr>
+        [{/if}]
     </table>
 </fieldset>
-    {% if oView.getErrorMessage() is not same as(false) %}
-        <fieldset class="refundError message">
-            <strong>Error</strong>
-            {{ oView.getErrorMessage() }}
-        </fieldset>
-    {% endif %}
-    {% if oView.getSNoticeMessage() is not same as(false) %}
-        <fieldset class="refundNotice message">
-            <strong>Notice</strong>
-            {{ oView.getSNoticeMessage() }}
-        </fieldset>
-    {% endif %}
-    {% if oView.wasRefundSuccessful() is same as(true) %}
+    [{if $oView->getErrorMessage() }]
+    <fieldset class="refundError message">
+        <strong>Error</strong>
+        [{$oView->getErrorMessage()}]
+    </fieldset>
+    [{/if}]
+    [{if $oView->getSNoticeMessage() }]
+    <fieldset class="refundNotice message">
+        <strong>Notice</strong>
+        [{$oView->getSNoticeMessage()}]
+    </fieldset>
+    [{/if}]
+    [{if $oView->wasRefundSuccessful()}]
         <fieldset class="refundSuccess message">
-            {{ translate({ ident: "COMPUTOP_REFUND_SUCCESS" }) }}
+            [{oxmultilang ident="COMPUTOP_REFUND_SUCCESS"}]
         </fieldset>
-    {% endif %}
-    {% if order.getCapturedAmount() == "0.0" %}
-        <fieldset>
-        <legend>{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_TITLE" }) }}</legend>
-            <table cellspacing="0" cellpadding="0" border="0" width="98%" class="refundTable">
-                <tr>
-                    <td class="listheader first" height="15"
-                        width="10%">{{ translate({ ident: "GENERAL_ITEMNR" }) }}</td>
-                    <td class="listheader" width="10%">{{ translate({ ident: "GENERAL_TITLE" }) }}</td>
-                    <td class="listheader"
-                        width="10%">{{ translate({ ident: "FATCHIP_COMPUTOP_HEADER_SINGLE_PRICE" }) }}</td>
-                    <td class="listheader" width="10%">{{ translate({ ident: "GENERAL_ATALL" }) }}</td>
-                    <td class="listheader" width="10%">{{ translate({ ident: "ORDER_ARTICLE_MWST" }) }}</td>
-                </tr>
-                {% set blWhite = "" %}
-                {% set class = "" %}
-                {% set blBorderDrawn = false %}
-                {% set _cnt = 0 %}
+    [{/if}]
+[{if $order->getCapturedAmount() == "0.0"}]
+<fieldset>
+    <legend>[{oxmultilang ident="FATCHIP_COMPUTOP_CAPTURE_TITLE"}]</legend>
+    <table cellspacing="0" cellpadding="0" border="0" width="98%" class="refundTable">
+        <tr>
+            <td class="listheader first" height="15" width="10%">[{oxmultilang ident="GENERAL_ITEMNR"}]</td>
+            <td class="listheader" width="10%">[{oxmultilang ident="GENERAL_TITLE"}]</td>
+            <td class="listheader" width="10%">[{oxmultilang ident="FATCHIP_COMPUTOP_HEADER_SINGLE_PRICE"}]</td>
+            <td class="listheader" width="10%">[{oxmultilang ident="GENERAL_ATALL"}]</td>
+            <td class="listheader" width="10%">[{oxmultilang ident="ORDER_ARTICLE_MWST"}]</td>
+        </tr>
+        [{assign var="blWhite" value=""}]
+        [{assign var="class" value=""}]
+        [{assign var="blBorderDrawn" value=false}]
+        [{assign var="_cnt" value=0}]
 
-                {% for listitem in oView.getRefundItems() %}
-                    {% set _cnt = _cnt+1 %}
-                    <tr id="art.{{ _cnt }}">
-                        {% if listitem.isOrderarticle == false and blBorderDrawn == false %}
-                            {% set class = " borderTop" %}
-                            {% set blBorderDrawn = true %}
-                        {% endif %}
-                        {% set listclass = listitemblWhite %}
-                        <td valign="top" class="{{ listclass }}{{ class }}" height="15">{{ listitem.artnum }}</a></td>
-                        <td valign="top" class="{{ listclass }}{{ class }}">{{ listitem.title|striptags }}</a></td>
-                        <td valign="top"
-                            class="{{ listclass }}{{ class }}">{{ oView.getFormatedPrice(listitem.singlePrice) }}
-                            <small>{{ edit.oxorder__oxcurrency.value }}</small></td>
-                        <td valign="top"
-                            class="{{ listclass }}{{ class }}">{{ oView.getFormatedPrice(listitem.totalPrice) }}
-                            <small>{{ edit.oxorder__oxcurrency.value }}</small></td>
-                        <td valign="top" class="{{ listclass }}{{ class }}">{{ listitem.vat }}</td>
-                        {% if listitem.isOrderarticle == false %}
-                            {% set class = "" %}
-                        {% endif %}
-
-                    </tr>
-                    {% if blWhite == "2" %}
-                        {% set blWhite = "" %}
-                    {% else %}
-                        {% set blWhite = "2" %}
-                    {% endif %}
-                {% endfor %}
-                <tr>
-                    <td valign="top" class="{{ listclass }}{{ class }}" nowrap>
+        [{foreach from=$oView->getRefundItems() item=listitem}]
+        [{assign var="_cnt" value=$_cnt+1}]
+        <tr id="art.[{$_cnt}]">
+            [{if !$listitem->isOrderarticle && !$blBorderDrawn}]
+                [{assign var="class" value=" borderTop"}]
+                [{assign var="blBorderDrawn" value=true}]
+            [{/if}]
+            [{assign var="listclass" value=$listitem->blWhite}]
+            <td valign="top" class="[{$listclass}][{$class}]" height="15">[{$listitem.artnum}]</td>
+            <td valign="top" class="[{$listclass}][{$class}]">[{$listitem.title|strip_tags}]</td>
+            <td valign="top" class="[{$listclass}][{$class}]">
+                [{$oView->getFormatedPrice($listitem.singlePrice)}]
+                <small>[{$edit->oxorder__oxcurrency->value}]</small>
+            </td>
+            <td valign="top" class="[{$listclass}][{$class}]">
+                [{$oView->getFormatedPrice($listitem.totalPrice)}]
+                <small>[{$edit->oxorder__oxcurrency->value}]</small>
+            </td>
+            <td valign="top" class="[{$listclass}][{$class}]">[{$listitem.vat}]</td>
+            [{if !$listitem->isOrderarticle}]
+                [{assign var="class" value=""}]
+            [{/if}]
+        </tr>
+        [{if $blWhite == "2"}]
+            [{assign var="blWhite" value=""}]
+        [{else}]
+            [{assign var="blWhite" value="2"}]
+        [{/if}]
+        [{/foreach}]
+        <tr>
+            <td valign="top" class="[{$listclass}][{$class}]" nowrap>
                         <span class="refundQuantity">
-                            <form action="{{ oViewConf.getSelfLink()|raw }}" method="post">
-                                {{ oViewConf.getHiddenSid()|raw }}
+                            <form action="[{$oViewConf->getSelfLink()}]" method="post">
+                                [{$oViewConf->getHiddenSid()}]
                                 <input type="hidden" name="cl" value="fatchip_computop_order_settings">
-                                <input type="hidden" name="oxid" value="{{ oxid }}">
+                                <input type="hidden" name="oxid" value="[{$oxid}]">
                                 <input type="hidden" name="fnc" value="captureManual">
                                 <input type="hidden" name="capture_description" value="" class="capture_description">
                                 <input type="text" name="captureAmount"
-                                       value="{{ order.oxorder__oxtotalordersum.value }}" class="listedit">
+                                       value="[{$order->oxorder__oxtotalordersum->value}]" class="listedit">
                                 <input type="submit"
-                                       value="{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_SUBMIT" }) }}">
+                                       value="[{oxmultilang ident='FATCHIP_COMPUTOP_CAPTURE_SUBMIT'}]">
                             </form>
                         </span>
+            </td>
+        </tr>
+    </table>
+    <br>
+</fieldset>
+[{else}]
+[{if $totalSum != $refundedAmount}]
+    <fieldset>
+        <legend>[{oxmultilang ident="FATCHIP_COMPUTOP_REFUND"}]</legend>
+
+        <table cellspacing="0" cellpadding="0" border="0" width="98%" class="refundTable">
+            <tr>
+                <td class="listheader first" height="15" width="10%">[{oxmultilang ident="GENERAL_ITEMNR"}]</td>
+                <td class="listheader" width="10%">[{oxmultilang ident="GENERAL_TITLE"}]</td>
+                <td class="listheader" width="10%">[{oxmultilang ident="FATCHIP_COMPUTOP_HEADER_SINGLE_PRICE"}]</td>
+                <td class="listheader" width="10%">[{oxmultilang ident="GENERAL_ATALL"}]</td>
+                <td class="listheader" width="10%">[{oxmultilang ident="ORDER_ARTICLE_MWST"}]</td>
+                <td class="listheader" width="10%">[{oxmultilang ident="COMPUTOP_ARTICLE_REFUNDED"}]</td>
+                <td class="listheader" width="10%">Auswahl</td>
+            </tr>
+            [{assign var="blWhite" value=""}]
+            [{assign var="class" value=""}]
+            [{assign var="blBorderDrawn" value=false}]
+            [{assign var="_cnt" value=0}]
+
+            <form action="[{$oViewConf->getSelfLink()}]" method="post">
+                [{$oViewConf->getHiddenSid()}]
+                <input type="hidden" name="cl" value="fatchip_computop_order_settings">
+                <input type="hidden" name="oxid" value="[{$oxid}]">
+                <input type="hidden" name="fnc" value="refundSpecificArticles">
+
+                [{foreach from=$oView->getRefundItems() item=listitem}]
+                [{assign var="_cnt" value=$_cnt+1}]
+                <tr id="art.[{$_cnt}]">
+                    [{if !$listitem->isOrderarticle && !$blBorderDrawn}]
+                    [{assign var="class" value=" borderTop"}]
+                    [{assign var="blBorderDrawn" value=true}]
+                    [{/if}]
+                    [{assign var="listclass" value=$listitem->blWhite}]
+
+                    <input type="hidden" name="aArtId[[{$listitem.id}]][oxid]" value="[{$listitem.id}]"/>
+                    <input type="hidden" name="aArtId[[{$listitem.id}]][price]" value="[{$listitem.totalPrice}]"/>
+                    [{if !$listitem->isOrderarticle}]
+                <input type="hidden" name="aArtId[[{$listitem->id}]][shipping]" value="1"/>
+                    [{/if}]
+
+                    <td valign="top" class="[{$listclass}][{$class}]" height="15">[{$listitem.artnum}]</td>
+                    <td valign="top" class="[{$listclass}][{$class}]">[{$listitem.title|strip_tags}]</td>
+                    <td valign="top" class="[{$listclass}][{$class}]">
+                        [{$oView->getFormatedPrice($listitem.singlePrice)}]
+                        <small>[{$edit->oxorder__oxcurrency->value}]</small>
+                    </td>
+                    <td valign="top" class="[{$listclass}][{$class}]">
+                        [{$oView->getFormatedPrice($listitem.totalPrice)}]
+                        <small>[{$edit->oxorder__oxcurrency->value}]</small>
+                    </td>
+                    <td valign="top" class="[{$listclass}][{$class}]">[{$listitem.vat}]</td>
+                    <td valign="top" class="[{$listclass}][{$class}]">[{$listitem.refunded}]</td>
+                    <td valign="top" class="[{$listclass}][{$class}]">
+                        <input type="checkbox" name="aArtId[[{$listitem.id}]][refundthis]">
+                    </td>
+
+                    [{if !$listitem->isOrderarticle}]
+                    [{assign var="class" value=""}]
+                    [{/if}]
+                </tr>
+
+                [{if $blWhite == "2"}]
+                [{assign var="blWhite" value=""}]
+                [{else}]
+                [{assign var="blWhite" value="2"}]
+                [{/if}]
+                [{/foreach}]
+
+                <tr>
+                    <td>
+                        <input type="submit" value="[{oxmultilang ident="FATCHIP_COMPUTOP_REFUND_ARTICLES_SUBMIT"}]">
                     </td>
                 </tr>
-            </table><br>
-        </fieldset>
-    {% else %}
-        {% if isDifferent %}
-            <fieldset>
-                <legend>{{ translate({ ident: "FATCHIP_COMPUTOP_REFUND" }) }}</legend>
+            </form>
+        </table>
+        <br>
+    </fieldset>
 
-                <table cellspacing="0" cellpadding="0" border="0" width="98%" class="refundTable">
-                    <tr>
-                        <td class="listheader first" height="15" width="10%">{{ translate({ ident: "GENERAL_ITEMNR" }) }}</td>
-                        <td class="listheader" width="10%">{{ translate({ ident: "GENERAL_TITLE" }) }}</td>
-                        <td class="listheader"
-                            width="10%">{{ translate({ ident: "FATCHIP_COMPUTOP_HEADER_SINGLE_PRICE" }) }}</td>
-                        <td class="listheader" width="10%">{{ translate({ ident: "GENERAL_ATALL" }) }}</td>
-                        <td class="listheader" width="10%">{{ translate({ ident: "ORDER_ARTICLE_MWST" }) }}</td>
-                        <td class="listheader" width="10%">{{ translate({ ident: "COMPUTOP_ARTICLE_REFUNDED" }) }}</td>
-                        <td class="listheader" width="10%">Auswahl</td>
-                    </tr>
-                    {% set blWhite = "" %}
-                    {% set class = "" %}
-                    {% set blBorderDrawn = false %}
-                    {% set _cnt = 0 %}
-                    <form action="{{ oViewConf.getSelfLink()|raw }}" method="post">
-                        {{ oViewConf.getHiddenSid()|raw }}
-                        <input type="hidden" name="cl" value="fatchip_computop_order_settings">
-                        <input type="hidden" name="oxid" value="{{ oxid }}">
-                        <input type="hidden" name="fnc" value="refundSpecificArticles">
-                        {% for listitem in oView.getRefundItems() %}
-                            {% set _cnt = _cnt+1 %}
-                            <tr id="art.{{ _cnt }}">
-                                {% if listitem.isOrderarticle == false and blBorderDrawn == false %}
-                                    {% set class = " borderTop" %}
-                                    {% set blBorderDrawn = true %}
-                                {% endif %}
-                                {% set listclass = listitemblWhite %}
-                                <input type="hidden" name="aArtId[{{ listitem.id }}][oxid]" value="{{ listitem.id }}" />
-                                <input type="hidden" name="aArtId[{{ listitem.id }}][price]" value="{{ listitem.totalPrice }}" />
-                                {% if listitem.isOrderarticle == false %}
-                                    <input type="hidden" name="aArtId[{{ listitem.id }}][shipping]" value="1" />
-                                {% endif %}
-                                <td valign="top" class="{{ listclass }}{{ class }}" height="15">{{ listitem.artnum }}</a></td>
-                                <td valign="top" class="{{ listclass }}{{ class }}">{{ listitem.title|striptags }}</a></td>
-                                <td valign="top"
-                                    class="{{ listclass }}{{ class }}">{{ oView.getFormatedPrice(listitem.singlePrice) }}
-                                    <small>{{ edit.oxorder__oxcurrency.value }}</small></td>
-                                <td valign="top"
-                                    class="{{ listclass }}{{ class }}">{{ oView.getFormatedPrice(listitem.totalPrice) }}
-                                    <small>{{ edit.oxorder__oxcurrency.value }}</small></td>
-
-                                <td valign="top" class="{{ listclass }}{{ class }}">{{ listitem.vat }}</td>
-                                <td valign="top" class="{{ listclass }}{{ class }}">{{ listitem.refunded }}</td>
-
-                                <td valign="top" class="{{ listclass }}{{ class }}"><input type="checkbox" name="aArtId[{{ listitem.id }}][refundthis]"></td>
-                                {% if listitem.isOrderarticle == false %}
-                                    {% set class = "" %}
-                                {% endif %}
-                            </tr>
-
-                            {% if blWhite == "2" %}
-                                {% set blWhite = "" %}
-                            {% else %}
-                                {% set blWhite = "2" %}
-                            {% endif %}
-                        {% endfor %}
-                        <tr>
-                            <td> <input type="submit"
-                                        value="{{ translate({ ident: "FATCHIP_COMPUTOP_REFUND_ARTICLES_SUBMIT" }) }}"></td>
-                        </tr>
-                    </form>
-                </table><br>
-            </fieldset>
-            {% if refundedAmount == "" %}
-                <fieldset>
-                    <legend>{{ translate({ ident: "FATCHIP_COMPUTOP_REFUND_ALL" }) }}</legend>
-                    <table>
-                    <tr>
-                        <td valign="top" class="{{ listclass }}{{ class }}" nowrap>
-                            <span class="refundQuantity">
-                                <form action="{{ oViewConf.getSelfLink()|raw }}" method="post">
-                                    {{ oViewConf.getHiddenSid()|raw }}
-                                    <input type="hidden" name="cl" value="fatchip_computop_order_settings">
-                                    <input type="hidden" name="oxid" value="{{ oxid }}">
-                                    <input type="hidden" name="fnc" value="refundOrderArticles">
-                                    <input type="hidden" name="capture_description" value="" class="capture_description">
-                                    <input type="text" name="captureAmount"
-                                           value="{{ order.oxorder__oxtotalordersum.value }}" class="listedit" readonly>
-                                    <input type="submit"
-                                           value="{{ translate({ ident: "FATCHIP_COMPUTOP_REFUND_SUBMIT" }) }}">
-                                </form>
-                            </span>
-                        </td>
-                    </tr>
-                </table>
-            </fieldset>
-            {% endif %}
-        {% else %}
-            <fieldset class="refundNotice message">
-                {{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_SUBMIT_COMPLETE" }) }}
-            </fieldset>
-        {% endif %}
-
-    {% endif %}
-{% endif %}
-
-{% include "bottomnaviitem.html.twig" %}
-
-{% include "bottomitem.html.twig" %}
+    [{if $refundedAmount == ""}]
+    <fieldset>
+        <legend>[{oxmultilang ident="FATCHIP_COMPUTOP_REFUND_ALL"}]</legend>
+        <table>
+            <tr>
+                <td valign="top" class="[{$listclass}][{$class}]" nowrap>
+                        <span class="refundQuantity">
+                            <form action="[{$oViewConf->getSelfLink()}]" method="post">
+                                [{$oViewConf->getHiddenSid()}]
+                                <input type="hidden" name="cl" value="fatchip_computop_order_settings">
+                                <input type="hidden" name="oxid" value="[{$oxid}]">
+                                <input type="hidden" name="fnc" value="refundOrderArticles">
+                                <input type="hidden" name="capture_description" value="" class="capture_description">
+                                <input type="text" name="captureAmount"
+                                       value="[{$order->oxorder__oxtotalordersum->value}]" class="listedit" readonly>
+                                <input type="submit"
+                                       value="[{oxmultilang ident="FATCHIP_COMPUTOP_REFUND_SUBMIT"}]">
+                            </form>
+                        </span>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    [{/if}]
+    [{else}]
+    <fieldset class="refundNotice message">
+        [{oxmultilang ident="FATCHIP_COMPUTOP_CAPTURE_SUBMIT_COMPLETE"}]
+    </fieldset>
+    [{/if}]
+[{/if}]
+[{/if}]
+[{include file="bottomnaviitem.tpl"}]
+[{include file="bottomitem.tpl"}]
+[{debug}]
