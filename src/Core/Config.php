@@ -62,12 +62,6 @@ class Config
 
     protected $creditCardTemplate = null;
 
-    protected $idealDirektOderUeberSofort = null;
-
-    protected $lastschriftDienst = null;
-
-    protected $lastschriftCaption = null;
-
     protected $paypalCaption = null;
 
     protected $paypalExpressCaption = null;
@@ -80,18 +74,6 @@ class Config
 
     protected $paypalExpressTestMode = null;
 
-    protected $amazonpayPubKeyId = null;
-
-    protected $amazonpayMerchantId = null;
-
-    protected $amazonLiveMode = null;
-
-    protected $amazonCaptureType = null;
-
-    protected $amazonButtonColor = null;
-
-
-    protected $klarnaaccount = null;
 
 
     /**
@@ -338,15 +320,7 @@ class Config
     /**
      * @return null
      */
-    public function getIdealDirektOderUeberSofort()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('idealDirektOderUeberSofort', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
+
 
     /**
      * @param null $idealDirektOderUeberSofort

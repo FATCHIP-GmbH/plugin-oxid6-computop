@@ -1236,16 +1236,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public function getUserDataParam()
     {
         $moduleVersion = '';
-
-        $shopConfiguration = ContainerFacade::get(ShopConfigurationDaoBridgeInterface::class)->get();
-
-        try {
-            $moduleConfig = $shopConfiguration->getModuleConfiguration('fatchip_computop_payments');
-            $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
-        } catch (ModuleConfigurationNotFoundException $e) {
-            Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
-        }
-
         $activeShop = $this->fatchipComputopShopConfig->getActiveShop();
         $shopName = $activeShop->getFieldData('oxname');
         $shopVersion = $activeShop->getFieldData('oxversion');

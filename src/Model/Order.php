@@ -1188,7 +1188,7 @@ class Order extends Order_parent
         if (!isset($this->oxorder__oxordernr->value) || !$this->oxorder__oxordernr->value) {
             $this->_setNumber();
         } else {
-            oxNew(\OxidEsales\Eshop\Core\Counter::class)->update($this->getCounterIdent(), $this->oxorder__oxordernr->value);
+            oxNew(\OxidEsales\Eshop\Core\Counter::class)->update($this->_getCounterIdent(), $this->oxorder__oxordernr->value);
         }
 
         // deleting remark info only when order is finished

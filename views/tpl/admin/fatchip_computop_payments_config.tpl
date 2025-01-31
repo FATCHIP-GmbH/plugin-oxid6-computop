@@ -21,18 +21,6 @@
                 [{/if}]
             </div>
 
-            [{if $oView->getIdealUpdateSuccess() === null}]
-            [{* No action when getIdealUpdateSuccess() is null (initial state) *}]
-            [{else}]
-            <div class="alert alert-[{if $oView->getIdealUpdateSuccess()}]success[{else}]danger[{/if}] mb-3" role="alert">
-                [{if $oView->getIdealUpdateSuccess()}]
-                [{assign var="idealMessage" value="FATCHIP_COMPUTOP_IDEAL_ISSUERS"}]
-                [{else}]
-                [{assign var="idealMessage" value="FATCHIP_COMPUTOP_IDEAL_ISSUERS_ERROR"}]
-                [{/if}]
-
-                [{oxmultilang ident=$idealMessage}]            </div>
-            [{/if}]
         </div>
     </div>
 
@@ -59,12 +47,6 @@
         title=$FATCHIP_COMPUTOP_CREDIT_CARD_SETTINGS
         formFields=$creditCardFormFields currentBlock='creditcard' }]
 
-        [{* iDEAL Settings *}]
-        [{capture assign="FATCHIP_COMPUTOP_IDEAL_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_IDEAL_SETTINGS"}][{/capture}]
-        [{include file="accordion_section.tpl" headingId='headingIdeal' collapseId='collapseIdeal'
-        title=$FATCHIP_COMPUTOP_IDEAL_SETTINGS
-        formFields=$idealFormFields currentBlock='ideal' }]
-
         [{* PayPal Settings *}]
         [{capture assign="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{/capture}]
         [{include file="accordion_section.tpl" headingId='headingPayPal' collapseId='collapsePayPal'
@@ -72,29 +54,10 @@
         formFields=$payPalFormFields currentBlock='paypal' }]
 
         [{* PayPal Express Settings *}]
-        [{capture assign="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{/capture}]
+        [{capture assign="FATCHIP_COMPUTOP_PAYPAL_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_PAYPALEXPRESS_SETTINGS"}][{/capture}]
         [{include file="accordion_section.tpl" headingId='headingPayPalExpress' collapseId='collapsePayPalExpress'
         title=$FATCHIP_COMPUTOP_PAYPAL_SETTINGS
         formFields=$payPalExpressFormFields currentBlock='paypalExpress' }]
-
-        [{* Direct Debit (Lastschrift) Settings *}]
-        [{capture assign="FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS"}][{/capture}]
-        [{include file="accordion_section.tpl" headingId='headingLastschrift' collapseId='collapseLastschrift'
-        title=$FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS
-        formFields=$lastschriftFormFields currentBlock='lastschrift' }]
-
-        [{* Amazon Settings *}]
-        [{capture assign="FATCHIP_COMPUTOP_AMAZON_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_AMAZON_SETTINGS"}][{/capture}]
-        [{include file="accordion_section.tpl" headingId='headingAmazon' collapseId='collapseAmazon'
-        title=$FATCHIP_COMPUTOP_AMAZON_SETTINGS
-        formFields=$amazonFormFields currentBlock='amazon' }]
-
-        [{* Klarna Settings *}]
-        [{capture assign="FATCHIP_COMPUTOP_KLARNA_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_KLARNA_SETTINGS"}][{/capture}]
-        [{include file="accordion_section.tpl" headingId='headingKlarna' collapseId='collapseKlarna'
-        title=$FATCHIP_COMPUTOP_KLARNA_SETTINGS
-        formFields=$klarnaFormFields currentBlock='klarna' }]
-
         <br />
         <div class="form-group row mt-3">
             <div class="col-md-12 text-center">

@@ -64,21 +64,13 @@ class FatchipComputopConfig extends AdminController
         // Create separate form field arrays for each payment method
         $generalFormFields = array_merge(CTPaymentConfigForms::formGeneralTextElements, CTPaymentConfigForms::formGeneralSelectElements);
         $creditCardFormFields = array_merge(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardTextElements);
-        $idealFormFields = CTPaymentConfigForms::formIdealSelectElements;
-        $lastschriftFormFields = CTPaymentConfigForms::formLastschriftSelectElements;
         $payPalFormFields = CTPaymentConfigForms::formPayPalSelectElements;
-        $amazonFormFields = array_merge(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
-        $klarnaFormFields = CTPaymentConfigForms::formKlarnaTextElements;
         $payPalExpressFormFields = array_merge(CTPaymentConfigForms::formPayPalExpressSelectElementTestMode,CTPaymentConfigForms::formPayPalExpressSelectElements,CTPaymentConfigForms::formPayPalExpressTextElementClientID,CTPaymentConfigForms::formPayPalExpressTextElementMerchantID,CTPaymentConfigForms::formPayPalExpressTextElementPartnerAttributionID);
         $mergedFormFields = array_replace_recursive(
             $generalFormFields,
             $creditCardFormFields,
-            $idealFormFields,
-            $lastschriftFormFields,
             $payPalFormFields,
             $payPalExpressFormFields,
-            $amazonFormFields,
-            $klarnaFormFields,
             $configArr
         );
 
@@ -93,12 +85,8 @@ class FatchipComputopConfig extends AdminController
         $this->addTplParam('formFields', $formFields);
         $this->addTplParam('generalFormFields', $generalFormFields);
         $this->addTplParam('creditCardFormFields', $creditCardFormFields);
-        $this->addTplParam('idealFormFields', $idealFormFields);
-        $this->addTplParam('lastschriftFormFields', $lastschriftFormFields);
         $this->addTplParam('payPalFormFields', $payPalFormFields);
         $this->addTplParam('payPalExpressFormFields', $payPalExpressFormFields);
-        $this->addTplParam('amazonFormFields', $amazonFormFields);
-        $this->addTplParam('klarnaFormFields', $klarnaFormFields);
         $this->addTplParam('config', $mergedFormFields);
         $thisTemplate = parent::render();
 

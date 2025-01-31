@@ -1,5 +1,4 @@
 [{capture append="oxidBlock_content"}]
-    [{* Ordering steps *}]
     [{include file="page/checkout/inc/steps.tpl" active=4}]
     <style>
         .iframe-container {

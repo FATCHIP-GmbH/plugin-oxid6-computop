@@ -16,7 +16,7 @@ class FatchipComputopSession extends FatchipComputopSession_parent {
     protected $fatchipComputopPaymentService;
 
 
-        protected function allowSessionStart()
+        protected function _allowSessionStart()
         {
             $len = Registry::getRequest()->getRequestParameter('Len');
             $data = Registry::getRequest()->getRequestParameter('Data');
@@ -30,7 +30,7 @@ class FatchipComputopSession extends FatchipComputopSession_parent {
                     return false;
                 }
             }
-          return  parent::allowSessionStart();
+          return  parent::_allowSessionStart();
 
         }
 }

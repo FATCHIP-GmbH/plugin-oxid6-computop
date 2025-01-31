@@ -366,4 +366,3 @@
 [{/if}]
 [{include file="bottomnaviitem.tpl"}]
 [{include file="bottomitem.tpl"}]
-[{debug}]

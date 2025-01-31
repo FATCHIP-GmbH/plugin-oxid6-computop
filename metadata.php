@@ -107,7 +107,7 @@ $aModule = [
             'file' => 'views/tpl/admin/blocks/headitem.tpl'
         ],
         [
-            'template' => 'base.tpl',
+            'template' => 'layout/base.tpl',
             'block' => 'base_js',
             'file' => 'views/tpl/extensions/layout/base.tpl'
         ],
@@ -117,42 +117,42 @@ $aModule = [
             'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'
         ],
         [
-            'template' => 'order.tpl',
+            'template' => 'page/checkout/order.tpl',
             'block' => 'checkout_order_btn_confirm_bottom',
             'file' => 'views/tpl/extensions/page/checkout/order.tpl'
         ],
         [
-            'template' => 'order.tpl',
+            'template' => 'page/checkout/order.tpl',
             'block' => 'checkout_order_payment_method',
             'file' => 'views/tpl/extensions/page/checkout/order.tpl'
         ],
         [
-            'template' => 'order.tpl',
+            'template' => 'page/checkout/order.tpl',
             'block' => 'checkout_order_next_step_side',
             'file' => 'views/tpl/extensions/page/checkout/order.tpl'
         ],
         [
-            'template' => 'order.tpl',
+            'template' => 'page/checkout/order.tpl',
             'block' => 'checkout_order_billing_address_button',
             'file' => 'views/tpl/extensions/page/checkout/order.tpl'
         ],
         [
-            'template' => 'order.tpl',
+            'template' => 'page/checkout/order.tpl',
             'block' => 'checkout_order_shipping_address_button',
             'file' => 'views/tpl/extensions/page/checkout/order.tpl'
         ],
         [
-            'template' => 'order.tpl',
+            'template' => 'page/checkout/order.tpl',
             'block' => 'checkout_order_shipping_carrier_button',
             'file' => 'views/tpl/extensions/page/checkout/order.tpl'
         ],
         [
-            'template' => 'order.tpl',
+            'template' => 'page/checkout/order.tpl',
             'block' => 'checkout_order_payment_method_button',
             'file' => 'views/tpl/extensions/page/checkout/order.tpl'
         ],
         [
-            'template' => 'payment.tpl',
+            'template' => 'page/checkout/payment.tpl',
             'block' => 'select_payment',
             'file' => 'views/tpl/extensions/page/checkout/payment.tpl'
         ],
@@ -167,32 +167,17 @@ $aModule = [
         ['name' => 'creditCardMode', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'creditCardTestMode', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'creditCardSilentModeBrandsVisa', 'type' => 'str', 'value' => '', 'group' => null],
-
         ['name' => 'creditCardSilentModeBrandsMaster', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'creditCardSilentModeBrandsAmex', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'creditCardCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'creditCardAcquirer', 'type' => 'str', 'value' => '', 'group' => null],
-
         ['name' => 'creditCardTemplate', 'type' => 'str', 'value' => 'ct_responsive', 'group' => null],
-        ['name' => 'idealDirektOderUeberSofort', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'lastschriftDienst', 'type' => 'str', 'value' => 'DIREKT', 'group' => null],
-        ['name' => 'lastschriftCaption', 'type' => 'str', 'value' => '', 'group' => null],
-
         ['name' => 'paypalCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressClientID', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressMerchantID', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressPartnerAttributionID', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressTestMode', 'type' => 'str', 'value' => '', 'group' => null],
-
-        ['name' => 'amazonpayMerchantId', 'type' => 'string', 'value' => false, 'group' => null],
-        ['name' => 'amazonpayPubKeyId', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'amazonLiveMode', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'amazonCaptureType', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'amazonButtonColor', 'type' => 'string', 'value' => false, 'group' => null],
-
-        ['name' => 'klarnaaccount', 'type' => 'str', 'value' => '', 'group' => null],
-
     ],
     'templates' => [
         'accordion_section.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/accordion_section.tpl',
