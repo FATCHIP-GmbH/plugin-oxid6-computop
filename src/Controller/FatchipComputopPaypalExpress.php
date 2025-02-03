@@ -56,7 +56,7 @@ class FatchipComputopPayPalExpress extends FrontendController
      *
      * @var string
      */
-    protected $_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_paypalexpress';
+    protected $_sThisTemplate = 'fatchip_computop_paypalexpress.tpl';
 
     protected $fatchipComputopConfig;
     protected $fatchipComputopSession;

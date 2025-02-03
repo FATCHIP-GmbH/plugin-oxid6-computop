@@ -1,4 +1,4 @@
-{% extends 'page/checkout/inc/summary_sidebar.html.twig' %}
+{% extends 'page/checkout/inc/basketcontents.tpl' %}
 
 {% block checkout_basketcontents_summary %}
     {{ parent() }}
