@@ -742,10 +742,13 @@ class Order extends Order_parent
             );
         }
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
+
+            $template = $this->fatchipComputopConfig['creditCardTemplate'] ?? 'ct_responsive';
             $this->fatchipComputopPaymentClass = 'CreditCard';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
 
                 $response = $payment->getHTTPGetURL($params);
+                $response .= '&template='.$template;
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
 
                 $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-IFRAME', $payment);

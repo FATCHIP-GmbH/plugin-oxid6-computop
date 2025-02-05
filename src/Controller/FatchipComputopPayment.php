@@ -54,11 +54,13 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
 
     public function render()
     {
+        $previousRedirectUrl = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'RedirectUrl');
         if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse')) {
             $this->unsetSessionVars();
             //   Registry::getSession()->regenerateSessionId();
         }
-        if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing')) {
+        if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing') ||
+            $previousRedirectUrl) {
 
             $this->cleanUpPPEOrder();
             $this->unsetSessionVars();
@@ -128,7 +130,7 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
         Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
         Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
     }
 
     public function cleanUpPPEOrder() {
