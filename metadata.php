@@ -86,15 +86,10 @@ $aModule = [
 
         // Frontend
         Constants::GENERAL_PREFIX . 'payments' => FatchipComputopPayments::class,
-        Constants::GENERAL_PREFIX . 'lastschrift' => FatchipComputopLastschrift::class,
         Constants::GENERAL_PREFIX . 'creditcard' => FatchipComputopCreditcard::class,
         Constants::GENERAL_PREFIX . 'paypal_standard' => FatchipComputopPaypalStandard::class,
         Constants::GENERAL_PREFIX . 'paypal_express' => FatchipComputopPaypalExpress::class,
-        Constants::GENERAL_PREFIX . 'klarna' => FatchipComputopKlarna::class,
-        Constants::GENERAL_PREFIX . 'easycredit' => FatchipComputopEasycredit::class,
-        Constants::GENERAL_PREFIX . 'amazonpay' => FatchipComputopAmazonpay::class,
         Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
-        Constants::GENERAL_PREFIX . 'ideal' => FatchipComputopIdeal::class,
         Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,
         Constants::GENERAL_PREFIX . 'redirect' => FatchipComputopRedirect::class
     ],

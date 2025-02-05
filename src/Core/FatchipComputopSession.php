@@ -2,6 +2,7 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Fatchip\CTPayment\CTPaymentService;
+use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopSession extends FatchipComputopSession_parent {
@@ -33,4 +34,63 @@ class FatchipComputopSession extends FatchipComputopSession_parent {
           return  parent::_allowSessionStart();
 
         }
+    public function unsetSessionVars()
+    {
+
+        $sessionVars = [
+            'FatchipComputopErrorCode',
+            'FatchipComputopErrorMessage',
+            'paymentid',
+            'sess_challenge',
+            Constants::CONTROLLER_PREFIX . 'DirectResponse',
+            Constants::CONTROLLER_PREFIX . 'RedirectResponse',
+            Constants::CONTROLLER_PREFIX . 'DirectRequest',
+            Constants::CONTROLLER_PREFIX . 'RedirectUrl',
+            Constants::CONTROLLER_PREFIX . 'PpeFinished',
+        ];
+
+        foreach ($sessionVars as $var) {
+            $this->deleteVariable($var);
+        }
+    }
+
+    public function cleanUpPPEOrder()
+    {
+        $orderId = $this->getVariable('sess_challenge');
+
+        if ($orderId) {
+            $oOrder = oxNew(Order::class);
+            $oOrder->delete($orderId);
+        }
+
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
+        $this->initNewSession();
+    }
+
+    public function handlePaymentSession()
+    {
+        if ($this->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse')) {
+            $this->unsetSessionVars();
+        }
+
+        if ($this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished') === 1 && $this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing')) {
+            $this->unsetSessionVars();
+        }
+
+        if ($this->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl')) {
+            $this->cleanUpPPEOrder();
+            $this->unsetSessionVars();
+            Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL');
+        }
+
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+
+        if ($errorCode = $this->getVariable('FatchipComputopErrorCode')) {
+            $errorMessage = $this->getVariable('FatchipComputopErrorMessage');
+            $this->unsetSessionVars();
+            $errorText = $errorCode === 22890703 ? 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL' : "$errorCode-$errorMessage";
+            Registry::getUtilsView()->addErrorToDisplay($errorText);
+        }
+    }
 }

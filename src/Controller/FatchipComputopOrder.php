@@ -72,6 +72,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
     public function render()
     {
+        Registry::getSession()->handlePaymentSession();
         $paymentId = $this->fatchipComputopBasket->getPaymentId();
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_klarna') {
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
@@ -446,6 +447,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
         if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing')) {
             Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing');
+            Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeFinished',1);
         }
         return $ret;
     }
@@ -713,26 +715,15 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $oDelivery = $this->fatchipComputopBasket->getCosts('oxdelivery');
         $sDeliveryCosts = $oDelivery === null ? 0.0 : (int)($oDelivery->getBruttoPrice() * 100);
 
-        $sDeliveryCosts = (double)str_replace(
-            ',',
-            '.',
-            $sDeliveryCosts
-        );
-
         $taxAmount = $this->fatchipComputopBasket->getBruttoSum() - $this->fatchipComputopBasket->getNettoSum();
-        $taxAmount = (int)$taxAmount * 100;
         $amount = $this->fatchipComputopBasket->getPrice()->getBruttoPrice() * 100;
         $amount = (int)$amount;
         $currency = 'EUR';
         $shopUrl =  $this->fatchipComputopShopConfig->getShopUrl().'computop/amazonpay/return/';
         $oUser = $this->getUser();
         $UrlParams = $this->getUrlParams();
-//        $customParam = $this->getCustomParam($payment->getTransID());
-        //     $redirectParams = $payment->getRedirectUrlParams();
-        //    $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
         $ctOrder = $this->createCTOrder();
         $payment = $this->initializePayment($ctOrder, 'AmazonPay');
-        // $request = $this->createAuthorizeRequest($payment, 'AmazonPay', $amount, $currency, $ctOrder);
 
         /** @var AmazonPay $payment */
         $params = $payment->getAmazonInitParams(
@@ -761,7 +752,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $sessionID = $this->fatchipComputopSession->getId();
             $customerId = $oUser->getId();
             $paymentName = $this->fatchipComputopPaymentClass;
-            $basketExport = var_export($this->fatchipComputopBasket, true);
             $this->fatchipComputopLogger->log(
                 'DEBUG',
                 'Redirecting to ' . $payment->getCTPaymentURL($params),
@@ -830,14 +820,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public
     function getKlarnaOrderlinesParams(): string
     {
-        $aOrderlines = [];
         foreach ($this->fatchipComputopBasket->getContents() as $oBasketItem) {
             $oArticle = $oBasketItem->getArticle();
-            $test = round(
-                (($oBasketItem->getPrice()->getBruttoPrice() - $oBasketItem->getPrice()->getNettoPrice()) * 100)
-            );
-            $test2 = (int)((($oBasketItem->getPrice()->getBruttoPrice() - $oBasketItem->getPrice()->getNettoPrice(
-                    )) * 100));
+
             $articleListArray['order_lines'][] = [
                 'reference' => $oArticle->oxarticles__oxartnum->value,
                 'name' => $oBasketItem->getTitle(),
@@ -871,7 +856,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 'total_tax_amount' => $deliveryTax
             ];
         }
-        $test = json_encode($articleListArray);
 
         $articleList = base64_encode(json_encode($articleListArray));
 
@@ -887,8 +871,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $params,
         $payment
     ) {
-        $requestType = 'KLARNA';
-
         $response = $payment->prepareComputopRequest($params, $payment->getCTPaymentURL());
 
         return $response;
@@ -903,32 +885,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $params,
         $payment
     ) {
-        $requestType = 'AMAZONPAY_INIT';
-        // $ctRequest = $this->cleanUrlParams($params);
-
         $response = $payment->callComputop($params, $payment->getCTPaymentURL());
 
         return $response;
-    }
-
-    /**
-     * Returns parameters for redirectURL
-     *
-     * @param $params
-     *
-     * @return array
-     */
-    public
-    function cleanUrlParams(
-        $params
-    ) {
-        $requestParams = [];
-        foreach ($params as $key => $value) {
-            if (!is_null($value) && !array_key_exists($key, $this::paramexcludes)) {
-                $requestParams[$key] = $value;
-            }
-        }
-        return $requestParams;
     }
 
     /**

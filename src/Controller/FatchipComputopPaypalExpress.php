@@ -193,6 +193,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                     //set the sess_challenge is needed for the ThankYouController
                     Registry::getSession()->setVariable('sess_challenge', $oOrder->getId());
                     Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing', $oResponse->getTransID());
+                    Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeFinished',0);
                     //redirect to the order page
                     Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=order');
                 } else {
