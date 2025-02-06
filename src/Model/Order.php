@@ -718,9 +718,9 @@ class Order extends Order_parent
         $redirectParams = $payment->getRedirectUrlParams();
         $payment->setBillToCustomer($ctOrder);
         if ($payment instanceof PaypalStandard) {
-            //   $payment->setPayPalMethod('shortcut');
+            $payment->setShippingAddress($ctOrder->getShippingAddress());
         }
-        $paymentParams = $this->getPaymentParams($oUser, $dynValue);
+        $paymentParams = $this->getPaymentParams($oUser, $dynValue, $ctOrder);
         $paymentParams['billToCustomer'] = $payment->getBillToCustomer();
         $customParam = $this->getCustomParam($payment->getTransID());
         $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
@@ -928,12 +928,15 @@ class Order extends Order_parent
         return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
     }
 
-    public
-    function getPaymentParams(
-        $oUser,
-        $dynValue
-    ) {
-
+    /**
+     * @param $oUser
+     * @param $dynValue
+     * @param $ctOrder CTOrder
+     * @return array|string[]
+     */
+    public function getPaymentParams($oUser,$dynValue,$ctOrder = false)
+    {
+        $CTAddress = $ctOrder ? $ctOrder->getShippingAddress() : null;
         switch ($this->getFieldData('oxpaymenttype')) {
             case "fatchip_computop_lastschrift":
                 return [
@@ -948,7 +951,6 @@ class Order extends Order_parent
                 $oCountry = oxNew(Country::class);
                 $oCountry->load($oxcountryid);
                 $oxisoalpha2 = $oCountry->getFieldData('oxisoalpha2');
-
                 return [
                     'order' => 'AUTO',
                     'TaxAmount' => $taxAmount,
@@ -956,7 +958,6 @@ class Order extends Order_parent
                     'Account' => $this->fatchipComputopConfig['klarnaaccount'],
                     'bdCountryCode' => $oxisoalpha2,
                 ];
-
             case "fatchip_computop_easycredit":
                 $oSession = Registry::getSession();
                 if ($oSession->getVariable('fatchip_computop_TransId')) {
@@ -972,14 +973,19 @@ class Order extends Order_parent
                         'EventToken' => CTEnumEasyCredit::EVENTTOKEN_INIT,
                     ];
                 }
-
-
             case "fatchip_computop_paypal_standard":
                 return [
                     'TxType' => 'Auth',
                     'mode' => 'redirect',
+                    'NoShipping' => "1",
+                    'FirstName' => $CTAddress->getFirstName(),
+                    'LastName' => $CTAddress->getLastName(),
+                    'AddrStreet' => $CTAddress->getStreet().' '.$CTAddress->getStreetNr(),
+                    'AddrStreet2' => $CTAddress->getStreet2(),
+                    'AddrCity' => $CTAddress->getCity(),
+                    'AddrZip' => $CTAddress->getZip(),
+                    'AddrCountryCode' =>$CTAddress->getCountryCode(),
                 ];
-
             case "fatchip_computop_ideal":
                 if ($this->fatchipComputopConfig['idealDirektOderUeberSofort'] === 'PPRO') {
                     return [];
@@ -991,13 +997,10 @@ class Order extends Order_parent
                     'RefNr' => Registry::getSession()->getSessionChallengeToken(),
                     'UserData' => Registry::getSession()->getId()
                 ];
-
             case "fatchip_computop_paypal_express":
                 return [
                     'NONE YET',
                 ];
-
-
         }
         return [];
     }
