@@ -31,18 +31,12 @@ use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
 use Fatchip\ComputopPayments\Service\ModuleSettings;
-use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
-use OxidEsales\Eshop\Application\Controller\OrderController;
+use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\PaymentController;
-use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Payment;
-use OxidEsales\Eshop\Application\Model\PaymentGateway;
 use OxidEsales\Eshop\Application\Model\PaymentList;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Core\Model\ListModel;
-use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
-use Symfony\Component\String\UnicodeString;
 
 /**
  * @mixin PaymentController

@@ -44,11 +44,16 @@ use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\PaymentGateway;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Exception\StandardException;
+use OxidEsales\Eshop\Core\Module\ModuleList;
 use OxidEsales\Eshop\Core\Price;
 use OxidEsales\Eshop\Core\Registry;
 
 use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ModuleSettingBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ShopConfigurationDaoBridgeInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ModuleConfigurationDao;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\DataObject\ModuleConfiguration;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Exception\ModuleConfigurationNotFoundException;
 
 use function date;
@@ -741,9 +746,8 @@ class Order extends Order_parent
                 ]
             );
         }
+        $template = $this->fatchipComputopConfig['creditCardTemplate'] ?? 'ct_responsive';
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
-
-            $template = $this->fatchipComputopConfig['creditCardTemplate'] ?? 'ct_responsive';
             $this->fatchipComputopPaymentClass = 'CreditCard';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
 
@@ -759,6 +763,7 @@ class Order extends Order_parent
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
+                $response .= '&template='.$template;
                 $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-PAYMENTPAGE', $payment);
 
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
@@ -911,11 +916,15 @@ class Order extends Order_parent
         $moduleVersion = '';
 
         try {
-            $moduleConfig = Registry::getConfig()->getShopConfVar('aModules', null, 'module:fatchip_computop_payments');
-            if (isset($moduleConfig['fatchip_computop_payments'])) {
-                $moduleVersion = 'ModuleVersion: ' . $moduleConfig['fatchip_computop_payments'];
-            } else {
-                Registry::getLogger()->error('ModuleConfig not found for fatchip_computop_payments.');
+
+            $shopConfig =  ContainerFactory::getInstance()
+                ->getContainer()
+                ->get(ShopConfigurationDaoBridgeInterface::class)->get();
+            try {
+                $moduleConfig = $shopConfig->getModuleConfiguration('fatchip_computop_payments');
+                $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
+            } catch (ModuleConfigurationNotFoundException $e) {
+                Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
             }
         } catch (Exception $e) {
             Registry::getLogger()->error('ModuleConfig fetch error: ' . $e->getMessage());
