@@ -245,7 +245,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             $aLog['response_details'] = json_encode($aRequestParams);
             $aLog['trans_id'] = $oResponse->getTransID();
             $aLog['pay_id'] = $oResponse->getPayID();
-            if ($oOrder->load($oResponse->getTransID())) {
+            if ($oOrder->load($oResponse->getTransID()) || $oOrder->load(Registry::getSession()->getId())) {
                 $oOrder->oxorder__oxstorno = new Field(1);
                 $oOrder->oxorder__oxtransstatus = new Field('ERROR');
                 $oOrder->save();
@@ -253,9 +253,11 @@ class FatchipComputopPayPalExpress extends FrontendController
                 Registry::getLogger()->error('PAYPAL_EXPRESS_FAILURE_HOOK: order not found transID: ' . $oResponse->getTransID());
             }
             if ($oResponse->getCode() === '21500053') {
+                Registry::getSession()->cleanUpPPEOrder();
                 $sErrorString = 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL';
             }
         } else {
+            Registry::getSession()->cleanUpPPEOrder();
             $aLog['request_details'] = 'INVALID PARAMS';
             $sErrorString = 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR';
         }

@@ -64,23 +64,30 @@ class FatchipComputopSession extends FatchipComputopSession_parent {
         }
 
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
-        $this->initNewSession();
     }
 
     public function handlePaymentSession()
     {
+        $ppeFinished =  $this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished');
+        $ppeOnGoing  =  $this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
+        $redirected  = Registry::getRequest()->getRequestParameter('redirected');
         if ($this->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse')) {
             $this->unsetSessionVars();
         }
 
-        if ($this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished') === 1 && $this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing')) {
+        if ($ppeFinished === 1 && $ppeOnGoing) {
             $this->unsetSessionVars();
+        }
+
+        if ($ppeFinished === 0 && !empty($ppeOnGoing) && $redirected === "0") {
+            $this->cleanUpPPEOrder();
+            $this->unsetSessionVars();
+            Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL');
         }
 
         if ($this->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl')) {
             $this->cleanUpPPEOrder();
             $this->unsetSessionVars();
-            Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL');
         }
 
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');

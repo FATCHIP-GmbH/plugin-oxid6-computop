@@ -18,22 +18,6 @@
             </div>
         </div>
     </div>
-
-    [{if $paymentmethod->getPrice()}]
-    <div class="payment-option-price">
-        [{assign var="oPaymentPrice" value=$paymentmethod->getPrice()}]
-        [{if $oViewConf->isFunctionalityEnabled('blShowVATForPayCharge')}]
-        [{oxprice price=$oPaymentPrice->getNettoPrice() currency=$currency}]
-
-        [{if $oPaymentPrice->getVatValue() > 0}]
-        [{oxmultilang ident="PLUS_VAT"}][{oxprice price=$oPaymentPrice->getVatValue() currency=$currency}]
-
-        [{/if}]
-        [{else}]
-        [{oxprice price=$oPaymentPrice->getNettoPrice() currency=$currency}]
-        [{/if}]
-    </div>
-    [{/if}]
 </div>
 
 <script>

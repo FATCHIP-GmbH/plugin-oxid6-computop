@@ -371,6 +371,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $ret = parent::execute();
             // if order is validated and finalized complete Order on thankyou
             if ($ret === 'thankyou' || $ret === 'thankyou?mailerror=1') {
+                $this->fatchipComputopSession->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectUrl');
                 if($lastschrift === false){
                     $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
                     $this->fatchipComputopSession->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectResponse');
