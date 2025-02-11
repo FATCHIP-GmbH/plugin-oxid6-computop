@@ -56,7 +56,7 @@ class FatchipComputopPayPalExpress extends FrontendController
      *
      * @var string
      */
-    protected $_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_paypalexpress';
+    protected $_sThisTemplate = 'fatchip_computop_paypalexpress.tpl';
 
     protected $fatchipComputopConfig;
     protected $fatchipComputopSession;
@@ -193,6 +193,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                     //set the sess_challenge is needed for the ThankYouController
                     Registry::getSession()->setVariable('sess_challenge', $oOrder->getId());
                     Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing', $oResponse->getTransID());
+                    Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeFinished',0);
                     //redirect to the order page
                     Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=order');
                 } else {
@@ -244,7 +245,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             $aLog['response_details'] = json_encode($aRequestParams);
             $aLog['trans_id'] = $oResponse->getTransID();
             $aLog['pay_id'] = $oResponse->getPayID();
-            if ($oOrder->load($oResponse->getTransID())) {
+            if ($oOrder->load($oResponse->getTransID()) || $oOrder->load(Registry::getSession()->getId())) {
                 $oOrder->oxorder__oxstorno = new Field(1);
                 $oOrder->oxorder__oxtransstatus = new Field('ERROR');
                 $oOrder->save();
@@ -252,9 +253,11 @@ class FatchipComputopPayPalExpress extends FrontendController
                 Registry::getLogger()->error('PAYPAL_EXPRESS_FAILURE_HOOK: order not found transID: ' . $oResponse->getTransID());
             }
             if ($oResponse->getCode() === '21500053') {
+                Registry::getSession()->cleanUpPPEOrder();
                 $sErrorString = 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL';
             }
         } else {
+            Registry::getSession()->cleanUpPPEOrder();
             $aLog['request_details'] = 'INVALID PARAMS';
             $sErrorString = 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR';
         }

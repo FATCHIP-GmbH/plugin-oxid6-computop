@@ -86,15 +86,10 @@ $aModule = [
 
         // Frontend
         Constants::GENERAL_PREFIX . 'payments' => FatchipComputopPayments::class,
-        Constants::GENERAL_PREFIX . 'lastschrift' => FatchipComputopLastschrift::class,
         Constants::GENERAL_PREFIX . 'creditcard' => FatchipComputopCreditcard::class,
         Constants::GENERAL_PREFIX . 'paypal_standard' => FatchipComputopPaypalStandard::class,
         Constants::GENERAL_PREFIX . 'paypal_express' => FatchipComputopPaypalExpress::class,
-        Constants::GENERAL_PREFIX . 'klarna' => FatchipComputopKlarna::class,
-        Constants::GENERAL_PREFIX . 'easycredit' => FatchipComputopEasycredit::class,
-        Constants::GENERAL_PREFIX . 'amazonpay' => FatchipComputopAmazonpay::class,
         Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
-        Constants::GENERAL_PREFIX . 'ideal' => FatchipComputopIdeal::class,
         Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,
         Constants::GENERAL_PREFIX . 'redirect' => FatchipComputopRedirect::class
     ],
@@ -156,6 +151,11 @@ $aModule = [
             'block' => 'select_payment',
             'file' => 'views/tpl/extensions/page/checkout/payment.tpl'
         ],
+        [
+            'template' => 'page/checkout/inc/basketcontents.tpl',
+            'block' => 'checkout_basketcontents_summary',
+            'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'
+        ],
     ],
     'settings' => [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
@@ -194,6 +194,7 @@ $aModule = [
         'fatchip_computop_iframe.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe.tpl',
         'fatchip_computop_iframe_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe_return.tpl',
         'fatchip_computop_redirect_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_redirect_return.tpl',
+        'fatchip_computop_paypalbutton.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_paypalbutton.tpl',
 
 
     ],

@@ -1,10 +1,6 @@
 <div class="payment-option">
     [{assign var="dynvalue" value=$oView->getDynValue()}]
     <div class="payment-option-form">
-        <input class="form-check-input" id="payment_[{$sPaymentID}]" type="radio" name="paymentid"
-               value="[{$sPaymentID}]" [{if $oView->getCheckedPaymentId() == $paymentmethod->oxpayments__oxid->value}]checked[{/if}]>
-        <label for="payment_[{$sPaymentID}]">[{$paymentmethod->oxpayments__oxdesc->value}]</label>
-
         <div class="payment-option-info [{if $oView->getCheckedPaymentId() == $paymentmethod->oxpayments__oxid->value}]activePayment[{/if}]">
             <div class="hidden">
                 <input id="payment_[{$sPaymentID}]_javascriptEnabled" type="hidden" maxlength="64"
@@ -22,22 +18,6 @@
             </div>
         </div>
     </div>
-
-    [{if $paymentmethod->getPrice()}]
-    <div class="payment-option-price">
-        [{assign var="oPaymentPrice" value=$paymentmethod->getPrice()}]
-        [{if $oViewConf->isFunctionalityEnabled('blShowVATForPayCharge')}]
-        [{oxprice price=$oPaymentPrice->getNettoPrice() currency=$currency}]
-
-        [{if $oPaymentPrice->getVatValue() > 0}]
-        [{oxmultilang ident="PLUS_VAT"}][{oxprice price=$oPaymentPrice->getVatValue() currency=$currency}]
-
-        [{/if}]
-        [{else}]
-        [{oxprice price=$oPaymentPrice->getNettoPrice() currency=$currency}]
-        [{/if}]
-    </div>
-    [{/if}]
 </div>
 
 <script>

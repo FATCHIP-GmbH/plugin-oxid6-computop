@@ -31,18 +31,12 @@ use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
 use Fatchip\ComputopPayments\Service\ModuleSettings;
-use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
-use OxidEsales\Eshop\Application\Controller\OrderController;
+use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\PaymentController;
-use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Payment;
-use OxidEsales\Eshop\Application\Model\PaymentGateway;
 use OxidEsales\Eshop\Application\Model\PaymentList;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Core\Model\ListModel;
-use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
-use Symfony\Component\String\UnicodeString;
 
 /**
  * @mixin PaymentController
@@ -54,35 +48,7 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
 
     public function render()
     {
-        if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse')) {
-            $this->unsetSessionVars();
-            //   Registry::getSession()->regenerateSessionId();
-        }
-        if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing')) {
-
-            $this->cleanUpPPEOrder();
-            $this->unsetSessionVars();
-            Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL');
-        }
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
-        if (!empty(Registry::getSession()->getVariable('FatchipComputopErrorCode'))) {
-            $errorCode = Registry::getSession()->getVariable('FatchipComputopErrorCode');
-            $errorMessage = Registry::getSession()->getVariable('FatchipComputopErrorMessage');
-
-            $this->unsetSessionVars();
-
-            switch ($errorCode) {
-                // Klarna Cancel
-                case 22890703:
-                    Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL');
-                    break;
-                default:
-                    Registry::getUtilsView()->addErrorToDisplay($errorCode . '-' . $errorMessage);
-                    break;
-            }
-
-        }
+        Registry::getSession()->handlePaymentSession();
         return parent::render();
     }
 
@@ -119,25 +85,6 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         return $returnValue;
     }
 
-    public function unsetSessionVars()
-    {
-        Registry::getSession()->deleteVariable('FatchipComputopErrorCode');
-        Registry::getSession()->deleteVariable('FatchipComputopErrorMessage');
-        Registry::getSession()->deleteVariable('paymentid');
-        Registry::getSession()->deleteVariable('sess_challenge');
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
-    }
-
-    public function cleanUpPPEOrder() {
-        $orderId = Registry::getSession()->getVariable('sess_challenge');
-        $oOrder = oxNew(Order::class);
-        $oOrder->delete($orderId);
-        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing');
-        Registry::getSession()->initNewSession();
-    }
     /**
      * Returns an array with range of given numbers as pad formatted string
      *

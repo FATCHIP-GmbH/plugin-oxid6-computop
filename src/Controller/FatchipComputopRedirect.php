@@ -6,9 +6,7 @@ use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTPaymentService;
-use OxidEsales\Eshop\Application\Controller\OrderController;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\Eshop\Core\Session;
 
 class FatchipComputopRedirect extends FatchipComputopPayments
 {
@@ -39,50 +37,52 @@ class FatchipComputopRedirect extends FatchipComputopPayments
     }
 
     public function getFinishUrl() {
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        $custom = Registry::getRequest()->getRequestParameter('Custom');
+        $req         = Registry::getRequest();
+        $len         = $req->getRequestParameter('Len');
+        $data        = $req->getRequestParameter('Data');
+        $customParam = $req->getRequestParameter('Custom');
+        $response    = null;
+        $custom      = null;
 
         if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-                'Custom' => $custom,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-            $custom = $this->fatchipComputopPaymentService->getRequest();
+            $params   = ['Len' => $len, 'Data' => $data, 'Custom' => $customParam];
+            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($params);
+            $custom   = $this->fatchipComputopPaymentService->getRequest();
         }
+
         if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$response);
+            $prefix = Constants::CONTROLLER_PREFIX;
+            $this->fatchipComputopSession->setVariable("{$prefix}DirectResponse", $response);
+            $this->fatchipComputopSession->setVariable("{$prefix}RedirectResponse", $response);
         }
-        $stoken = '';
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        if (!empty($response)) {
-            $stoken = $response->getStoken();
-        }
-        $sid = '';
-        $delAdress = '';
-        if ($custom) {
-            $this->fatchipComputopLogger->logRequestResponse([], 'REDIRECT', 'AUTH', $response,);
 
-            if (!empty($custom->getSessionId())) {
-                $sid = $custom->getSessionId();
-            }
-            if (empty($response->getStoken())) {
-                $stoken = $custom->getStoken();
-            }
-            if (!empty($custom->getDelAdress())) {
-                $delAdress = $custom->getDelAdress();
-            }
-        }
-        if (empty($stoken)) {
-            $stoken = Registry::getSession()->getVariable('sess_stoken');
-        }
-        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
-            . '&stoken=' . $stoken.'&sid='.$sid.'&sDeliveryAddressMD5='.$delAdress;
+        $shopUrl    = $this->fatchipComputopShopConfig->getShopUrl();
+        $stoken   = ($response && $response->getStoken()) ? $response->getStoken() : ($custom ? $custom->getStoken() : '');
+        $sid      = ($custom && $custom->getSessionId()) ? $custom->getSessionId() : '';
+        $delAddr  = ($custom && $custom->getDelAdress()) ? $custom->getDelAdress() : '';
+        $stoken   = $stoken ?: Registry::getSession()->getVariable('sess_stoken');
 
+        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+            $queryParams = [
+                'cl'                 => 'payment',
+                'FatchipComputopLen' => $len,
+                'FatchipComputopData'=> $data,
+                'stoken'             => $stoken,
+                'sid'                => $sid,
+            ];
+        } else {
+            $queryParams = [
+                'cl'                  => 'order',
+                'fnc'                 => 'execute',
+                'FatchipComputopLen'  => $len,
+                'FatchipComputopData' => $data,
+                'stoken'              => $stoken,
+                'sid'                 => $sid,
+                'sDeliveryAddressMD5' => $delAddr,
+            ];
+        }
+
+        $returnUrl = $shopUrl . 'index.php?' . http_build_query($queryParams);
         Registry::getUtils()->redirect($returnUrl, false, 301);
-
     }
 }

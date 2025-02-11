@@ -98,7 +98,7 @@ class FatchipComputopCreditcard extends FrontendController
             $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
         } else {
             $this->_sThisTemplate = 'fatchip_computop_iframe.tpl';
-            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME' && ($response !== null && $response->getStatus() === 'AUTHORIZED')) {
+            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME' && ($response !== null)) {
                 $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
             }
             else if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
@@ -156,8 +156,24 @@ class FatchipComputopCreditcard extends FrontendController
         }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         $stoken = $response->getRefNr();
-        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
-        .'&stoken='.$stoken;
+        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+            $queryParams = [
+                'cl'                 => 'payment',
+                'FatchipComputopLen' => $len,
+                'FatchipComputopData'=> $data,
+                'stoken'             => $stoken,
+            ];
+        } else {
+            $queryParams = [
+                'cl'                  => 'order',
+                'fnc'                 => 'execute',
+                'FatchipComputopLen'  => $len,
+                'FatchipComputopData' => $data,
+                'stoken'              => $stoken,
+            ];
+        }
+
+        $returnUrl = $sShopUrl . 'index.php?' . http_build_query($queryParams);
         $returnurl = json_encode($returnUrl);
         return  $returnurl;
 
