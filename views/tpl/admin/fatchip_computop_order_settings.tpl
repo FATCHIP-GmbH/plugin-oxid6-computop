@@ -208,7 +208,7 @@
         [{foreach from=$oView->getRefundItems() item=listitem}]
         [{assign var="_cnt" value=$_cnt+1}]
         <tr id="art.[{$_cnt}]">
-            [{if !$listitem->isOrderarticle && !$blBorderDrawn}]
+            [{if !$listitem.isOrderarticle && !$blBorderDrawn}]
                 [{assign var="class" value=" borderTop"}]
                 [{assign var="blBorderDrawn" value=true}]
             [{/if}]
@@ -224,7 +224,7 @@
                 <small>[{$edit->oxorder__oxcurrency->value}]</small>
             </td>
             <td valign="top" class="[{$listclass}][{$class}]">[{$listitem.vat}]</td>
-            [{if !$listitem->isOrderarticle}]
+            [{if !$listitem.isOrderarticle}]
                 [{assign var="class" value=""}]
             [{/if}]
         </tr>
@@ -283,7 +283,7 @@
                 [{foreach from=$oView->getRefundItems() item=listitem}]
                 [{assign var="_cnt" value=$_cnt+1}]
                 <tr id="art.[{$_cnt}]">
-                    [{if !$listitem->isOrderarticle && !$blBorderDrawn}]
+                    [{if !$listitem.isOrderarticle && !$blBorderDrawn}]
                     [{assign var="class" value=" borderTop"}]
                     [{assign var="blBorderDrawn" value=true}]
                     [{/if}]
@@ -291,8 +291,8 @@
 
                     <input type="hidden" name="aArtId[[{$listitem.id}]][oxid]" value="[{$listitem.id}]"/>
                     <input type="hidden" name="aArtId[[{$listitem.id}]][price]" value="[{$listitem.totalPrice}]"/>
-                    [{if !$listitem->isOrderarticle}]
-                <input type="hidden" name="aArtId[[{$listitem.id}]][shipping]" value="1"/>
+                    [{if !$listitem.isOrderarticle}]
+                    <input type="hidden" name="aArtId[[{$listitem.id}]][shipping]" value="1"/>
                     [{/if}]
 
                     <td valign="top" class="[{$listclass}][{$class}]" height="15">[{$listitem.artnum}]</td>
@@ -311,7 +311,7 @@
                         <input type="checkbox" name="aArtId[[{$listitem.id}]][refundthis]">
                     </td>
 
-                    [{if !$listitem->isOrderarticle}]
+                    [{if !$listitem.isOrderarticle}]
                     [{assign var="class" value=""}]
                     [{/if}]
                 </tr>
