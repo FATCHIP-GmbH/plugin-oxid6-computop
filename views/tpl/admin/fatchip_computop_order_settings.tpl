@@ -292,7 +292,7 @@
                     <input type="hidden" name="aArtId[[{$listitem.id}]][oxid]" value="[{$listitem.id}]"/>
                     <input type="hidden" name="aArtId[[{$listitem.id}]][price]" value="[{$listitem.totalPrice}]"/>
                     [{if !$listitem->isOrderarticle}]
-                <input type="hidden" name="aArtId[[{$listitem->id}]][shipping]" value="1"/>
+                <input type="hidden" name="aArtId[[{$listitem.id}]][shipping]" value="1"/>
                     [{/if}]
 
                     <td valign="top" class="[{$listclass}][{$class}]" height="15">[{$listitem.artnum}]</td>
