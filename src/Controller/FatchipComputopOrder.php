@@ -229,7 +229,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public function creditCardSilent() {
         try {
             $ctOrder = $this->createCTOrder();
-            //$this->execute();
             $amount = $this->calculateTotalAmount();
 
             $paymentId = $this->fatchipComputopBasket->getPaymentId();
@@ -771,6 +770,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public function getUrlParams($redirect = false)
     {
         $paymentClass = $this->fatchipComputopPaymentId;
+        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $URLFailure = $sShopUrl . 'index.php?cl=payment&sid=' . Registry::getSession()->getId();
 
         if ($paymentClass === 'fatchip_computop_easycredit') {
             $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
@@ -779,11 +780,10 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             if ($redirect === true) {
                 $paymentClass = Constants::GENERAL_PREFIX . 'redirect';
             }
-            $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
             $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass . '&sid=' . Registry::getSession()->getId();
+            $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass . '&sid=' . Registry::getSession()->getId();
         }
 
-        $URLFailure = $sShopUrl . 'index.php?cl=payment&sid=' . Registry::getSession()->getId();
         $URLCancel = $sShopUrl . 'index.php?cl=payment&sid=' . Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify' . '&sid=' . Registry::getSession()->getId();
 

@@ -868,7 +868,7 @@ class Order extends Order_parent
             $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
 
         }
-        $URLFailure = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
+        $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
         $URLCancel = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
         return [

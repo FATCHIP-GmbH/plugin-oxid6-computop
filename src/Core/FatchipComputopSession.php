@@ -15,6 +15,8 @@ class FatchipComputopSession extends FatchipComputopSession_parent {
     protected $fatchipComputopLogger;
     public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
+    protected $errorCode;
+    protected $errorMessage;
 
 
         protected function _allowSessionStart()
@@ -66,8 +68,49 @@ class FatchipComputopSession extends FatchipComputopSession_parent {
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
     }
 
+    /**
+     * @return void
+     */
+    protected function logRedirectToPayment()
+    {
+        $request = Registry::getRequest();
+        $len    = $request->getRequestParameter('FatchipComputopLen');
+        $data   = $request->getRequestParameter('FatchipComputopData');
+
+        if (empty($len) || empty($data)) {
+            return;
+        }
+
+        $config = new Config();
+        $this->fatchipComputopConfig        = $config->toArray();
+        $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+
+        $postRequestParams = [
+            'Len'    => $len,
+            'Data'   => $data,
+        ];
+
+        $response      = $this->fatchipComputopPaymentService->getDecryptedResponse($postRequestParams);
+        if ($response->getStatus() ==='FAILED') {
+            $this->errorCode = $response->getCode();
+            $this->errorMessage = $response->getDescription();
+        }
+        $logger = oxNew(Logger::class);
+        $logger->logRequestResponse($postRequestParams, 'RedirectToPaymentPage', 'REDIRECT-BACK', $response);
+    }
+
+    /**
+     * @return void
+     */
     public function handlePaymentSession()
     {
+        $this->logRedirectToPayment();
+        if ($errorCode = $this->errorCode) {
+            $errorMessage = $this->errorMessage;
+            $errorText = $errorCode === 22890703 || $errorCode === 22060200 ? 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL' : "$errorCode-$errorMessage";
+            Registry::getUtilsView()->addErrorToDisplay($errorText);
+            return;
+        }
         $ppeFinished =  $this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished');
         $ppeOnGoing  =  $this->getVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
         $redirected  = Registry::getRequest()->getRequestParameter('redirected');
@@ -93,11 +136,5 @@ class FatchipComputopSession extends FatchipComputopSession_parent {
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
 
-        if ($errorCode = $this->getVariable('FatchipComputopErrorCode')) {
-            $errorMessage = $this->getVariable('FatchipComputopErrorMessage');
-            $this->unsetSessionVars();
-            $errorText = $errorCode === 22890703 ? 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL' : "$errorCode-$errorMessage";
-            Registry::getUtilsView()->addErrorToDisplay($errorText);
-        }
     }
 }

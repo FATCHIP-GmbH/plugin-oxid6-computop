@@ -82,6 +82,10 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
             . '&stoken=' . $stoken.'&sid='.$sid.'&sDeliveryAddressMD5='.$delAdress;
 
+        if ($response->getStatus() === 'FAILED') {
+            $returnUrl = $sShopUrl . 'index.php?cl=payment&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
+                . '&stoken=' . $stoken.'&sid='.$sid;
+        }
         Registry::getUtils()->redirect($returnUrl, false, 301);
 
     }
