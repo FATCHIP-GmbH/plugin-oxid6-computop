@@ -785,7 +785,13 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
         $URLCancel = $sShopUrl . 'index.php?cl=' . $paymentClass . '&sid=' . Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify' . '&sid=' . Registry::getSession()->getId();
-
+        if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
+            return [
+                'UrlSuccess' => $URLSuccess,
+                'UrlFailure' => $URLFailure,
+                'UrlNotify' => $URLNotify,
+            ];
+        }
         return [
             'UrlSuccess' => $URLSuccess,
             'UrlFailure' => $URLFailure,
