@@ -156,14 +156,24 @@ class FatchipComputopCreditcard extends FrontendController
         }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         $stoken = $response->getRefNr();
-        if ($response->getStatus() === 'FAILED') {
-            $returnUrl = $sShopUrl . 'index.php?cl=payment&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
-                . '&stoken=' . $stoken;
+        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+            $queryParams = [
+                'cl'                 => 'payment',
+                'FatchipComputopLen' => $len,
+                'FatchipComputopData'=> $data,
+                'stoken'             => $stoken,
+            ];
         } else {
-            $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
-                .'&stoken='.$stoken;
+            $queryParams = [
+                'cl'                  => 'order',
+                'fnc'                 => 'execute',
+                'FatchipComputopLen'  => $len,
+                'FatchipComputopData' => $data,
+                'stoken'              => $stoken,
+            ];
         }
 
+        $returnUrl = $sShopUrl . 'index.php?' . http_build_query($queryParams);
         $returnurl = json_encode($returnUrl);
         return  $returnurl;
 

@@ -771,7 +771,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     {
         $paymentClass = $this->fatchipComputopPaymentId;
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLFailure = $sShopUrl . 'index.php?cl=payment&sid=' . Registry::getSession()->getId();
 
         if ($paymentClass === 'fatchip_computop_easycredit') {
             $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
@@ -784,7 +783,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass . '&sid=' . Registry::getSession()->getId();
         }
 
-        $URLCancel = $sShopUrl . 'index.php?cl=payment&sid=' . Registry::getSession()->getId();
+        $URLCancel = $sShopUrl . 'index.php?cl=' . $paymentClass . '&sid=' . Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify' . '&sid=' . Registry::getSession()->getId();
 
         return [
@@ -792,6 +791,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             'UrlFailure' => $URLFailure,
             'UrlNotify' => $URLNotify,
             'UrlCancel' => $URLCancel,
+            'UrlBack' => $URLCancel,
         ];
     }
 
