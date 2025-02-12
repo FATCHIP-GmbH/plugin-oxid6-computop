@@ -83,36 +83,10 @@ class FatchipComputopCreditcard extends FrontendController
      */
     public function render()
     {
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        $custom = Registry::getRequest()->getRequestParameter('Custom');
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len'    => $len,
-                'Data'   => $data,
-                'Custom' => $custom,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-        }
-        if ($response !== null && $this->fatchipComputopConfig['creditCardMode'] === 'SILENT' ) {
-            $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
-        } else {
-            $this->_sThisTemplate = 'fatchip_computop_iframe.tpl';
-            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME' && ($response !== null)) {
-                $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
-            }
-            else if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-                $this->_sThisTemplate = 'fatchip_computop_iframe.tpl';
-            }
-            else {
-                return parent::render();
-
-            }
-        }
-
         return parent::render();
 
     }
+
     /**
      * Returns iframe url or redirects directly to it
      *
@@ -121,76 +95,10 @@ class FatchipComputopCreditcard extends FrontendController
      */
     public function getIframeUrl()
     {
-
         $redirectUrl = $this->fatchipComputopSession->getVariable('FatchipComputopIFrameURL');
         if ($redirectUrl) {
             return $redirectUrl;
         }
     }
 
-    public function success() {
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-        }
-        if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-            $this->_sThisTemplate = 'fatchip_computop_iframe_return.tpl';
-        } else {
-        }
-    }
-
-    public function getFinishUrl() {
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-        }
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $stoken = $response->getRefNr();
-        if (!is_object($response) || $response->getStatus() === 'FAILED') {
-            $queryParams = [
-                'cl'                 => 'payment',
-                'FatchipComputopLen' => $len,
-                'FatchipComputopData'=> $data,
-                'stoken'             => $stoken,
-            ];
-        } else {
-            $queryParams = [
-                'cl'                  => 'order',
-                'fnc'                 => 'execute',
-                'FatchipComputopLen'  => $len,
-                'FatchipComputopData' => $data,
-                'stoken'              => $stoken,
-            ];
-        }
-
-        $returnUrl = $sShopUrl . 'index.php?' . http_build_query($queryParams);
-        $returnurl = json_encode($returnUrl);
-        return  $returnurl;
-
-    }
-
-    public function getResponse()
-    {
-        $response = false;
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-        }
-        return $response;
-    }
 }
