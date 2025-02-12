@@ -32,8 +32,34 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
     }
 
-    public function render() {
-        return $this->_sThisTemplate;
+    public function render()
+    {
+        $request = Registry::getRequest();
+        $len     = $request->getRequestParameter('Len');
+        $data    = $request->getRequestParameter('Data');
+        $custom  = $request->getRequestParameter('Custom');
+        $response = null;
+        if (!empty($len) && !empty($data)) {
+            $postParams = [
+                'Len'    => $len,
+                'Data'   => $data,
+                'Custom' => $custom,
+            ];
+            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($postParams);
+        }
+        if (is_object($response)) {
+            if ($response->getInfoText() === 'fatchip_computop_creditcard') {
+                $ccmode = $this->fatchipComputopConfig['creditCardMode'] ?? '';
+                if ($ccmode === 'IFRAME') {
+                    $this->_sThisTemplate = ($response !== null)
+                        ? 'fatchip_computop_iframe_return.tpl'
+                        : 'fatchip_computop_iframe.tpl';
+                } else if ($ccmode === 'SILENT') {
+                    return $this->_sThisTemplate;
+                }
+            }
+        }
+        return  $this->_sThisTemplate;
     }
 
     public function getFinishUrl() {
@@ -84,5 +110,40 @@ class FatchipComputopRedirect extends FatchipComputopPayments
 
         $returnUrl = $shopUrl . 'index.php?' . http_build_query($queryParams);
         Registry::getUtils()->redirect($returnUrl, false, 301);
+    }
+
+    public function getFinishUrlIframe() {
+        $len = Registry::getRequest()->getRequestParameter('Len');
+        $data = Registry::getRequest()->getRequestParameter('Data');
+        if (!empty($len) && !empty($data)) {
+            $PostRequestParams = [
+                'Len' => $len,
+                'Data' => $data,
+            ];
+            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
+        }
+        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $stoken = $response->getRefNr();
+        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+            $queryParams = [
+                'cl'                 => 'payment',
+                'FatchipComputopLen' => $len,
+                'FatchipComputopData'=> $data,
+                'stoken'             => $stoken,
+            ];
+        } else {
+            $queryParams = [
+                'cl'                  => 'order',
+                'fnc'                 => 'execute',
+                'FatchipComputopLen'  => $len,
+                'FatchipComputopData' => $data,
+                'stoken'              => $stoken,
+            ];
+        }
+
+        $returnUrl = $sShopUrl . 'index.php?' . http_build_query($queryParams);
+        $returnurl = json_encode($returnUrl);
+        return  $returnurl;
+
     }
 }
