@@ -236,7 +236,8 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     private function processShippingRefund($oOrder) {
         $oOrder->assign(['fatchip_computop_shipping_amount_refunded' => 1]);
         $oOrder->save();
-        return $oOrder->getFormattedDeliveryCost();
+        $normalizedAmount = str_replace(',', '.', $oOrder->getFormattedDeliveryCost());
+        return $normalizedAmount;
     }
 
     private function handleRefundOutcome($articleChecked, $refundAmount) {
@@ -797,11 +798,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
      */
     public function getFormatedPrice($dPrice)
     {
-        $oLang = Registry::getLang();
-        $oOrder = $this->getOrder();
-        $oCurrency = Registry::getConfig()->getCurrencyObject($oOrder->oxorder__oxcurrency->value);
-
-        return $oLang->formatCurrency($dPrice, $oCurrency);
+        return $dPrice;
     }
 
     /**
