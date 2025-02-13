@@ -137,12 +137,12 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         return $this->_sTemplate;
     }
 
-    public function getSNoticeMessage(): bool|string
+    public function getSNoticeMessage()
     {
         return $this->_sNoticeMessage;
     }
 
-    public function setSNoticeMessage(bool|string $sNoticeMessage): void
+    public function setSNoticeMessage($sNoticeMessage): void
     {
         $this->_sNoticeMessage = $sNoticeMessage;
     }

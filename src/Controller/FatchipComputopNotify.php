@@ -162,7 +162,7 @@ class FatchipComputopNotify extends FrontendController
 
     private
     function updateRefNrWithComputop(
-        $order,
+        $order
     ) {
         if (!$order) {
             return null;
