@@ -887,7 +887,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
      */
     private
     function updateRefNrWithComputop(
-        $order,
+        $order
     ) {
         if (!$order) {
             return null;

@@ -44,7 +44,7 @@ use OxidEsales\EshopCommunity\Core\Model\ListModel;
 class FatchipComputopPayment extends FatchipComputopPayment_parent
 {
     protected $fatchipComputopConfig;
-    protected array $frontendHiddenPayments = ['fatchip_computop_paypal_express'];
+    protected $frontendHiddenPayments = ['fatchip_computop_paypal_express'];
 
     public function render()
     {

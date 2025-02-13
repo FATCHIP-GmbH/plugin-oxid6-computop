@@ -286,7 +286,7 @@ class Events
         if (!$aColumns || $aColumns === []) {
             try {
                 DatabaseProvider::getDb()->Execute($sQuery);
-            } catch (Exception) {
+            } catch (Exception $e) {
             }
             return true;
         }
