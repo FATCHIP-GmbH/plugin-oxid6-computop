@@ -1951,7 +1951,7 @@ class CTResponse
         $this->buttonpublickeyid = $buttonpublickeyid;
     }
 
-    public function setStoken(mixed $param)
+    public function setStoken($param)
     {
         $this->stoken = $param;
     }
@@ -1964,7 +1964,7 @@ class CTResponse
         return $this->stoken;
     }
 
-    public function setDelAdress(mixed $param)
+    public function setDelAdress($param)
     {
         $this->delAdress = $param;
 
