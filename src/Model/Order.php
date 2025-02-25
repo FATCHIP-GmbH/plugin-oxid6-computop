@@ -65,35 +65,52 @@ use function date;
 class Order extends Order_parent
 {
     protected $fatchipComputopConfig;
+
     protected $fatchipComputopSession;
+
     protected $fatchipComputopShopConfig;
+
     protected $fatchipComputopPaymentId;
+
     protected $fatchipComputopPaymentClass;
+
     protected $fatchipComputopShopUtils;
+
     public $fatchipComputopSilentParams;
+
     protected $fatchipComputopLogger;
+
     protected $fatchipComputopBasket;
+
     protected $fatchipComputopPaymentService;
 
     public $oxorder__fatchip_computop_transid;
+
     public $oxorder__fatchip_computop_payid;
+
     public $oxorder__fatchip_computop_xid;
+
     public $oxorder__fatchip_computop_lastschrift_mandateid;
+
     public $oxorder__fatchip_computop_lastschrift_dos;
+
     public $oxorder__fatchip_computop_creditcard_schemereferenceid;
+
     public $oxorder__fatchip_computop_amount_captured;
+
     public $oxorder__fatchip_computop_amount_refunded;
+
     public $oxorder__fatchip_computop_remark;
 
+    // -----------------> START OXID CORE MODULE EXTENSIONS <-----------------
 
     /**
-     * init object construction
-     *
-     * @return null
+     * Class constructor, initiates parent constructor (parent::oxBase()).
      */
     public function __construct()
     {
         parent::__construct();
+
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
         $this->fatchipComputopSession = Registry::getSession();
@@ -106,18 +123,34 @@ class Order extends Order_parent
 
     /**
      * Order checking, processing and saving method.
+     * Before saving performed checking if order is still not executed (checks in
+     * database oxorder table for order with know ID), if yes - returns error code 3,
+     * if not - loads payment data, assigns all info from basket to new Order object
+     * and saves full order with error status. Then executes payment. On failure -
+     * deletes order and returns error code 2. On success - saves order (\OxidEsales\Eshop\Application\Model\Order::save()),
+     * removes article from wishlist (\OxidEsales\Eshop\Application\Model\Order::_updateWishlist()), updates voucher data
+     * (\OxidEsales\Eshop\Application\Model\Order::_markVouchers()). Finally sends order confirmation email to customer
+     * (\OxidEsales\Eshop\Core\Email::SendOrderEMailToUser()) and shop owner (\OxidEsales\Eshop\Core\Email::SendOrderEMailToOwner()).
+     * If this is order recalculation, skipping payment execution, marking vouchers as used
+     * and sending order by email to shop owner and user
+     * Mailing status (1 if OK, 0 on error) is returned.
      *
-     * @param Basket $oBasket Basket object
+     * @param \OxidEsales\Eshop\Application\Model\Basket $oBasket              Basket object
      * @param object $oUser Current User object
      * @param bool $blRecalculatingOrder Order recalculation
      *
-     * @return int|null
+     * @return integer
      */
     public function finalizeOrder(Basket $oBasket, $oUser, $blRecalculatingOrder = false)
     {
         $ret = parent::finalizeOrder($oBasket, $oUser, $blRecalculatingOrder);
+
         $paymentId = $oBasket->getPaymentId() ?: '';
         $isFatchipComputopPayment = Constants::isFatchipComputopPayment($paymentId);
+        if ($isFatchipComputopPayment === false) {
+            return $ret;
+        }
+
         $isFatchipComputopRedirectPayment = Constants::isFatchipComputopRedirectPayment($paymentId);
         $isFatchipComputopDirectPayment = Constants::isFatchipComputopDirectPayment($paymentId);
         $len = Registry::getRequest()->getRequestParameter('FatchipComputopLen');
@@ -128,7 +161,6 @@ class Order extends Order_parent
         ];
         /** @var CTResponse $responseDirect */
         $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-
 
         $status = $response->getStatus();
         $returning = false;
@@ -153,8 +185,6 @@ class Order extends Order_parent
             } else {
                 $returning = true;
             }
-
-
         }
 
         if ($ret === 3 || $response !== null) {
@@ -165,13 +195,86 @@ class Order extends Order_parent
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
             $this->fatchipComputopLogger->logRequestResponse([], $this->fatchipComputopPaymentClass, 'REDIRECT-BACK', $response);
 
-           // $this->customizeOrdernumber($response);
+            // $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
             $this->autocapture($oUser, false);
         }
 
         return $ret;
+    }
+
+    /**
+     * Checks if delivery set used for current order is available and active.
+     * Throws exception if not available
+     *
+     * @param \OxidEsales\Eshop\Application\Model\Basket $oBasket basket object
+     *
+     * @return null
+     */
+    public function validateDelivery($oBasket)
+    {
+        if ($oBasket->getPaymentId() == 'fatchip_computop_paypal_express') {
+            return;
+        }
+        return parent::validateDelivery($oBasket);
+    }
+
+    // -----------------> END OXID CORE MODULE EXTENSIONS <-----------------
+
+    // -----------------> START CUSTOM MODULE FUNCTIONS <-----------------
+    // @TODO: They ALL need a module function name prefix to not cross paths with other modules
+
+    public function finalizeRedirectOrder(\OxidEsales\Eshop\Application\Model\Basket $oBasket, $oUser, $blRecalculatingOrder = false)
+    {
+        // check if this order is already stored
+        $orderId = \OxidEsales\Eshop\Core\Registry::getSession()->getVariable('sess_challenge');
+        $this->load($orderId);
+
+        // payment information
+        $oUserPayment = $this->_setPayment($oBasket->getPaymentId());
+
+        if (!isset($this->oxorder__oxordernr->value) || !$this->oxorder__oxordernr->value) {
+            $this->_setNumber();
+        } else {
+            oxNew(\OxidEsales\Eshop\Core\Counter::class)->update($this->_getCounterIdent(), $this->oxorder__oxordernr->value);
+        }
+
+        // deleting remark info only when order is finished
+        \OxidEsales\Eshop\Core\Registry::getSession()->deleteVariable('ordrem');
+
+        //#4005: Order creation time is not updated when order processing is complete
+        if (!$blRecalculatingOrder) {
+            $this->_updateOrderDate();
+        }
+
+        // updating order trans status (success status)
+        $this->_setOrderStatus('OK');
+
+        // store orderid
+        $oBasket->setOrderId($this->getId());
+
+        // updating wish lists
+        $this->_updateWishlist($oBasket->getContents(), $oUser);
+
+        // updating users notice list
+        $this->_updateNoticeList($oBasket->getContents(), $oUser);
+
+        // marking vouchers as used and sets them to $this->_aVoucherList (will be used in order email)
+        // skipping this action in case of order recalculation
+        if (!$blRecalculatingOrder) {
+            $this->_markVouchers($oBasket, $oUser);
+        }
+
+        // send order by email to shop owner and current user
+        // skipping this action in case of order recalculation
+        if (!$blRecalculatingOrder) {
+            $iRet = $this->_sendOrderByEmail($oUser, $oBasket, $oUserPayment);
+        } else {
+            $iRet = self::ORDER_STATE_OK;
+        }
+
+        return $iRet;
     }
 
     public function updateComputopFatchipOrderStatus(string $orderStatus, array $data = [])
@@ -200,7 +303,6 @@ class Order extends Order_parent
                 }
                 $this->save();
                 break;
-
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_REVIEW_NECESSARY":
                 $this->_setFieldData('oxtransstatus', 'NOT_FINISHED');
                 $this->_setFieldData('oxfolder', 'ORDERFOLDER_PROBLEMS');
@@ -259,15 +361,9 @@ class Order extends Order_parent
         $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         $ctOrder = $this->createCTOrder();
         if($this->fatchipComputopPaymentClass === 'PayPalExpress'){
-            $payment = $this->fatchipComputopPaymentService->getPaymentClass(
-                $this->fatchipComputopPaymentClass
-            );
+            $payment = $this->fatchipComputopPaymentService->getPaymentClass($this->fatchipComputopPaymentClass);
         }else{
-            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
-                $this->fatchipComputopPaymentClass,
-                $this->fatchipComputopConfig,
-                $ctOrder
-            );
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($this->fatchipComputopPaymentClass, $this->fatchipComputopConfig, $ctOrder);
         }
         $payId = $this->getFieldData('fatchip_computop_payid');
         $param = $payment->getInquireParams($payId);
@@ -431,10 +527,8 @@ class Order extends Order_parent
      * @param CTResponse $response
      * @return Order $order new Order with updated ordernumber
      */
-    public
-    function customizeOrdernumber(
-        $response
-    ) {
+    public function customizeOrdernumber($response)
+    {
         $orderNumber = $this->getFieldData('oxordernr');
         $whitelist = '/[^a-zA-Z0-9]/';
         // make sure only 4 chars are used for pre and suffix
@@ -463,10 +557,8 @@ class Order extends Order_parent
         }
     }
 
-    public
-    function updateOrderAttributes(
-        $response
-    ) {
+    public function updateOrderAttributes($response)
+    {
         $payID = $response->getPayID();
         $transID = $response->getTransID();
         $xID = $response->getXID();
@@ -487,23 +579,16 @@ class Order extends Order_parent
      *
      * @return CTResponse
      */
-    protected
-    function captureOrder($amount = null)
+    protected function captureOrder($amount = null)
     {
         $ctOrder = $this->createCTOrder();
-        if ($this->fatchipComputopPaymentClass !== 'PayPalExpress'
-        ) {
-            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
-                $this->fatchipComputopPaymentClass,
-                $this->fatchipComputopConfig,
-                $ctOrder
-            );
+        if ($this->fatchipComputopPaymentClass !== 'PayPalExpress') {
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($this->fatchipComputopPaymentClass, $this->fatchipComputopConfig, $ctOrder);
         } else {
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($this->fatchipComputopPaymentClass);
         }
         if ($amount === null) {
             $totalOrderSum =  $this->oxorder__oxtotalordersum->value;
-
         } else {
             $totalOrderSum =  ((double)$amount);
         }
@@ -540,16 +625,13 @@ class Order extends Order_parent
         return $response;
     }
 
-
     /**
      * creates a CTAddress object from an oxid order
      * @return CTAddress
      * @throws \Exception
      */
-    public
-    function getCTAddress(
-        $deliveryAddress = false
-    ) {
+    public function getCTAddress($deliveryAddress = false)
+    {
         $orderId = Registry::getSession()->getVariable('sess_challenge');
         $this->load($orderId);
 
@@ -594,13 +676,8 @@ class Order extends Order_parent
         }
     }
 
-    public
-    function callComputopService(
-        $requestParams,
-        $payment,
-        $requestType,
-        $url
-    ) {
+    public function callComputopService($requestParams, $payment, $requestType, $url)
+    {
         $repository = oxNew(ApiLogRepository::class);
         $paymentName = $payment::paymentClass;
 
@@ -616,8 +693,8 @@ class Order extends Order_parent
         $logMessage->setResponseDetails(json_encode($response->toArray()));
         $logMessage->setCreationDate(date('Y-m-d H:i:s'));
 
-        $repository->saveApiLog($logMessage);
         try {
+            $repository->saveApiLog($logMessage);
         } catch (Exception $e) {
             $logger = new Logger();
             $logger->logError('Unable to save API Log', [
@@ -633,11 +710,8 @@ class Order extends Order_parent
      * @param PaymentGateway|null $oPayGateway
      * @return boolean
      */
-    public
-    function handleAuthorization(
-        $amount,
-        PaymentGateway $oPayGateway = null
-    ) {
+    public function handleAuthorization($amount, PaymentGateway $oPayGateway = null)
+    {
         $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
         $oUser = $this->getUser();
 
@@ -692,7 +766,6 @@ class Order extends Order_parent
             $response = $payment->callComputop($params, $payment->getCTCreditCheckURL());
         } else {
             $response = $payment->callComputop($params, $payment->getCTPaymentURL());
-
         }
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
 
@@ -705,18 +778,15 @@ class Order extends Order_parent
      * @param PaymentGateway|null $oPayGateway
      * @return boolean
      */
-    public
-    function handleRedirectPayment(
-        $amount,
-        PaymentGateway $oPayGateway = null
-    ) {
-
+    public function handleRedirectPayment($amount, PaymentGateway $oPayGateway = null)
+    {
         $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
         $this->fatchipComputopPaymentId = $this->getFieldData('oxpaymenttype');
         $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         $oUser = $this->getUser();
         $payment = $this->getPaymentClassForGatewayAction();
         $UrlParams = CTPaymentParams::getUrlParams($this->fatchipComputopPaymentId,$this->fatchipComputopConfig);
+
         $ctOrder = $this->createCTOrder();
         $redirectParams = $payment->getRedirectUrlParams();
         $payment->setBillToCustomer($ctOrder);
@@ -778,7 +848,7 @@ class Order extends Order_parent
         $parts = parse_url($response);
         parse_str($parts['query'], $query);
 
-// Die Len und Data Werte ausgeben
+        // Die Len und Data Werte ausgeben
         $len = $query['Len'];
         $data = $query['Data'];
         $PostRequestParams = [
@@ -792,13 +862,11 @@ class Order extends Order_parent
 
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse', $responseDec);
-        Registry::getUtils()->redirect($response, false);
 
-        // return true;
+        Registry::getUtils()->redirect($response, false);
     }
 
-    public
-    function createCTOrder()
+    public function createCTOrder()
     {
         $ctOrder = new CTOrder();
         $oUser = $this->getUser();
@@ -830,10 +898,8 @@ class Order extends Order_parent
         return $ctOrder;
     }
 
-    public
-    function writeOrderLog(
-        $ctOrder
-    ) {
+    public function writeOrderLog($ctOrder)
+    {
         $oUser = $this->getUser();
         $customerNr = $oUser->getFieldData('oxcustnr');
         $order = var_export($ctOrder, true);
@@ -851,8 +917,7 @@ class Order extends Order_parent
         );
     }
 
-    public
-    function getDirectAuthUrlParams()
+    public function getDirectAuthUrlParams()
     {
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         $URLSuccess = $sShopUrl . 'index.php?cl=thankyou';
@@ -867,13 +932,8 @@ class Order extends Order_parent
         ];
     }
 
-    /**
-     * @param $oUser
-     * @param $dynValue
-     * @param $ctOrder CTOrder
-     * @return array|string[]
-     */
-    public function getPaymentParams($oUser,$dynValue,$ctOrder = false)
+
+    public function getPaymentParams($oUser, $dynValue, $ctOrder = false)
     {
         $CTAddress = $ctOrder ? $ctOrder->getShippingAddress() : null;
         switch ($this->getFieldData('oxpaymenttype')) {
@@ -890,6 +950,7 @@ class Order extends Order_parent
                 $oCountry = oxNew(Country::class);
                 $oCountry->load($oxcountryid);
                 $oxisoalpha2 = $oCountry->getFieldData('oxisoalpha2');
+
                 return [
                     'order' => 'AUTO',
                     'TaxAmount' => $taxAmount,
@@ -900,8 +961,8 @@ class Order extends Order_parent
             case "fatchip_computop_easycredit":
                 $oSession = Registry::getSession();
                 if ($oSession->getVariable('fatchip_computop_TransId')) {
-                   $sessionDecisionPayId = Registry::getSession()->getVariable('fatchipComputopEasyCreditPayId');
-                   $payId =  $sessionDecisionPayId->getPayID();
+                    $sessionDecisionPayId = Registry::getSession()->getVariable('fatchipComputopEasyCreditPayId');
+                    $payId =  $sessionDecisionPayId->getPayID();
                     return [
                         'payID' => $payId,
                         'EventToken' => CTEnumEasyCredit::EVENTTOKEN_CON,
@@ -944,10 +1005,8 @@ class Order extends Order_parent
         return [];
     }
 
-    public
-    function handleAuthorizationResponse(
-        $response
-    ) {
+    public function handleAuthorizationResponse($response)
+    {
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
@@ -958,10 +1017,8 @@ class Order extends Order_parent
         return false;
     }
 
-    public
-    function handleRedirectResponse(
-        $response
-    ) {
+    public function handleRedirectResponse($response)
+    {
         if (gettype($response) === 'string') {
             Registry::getUtils()->redirect($response, false, 302);
         } else {
@@ -976,15 +1033,12 @@ class Order extends Order_parent
         return false;
     }
 
-
     /**
      * Returns and brings basket positions into appropriate form
      *
-     *
      * @return array<int, array{reference: mixed, name: mixed, quantity: mixed, unit_price: float|int, tax_rate: float|int, total_amount: float|int}>
      */
-    public
-    function getKlarnaOrderlinesParams(): string
+    public function getKlarnaOrderlinesParams(): string
     {
         $aOrderlines = [];
         foreach ($this->fatchipComputopBasket->getContents() as $oBasketItem) {
@@ -1041,10 +1095,8 @@ class Order extends Order_parent
      *
      * @return float
      */
-    public
-    static function calculateTaxAmount(
-        $articleList
-    ) {
+    public static function calculateTaxAmount($articleList)
+    {
         $taxAmount = 0;
         $articleList = json_decode(base64_decode($articleList), true);
         foreach ($articleList['order_lines'] as $article) {
@@ -1055,8 +1107,7 @@ class Order extends Order_parent
         return $taxAmount;
     }
 
-    protected
-    function getPaymentClassForGatewayAction()
+    protected function getPaymentClassForGatewayAction()
     {
         // used
         $ctOrder = $this->createCTOrder();
@@ -1097,10 +1148,8 @@ class Order extends Order_parent
      * @param $className
      * @return CTPaymentMethod
      */
-    public
-    function getPaymentClass(
-        $className
-    ) {
+    public function getPaymentClass($className)
+    {
         $class = 'Fatchip\\CTPayment\\CTPaymentMethods\\' . $className;
         return new $class();
     }
@@ -1109,75 +1158,9 @@ class Order extends Order_parent
      * @param $params
      * @return CTResponse
      */
-    public
-    function requestKlarna(
-        $params,
-        $payment
-    ) {
-        $requestType = 'KLARNA';
-
-        $response = $payment->prepareComputopRequest($params, $payment->getCTPaymentURL());
-
-        return $response;
-    }
-
-    public function finalizeRedirectOrder(\OxidEsales\Eshop\Application\Model\Basket $oBasket, $oUser, $blRecalculatingOrder = false)
+    public function requestKlarna($params, $payment)
     {
-        // check if this order is already stored
-        $orderId = \OxidEsales\Eshop\Core\Registry::getSession()->getVariable('sess_challenge');
-        $this->load($orderId);
-
-        // payment information
-        $oUserPayment = $this->_setPayment($oBasket->getPaymentId());
-
-        if (!isset($this->oxorder__oxordernr->value) || !$this->oxorder__oxordernr->value) {
-            $this->_setNumber();
-        } else {
-            oxNew(\OxidEsales\Eshop\Core\Counter::class)->update($this->_getCounterIdent(), $this->oxorder__oxordernr->value);
-        }
-
-        // deleting remark info only when order is finished
-        \OxidEsales\Eshop\Core\Registry::getSession()->deleteVariable('ordrem');
-
-        //#4005: Order creation time is not updated when order processing is complete
-        if (!$blRecalculatingOrder) {
-            $this->_updateOrderDate();
-        }
-
-        // updating order trans status (success status)
-        $this->_setOrderStatus('OK');
-
-        // store orderid
-        $oBasket->setOrderId($this->getId());
-
-        // updating wish lists
-        $this->_updateWishlist($oBasket->getContents(), $oUser);
-
-        // updating users notice list
-        $this->_updateNoticeList($oBasket->getContents(), $oUser);
-
-        // marking vouchers as used and sets them to $this->_aVoucherList (will be used in order email)
-        // skipping this action in case of order recalculation
-        if (!$blRecalculatingOrder) {
-            $this->_markVouchers($oBasket, $oUser);
-        }
-
-        // send order by email to shop owner and current user
-        // skipping this action in case of order recalculation
-        if (!$blRecalculatingOrder) {
-            $iRet = $this->_sendOrderByEmail($oUser, $oBasket, $oUserPayment);
-        } else {
-            $iRet = self::ORDER_STATE_OK;
-        }
-
-        return $iRet;
-    }
-
-    public function validateDelivery($oBasket)
-    {
-        if ($oBasket->getPaymentId() == 'fatchip_computop_paypal_express') {
-            return;
-        }else return parent::validateDelivery($oBasket);
+        return $payment->prepareComputopRequest($params, $payment->getCTPaymentURL());
     }
 
     public function loadByTransId(string $transID) : bool
@@ -1193,5 +1176,4 @@ class Order extends Order_parent
             return $this->load($aResult[0]['OXID']);
         }
     }
-
 }

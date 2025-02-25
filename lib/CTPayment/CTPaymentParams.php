@@ -65,11 +65,9 @@ class CTPaymentParams
             'UrlSuccess' => $urlSuccess,
             'UrlFailure' => $urlFailure,
             'UrlNotify'  => $urlNotify,
+            'UrlCancel'  => $urlCancel,
+            'UrlBack'    => $urlCancel,
         ];
-        if ($config['creditCardMode'] === 'PAYMENTPAGE' || $paymentId === 'fatchip_computop_paypal') {
-            $params['UrlCancel'] = $urlCancel;
-            $params['UrlBack']   = $urlCancel;
-        }
 
         return $params;
     }

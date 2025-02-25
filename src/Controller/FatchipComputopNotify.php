@@ -69,6 +69,7 @@ class FatchipComputopNotify extends FrontendController
         $this->fatchipComputopShopUtils = Registry::getUtils();
         $this->fatchipComputopSession = Registry::getSession();
         $this->fatchipComputopLogger = new Logger();
+
         parent::init();
     }
 
@@ -117,23 +118,23 @@ class FatchipComputopNotify extends FrontendController
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
-            /** @var string $orderOxId */
-            $orderOxId = $response->getSessionId();
-            /** @var Order $order */
-            $order = oxNew(Order::class);
-            if ($order->load($orderOxId)) {
-                if (empty($order->getFieldData('oxordernr'))) {
-                    $orderNumber = $order->getFieldData('oxordernr');
-                } else {
-                    $orderNumber = $order->getFieldData('oxordernr');
+                /** @var string $orderOxId */
+                $orderOxId = $response->getSessionId();
+                /** @var Order $order */
+                $order = oxNew(Order::class);
+                if ($order->load($orderOxId)) {
+                    if (empty($order->getFieldData('oxordernr'))) {
+                        $orderNumber = $order->getFieldData('oxordernr');
+                    } else {
+                        $orderNumber = $order->getFieldData('oxordernr');
+                    }
+                    $order->updateOrderAttributes($response);
+                    //  $order->customizeOrdernumber($response);
+                    // $responseRefNr =  $this->updateRefNrWithComputop($order);
+                    //  $order->autoCapture();
+
+
                 }
-                $order->updateOrderAttributes($response);
-              //  $order->customizeOrdernumber($response);
-               // $responseRefNr =  $this->updateRefNrWithComputop($order);
-              //  $order->autoCapture();
-
-
-            }
                 /* $this->inquireAndupdatePaymentStatus(
                         $order,
                         $paymentName,
@@ -155,15 +156,12 @@ class FatchipComputopNotify extends FrontendController
     protected function getPaymentName($oOrder) {
         if ( $paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
             return $paymentName;
-        } else {
-            exit;
         }
+        exit;
     }
 
-    private
-    function updateRefNrWithComputop(
-        $order
-    ) {
+    private function updateRefNrWithComputop($order)
+    {
         if (!$order) {
             return null;
         }
@@ -184,9 +182,9 @@ class FatchipComputopNotify extends FrontendController
             $payment = $this->paymentService->getPaymentClass($paymentClass);
         }
         $payID = $order->getFieldData('fatchip_computop_payid');
- /*       if ($order->getFieldData('oxordernr') === "0") {
-            die();
-        }*/
+        /*       if ($order->getFieldData('oxordernr') === "0") {
+                   die();
+               }*/
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
         $RefNrChangeParams['EtiId'] = $this->getUserDataParam($config);
 
@@ -198,8 +196,8 @@ class FatchipComputopNotify extends FrontendController
             $payment->getCTRefNrChangeURL()
         );
     }
-    protected
-    function createCTOrder($oOrder)
+
+    protected function createCTOrder($oOrder)
     {
         $ctOrder = new CTOrder();
         $configCt = oxNew(Config::class);
@@ -233,19 +231,16 @@ class FatchipComputopNotify extends FrontendController
         }
         return $ctOrder;
     }
+
     /**
      * Sets the userData paramater for Computop calls to Oxid Version and Module Version
      *
      * @return string
      * @throws Exception
      */
-    public
-    function getUserDataParam($config)
+    public function getUserDataParam($config)
     {
         return $config->oxshops__oxname->value . ' '
             . $config->getActiveShop()->oxshops__oxversion->value;
     }
-
 }
-
-

@@ -103,6 +103,4 @@ class FatchipComputopAjaxApiLog extends AdminController
         }
         return $result;
     }
-
-
 }

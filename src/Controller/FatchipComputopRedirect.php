@@ -62,7 +62,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         return  $this->_sThisTemplate;
     }
 
-    public function getFinishUrl() {
+    public function getFinishUrl()
+    {
         $req         = Registry::getRequest();
         $len         = $req->getRequestParameter('Len');
         $data        = $req->getRequestParameter('Data');
@@ -112,7 +113,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         Registry::getUtils()->redirect($returnUrl, false, 301);
     }
 
-    public function getFinishUrlIframe() {
+    public function getFinishUrlIframe()
+    {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
         if (!empty($len) && !empty($data)) {

@@ -245,7 +245,7 @@ class PayPalExpress extends CTPaymentMethod
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
         $paymentService = new CTPaymentService($this->fatchipComputopConfig);
-         $data =  $paymentService->ctEncrypt($dataQuery, $length,$paymentService->blowfishPassword,$paymentService->encryption);
+        $data =  $paymentService->ctEncrypt($dataQuery, $length,$paymentService->blowfishPassword,$paymentService->encryption);
         $payload = [
             'MerchantID' => $this->getComputopMerchantId(),
             'Len' => $length,
@@ -322,12 +322,11 @@ class PayPalExpress extends CTPaymentMethod
         $oBasket = Registry::getSession()->getBasket();
         $oPayment = oxNew(Payment::class);
 
-        if ($oPayment->oxpayments__oxactive->value === 0) {
-            return false;
-        }
-
         try {
-            $oPayment->load('fatchip_computop_paypal_express');
+            if (($oPayment->load('fatchip_computop_paypal_express') == false) || ($oPayment->oxpayments__oxactive && $oPayment->oxpayments__oxactive->value === 0)) {
+                return false;
+            }
+
             $bIsPaymentValid = $oPayment->isValidPayment(
                 null,
                 \OxidEsales\Eshop\Core\Registry::getConfig()->getShopId(),
