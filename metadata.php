@@ -1,40 +1,5 @@
 <?php
 
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopAjaxApiLog;
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogList;
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogMain;
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopConfig;
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiTest;
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLog;
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopOrderSettings;
-use Fatchip\ComputopPayments\Controller\FatchipComputopAmazonpay;
-use Fatchip\ComputopPayments\Controller\FatchipComputopEasycredit;
-use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopUpdateIdealIssuers;
-use Fatchip\ComputopPayments\Controller\FatchipComputopIdeal;
-use Fatchip\ComputopPayments\Controller\FatchipComputopKlarna;
-use Fatchip\ComputopPayments\Controller\FatchipComputopLastschrift;
-use Fatchip\ComputopPayments\Controller\FatchipComputopOrder;
-use Fatchip\ComputopPayments\Controller\FatchipComputopPayment;
-use Fatchip\ComputopPayments\Controller\FatchipComputopPayments;
-use Fatchip\ComputopPayments\Controller\FatchipComputopNotify;
-use Fatchip\ComputopPayments\Controller\FatchipComputopPaypalExpress;
-use Fatchip\ComputopPayments\Controller\FatchipComputopPaypalStandard;
-use Fatchip\ComputopPayments\Controller\FatchipComputopRedirect;
-use Fatchip\ComputopPayments\Controller\FatchipComputopTwint;
-use Fatchip\ComputopPayments\Core\Constants;
-use Fatchip\ComputopPayments\Core\FatchipComputopSession;
-use Fatchip\ComputopPayments\Core\ViewConfig as ModuleViewConfig;
-use Fatchip\ComputopPayments\Controller\FatchipComputopCreditcard;
-use OxidEsales\Eshop\Application\Controller\OrderController as CoreOrderController;
-use OxidEsales\Eshop\Application\Controller\PaymentController as CorePaymentController;
-use OxidEsales\Eshop\Application\Model\Order as CoreOrderModel;
-use Fatchip\ComputopPayments\Model\Order as ModuleOrder;
-use OxidEsales\Eshop\Application\Model\PaymentGateway as CorePaymentGateway;
-use Fatchip\ComputopPayments\Model\PaymentGateway as ModulePaymentGateway;
-use OxidEsales\Eshop\Core\Session;
-use OxidEsales\Eshop\Core\ViewConfig as CoreViewConfig;
-
-
 /**
  * Metadata version
  */
@@ -65,37 +30,38 @@ $aModule = [
     'url' => 'https://www.fatchip.de/',
     'email' => '',
     'extend' => [
-        CoreOrderController::class => FatchipComputopOrder::class,
-        CorePaymentController::class => FatchipComputopPayment::class,
-        CoreOrderModel::class => ModuleOrder::class,
-        CoreViewConfig::class => ModuleViewConfig::class,
-        Session::class => FatchipComputopSession::class,
+        // Controllers
+        \OxidEsales\Eshop\Application\Controller\OrderController::class => \Fatchip\ComputopPayments\Controller\FatchipComputopOrder::class,
+        \OxidEsales\Eshop\Application\Controller\PaymentController::class => \Fatchip\ComputopPayments\Controller\FatchipComputopPayment::class,
+
         // Models
-        CorePaymentGateway::class => ModulePaymentGateway::class,
+        \OxidEsales\Eshop\Application\Model\PaymentGateway::class => \Fatchip\ComputopPayments\Model\PaymentGateway::class,
+        \OxidEsales\Eshop\Application\Model\Order::class => \Fatchip\ComputopPayments\Model\Order::class,
+        \OxidEsales\Eshop\Core\ViewConfig::class => \Fatchip\ComputopPayments\Core\ViewConfig::class,
+        \OxidEsales\Eshop\Core\Session::class => \Fatchip\ComputopPayments\Core\FatchipComputopSession::class,
     ],
     'controllers' => [
         // Admin
-        Constants::GENERAL_PREFIX . 'config' => FatchipComputopConfig::class,
-        Constants::GENERAL_PREFIX . 'apitest' => FatchipComputopApiTest::class,
-        Constants::GENERAL_PREFIX . 'apilog' => FatchipComputopApiLog::class,
-        Constants::GENERAL_PREFIX . 'apilog_main' => FatchipComputopApiLogMain::class,
-        Constants::GENERAL_PREFIX . 'apilog_list' => FatchipComputopApiLogList::class,
-        Constants::GENERAL_PREFIX . 'ajaxapilog' => FatchipComputopAjaxApiLog::class,
-        Constants::GENERAL_PREFIX . 'updateidealissuers' => FatchipComputopUpdateIdealIssuers::class,
-        Constants::GENERAL_PREFIX . 'order_settings' => FatchipComputopOrderSettings::class,
+        'fatchip_computop_config'               => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopConfig::class,
+        'fatchip_computop_apitest'              => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiTest::class,
+        'fatchip_computop_apilog'               => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLog::class,
+        'fatchip_computop_apilog_main'          => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogMain::class,
+        'fatchip_computop_apilog_list'          => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogList::class,
+        'fatchip_computop_ajaxapilog'           => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopAjaxApiLog::class,
+        'fatchip_computop_updateidealissuers'   => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopUpdateIdealIssuers::class,
+        'fatchip_computop_order_settings'       => \Fatchip\ComputopPayments\Controller\Admin\FatchipComputopOrderSettings::class,
 
         // Frontend
-        Constants::GENERAL_PREFIX . 'payments' => FatchipComputopPayments::class,
-        Constants::GENERAL_PREFIX . 'creditcard' => FatchipComputopCreditcard::class,
-        Constants::GENERAL_PREFIX . 'paypal_standard' => FatchipComputopPaypalStandard::class,
-        Constants::GENERAL_PREFIX . 'paypal_express' => FatchipComputopPaypalExpress::class,
-        Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
-        Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,
-        Constants::GENERAL_PREFIX . 'redirect' => FatchipComputopRedirect::class
+        'fatchip_computop_payments'             => \Fatchip\ComputopPayments\Controller\FatchipComputopPayments::class,
+        'fatchip_computop_creditcard'           => \Fatchip\ComputopPayments\Controller\FatchipComputopCreditcard::class,
+        'fatchip_computop_paypal_standard'      => \Fatchip\ComputopPayments\Controller\FatchipComputopPaypalStandard::class,
+        'fatchip_computop_paypal_express'       => \Fatchip\ComputopPayments\Controller\FatchipComputopPaypalExpress::class,
+        'fatchip_computop_notify'               => \Fatchip\ComputopPayments\Controller\FatchipComputopNotify::class,
+        'fatchip_computop_twint'                => \Fatchip\ComputopPayments\Controller\FatchipComputopTwint::class,
+        'fatchip_computop_redirect'             => \Fatchip\ComputopPayments\Controller\FatchipComputopRedirect::class
     ],
     'blocks' => [
-
-        // Admin back-end
+        // Admin backend
         [
             'template' => 'headitem.tpl',
             'block' => 'admin_headitem_inccss',
@@ -161,7 +127,6 @@ $aModule = [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'mac', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'blowfishPassword', 'type' => 'str', 'value' => '', 'group' => null],
-
         ['name' => 'debuglog', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'encryption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'creditCardMode', 'type' => 'str', 'value' => '', 'group' => null],
@@ -188,15 +153,12 @@ $aModule = [
         'fatchip_computop_form_field.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_form_field.tpl',
         'fatchip_computop_json.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_json.tpl',
         'fatchip_computop_payments_config.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/fatchip_computop_payments_config.tpl',
-
         'fatchip_computop_creditcard_iframe.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_creditcard_iframe.tpl',
         'fatchip_computop_creditcard_silentmode.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_creditcard_silentmode.tpl',
         'fatchip_computop_iframe.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe.tpl',
         'fatchip_computop_iframe_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe_return.tpl',
         'fatchip_computop_redirect_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_redirect_return.tpl',
         'fatchip_computop_paypalbutton.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_paypalbutton.tpl',
-
-
     ],
     'events' => [
         'onActivate' => 'Fatchip\ComputopPayments\Core\Events::onActivate',

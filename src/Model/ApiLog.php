@@ -33,7 +33,7 @@ use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInt
 
 class ApiLog extends BaseModel
 {
-        public static $sTableName = "fatchip_computop_api_log";
+    public static $sTableName = "fatchip_computop_api_log";
 
     /**
      * Class constructor
@@ -44,36 +44,36 @@ class ApiLog extends BaseModel
         $this->init(self::$sTableName);
     }
 
-  /**
-   * Id of the Log entry
-   *
-   * @var integer $oxid
-   *
-   * @ORM\Column(name="id", type="integer", nullable=false)
-   * @ORM\Id
-   * @ORM\GeneratedValue(strategy="IDENTITY")
-   */
+    /**
+     * Id of the Log entry
+     *
+     * @var integer $oxid
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
     private $oxid;
 
-  /**
-   * will be used to save the type of the request to computop
-   * so we can easily filter
-   * "CreditCard" "EasyCredit"
-   *
-   * @ORM\Column(name="request", type="string", length=255, precision=0, scale=0, nullable=true, unique=false)
-   */
+    /**
+     * will be used to save the type of the request to computop
+     * so we can easily filter
+     * "CreditCard" "EasyCredit"
+     *
+     * @ORM\Column(name="request", type="string", length=255, precision=0, scale=0, nullable=true, unique=false)
+     */
     private $request;
 
-  /**
-   *  response status field "OK" or "Error"
-   * @ORM\Column(name="response", type="string", length=255, precision=0, scale=0, nullable=true, unique=false)
-   */
+    /**
+     *  response status field "OK" or "Error"
+     * @ORM\Column(name="response", type="string", length=255, precision=0, scale=0, nullable=true, unique=false)
+     */
     private $response;
 
-   /**
-    * Date the entry was created
-   * @ORM\Column(name="creation_date", type="datetime", precision=0, scale=0, nullable=false, unique=false)
-   */
+    /**
+     * Date the entry was created
+     * @ORM\Column(name="creation_date", type="datetime", precision=0, scale=0, nullable=false, unique=false)
+     */
     private $creationDate;
 
     /**
@@ -85,14 +85,14 @@ class ApiLog extends BaseModel
 
     /**
      * Contains all details of the request
-   * @ORM\Column(name="request_details", type="array", precision=0, scale=0, nullable=true, unique=false)
-   */
+     * @ORM\Column(name="request_details", type="array", precision=0, scale=0, nullable=true, unique=false)
+     */
     private $requestDetails;
 
-  /**
-   * Contains all details of the response
-   * @ORM\Column(name="response_details", type="array", precision=0, scale=0, nullable=true, unique=false)
-   */
+    /**
+     * Contains all details of the response
+     * @ORM\Column(name="response_details", type="array", precision=0, scale=0, nullable=true, unique=false)
+     */
     private $responseDetails;
 
     /**
@@ -289,21 +289,20 @@ class ApiLog extends BaseModel
     {
         $this->xId = $xId;
     }
-    public function loadByTransId($transId) {
+
+    public function loadByTransId($transId)
+    {
         $container = ContainerFactory::getInstance()->getContainer();
         $queryBuilderFactory = $container->get(QueryBuilderFactoryInterface::class);
         $queryBuilder = $queryBuilderFactory->create();
-        $builder =         $queryBuilder
+        $builder = $queryBuilder
             ->select('oxid')
             ->from(Constants::APILOG_TABLE)
             ->where('trans_id = :transid')->setParameter('transid', $transId);
         $result = $builder->execute()->fetchOne();
         if ($result !== false) {
             return $this->load($result);
-        } else {
-            return false;
         }
-
+        return false;
     }
 }
-

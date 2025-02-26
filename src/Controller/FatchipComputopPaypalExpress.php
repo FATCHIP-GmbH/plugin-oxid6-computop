@@ -50,7 +50,6 @@ use VIISON\AddressSplitter\AddressSplitter;
 
 class FatchipComputopPayPalExpress extends FrontendController
 {
-
     /**
      * Current class template name.
      *
@@ -343,27 +342,27 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $oUser->delete();
                 $oUser->load($sResponseEmailId);
             }
-                $notApplicableFields = [
-                    'oxuser__oxustid'  => '',
-                    'oxuser__oxcompany' => '',
-                    'oxuser__oxaddinfo' => '',
-                    'oxuser__oxstateid' => '',
-                    'oxuser__oxaddinfo' => '',
-                    'oxuser__oxfon' => '',
-                    'oxuser__oxfax' => '',
-                    'oxuser__oxsal' => ''
-                ];
-                $billAddress = [
-                    'oxuser__oxusername' => $oResponse->getEMail(),
-                    'oxuser__oxfname' => $oResponse->getFirstName(),
-                    'oxuser__oxlname' => $oResponse->getLastName(),
-                    'oxuser__oxstreet' => $oResponse->getAddrStreet(),
-                    'oxuser__oxstreetnr' => $oResponse->getAddrStreetNr(),
-                    'oxuser__oxcity' => $oResponse->getAddrCity(),
-                    'oxuser__oxcountryid' => $sCountryId,
-                    'oxuser__oxzip' => $oResponse->getAddrZIP(),
-                ];
-                $oUser->assign(array_merge($notApplicableFields,$billAddress));
+            $notApplicableFields = [
+                'oxuser__oxustid'  => '',
+                'oxuser__oxcompany' => '',
+                'oxuser__oxaddinfo' => '',
+                'oxuser__oxstateid' => '',
+                'oxuser__oxaddinfo' => '',
+                'oxuser__oxfon' => '',
+                'oxuser__oxfax' => '',
+                'oxuser__oxsal' => ''
+            ];
+            $billAddress = [
+                'oxuser__oxusername' => $oResponse->getEMail(),
+                'oxuser__oxfname' => $oResponse->getFirstName(),
+                'oxuser__oxlname' => $oResponse->getLastName(),
+                'oxuser__oxstreet' => $oResponse->getAddrStreet(),
+                'oxuser__oxstreetnr' => $oResponse->getAddrStreetNr(),
+                'oxuser__oxcity' => $oResponse->getAddrCity(),
+                'oxuser__oxcountryid' => $sCountryId,
+                'oxuser__oxzip' => $oResponse->getAddrZIP(),
+            ];
+            $oUser->assign(array_merge($notApplicableFields,$billAddress));
         }
         $delAdressPayPal = [
             'oxaddress__oxaddressuserid' => $oUser->getId(),
@@ -435,14 +434,16 @@ class FatchipComputopPayPalExpress extends FrontendController
     {
         if (!empty($oResponse->getName())) {
             return implode(' ', array_slice(explode(' ', (string)$oResponse->getName()), 0, -1));
-        } else return '';
+        }
+        return '';
     }
 
     protected function getLastName(CTResponse $oResponse): string
     {
         if (!empty($oResponse->getName())) {
             return array_slice(explode(' ', (string)$oResponse->getName()), -1)[0];
-        } else return '';
+        }
+        return '';
     }
 
     protected function extractStreetNr($address)

@@ -62,7 +62,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         return  $this->_sThisTemplate;
     }
 
-    public function getFinishUrl() {
+    public function getFinishUrl()
+    {
         $req         = Registry::getRequest();
         $len         = $req->getRequestParameter('Len');
         $data        = $req->getRequestParameter('Data');
@@ -77,9 +78,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         }
 
         if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
-            $prefix = Constants::CONTROLLER_PREFIX;
-            $this->fatchipComputopSession->setVariable("{$prefix}DirectResponse", $response);
-            $this->fatchipComputopSession->setVariable("{$prefix}RedirectResponse", $response);
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX."DirectResponse", $response);
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX."RedirectResponse", $response);
         }
 
         $shopUrl    = $this->fatchipComputopShopConfig->getShopUrl();
@@ -112,7 +112,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         Registry::getUtils()->redirect($returnUrl, false, 301);
     }
 
-    public function getFinishUrlIframe() {
+    public function getFinishUrlIframe()
+    {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
         if (!empty($len) && !empty($data)) {
@@ -144,6 +145,5 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $returnUrl = $sShopUrl . 'index.php?' . http_build_query($queryParams);
         $returnurl = json_encode($returnUrl);
         return  $returnurl;
-
     }
 }

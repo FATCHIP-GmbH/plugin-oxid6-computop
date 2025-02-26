@@ -35,7 +35,6 @@ use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopCreditcard extends FrontendController
 {
-
     /**
      * Current class template name.
      *
@@ -53,8 +52,10 @@ class FatchipComputopCreditcard extends FrontendController
     protected $fatchipComputopLogger;
     public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
+
     public function init()
-{       ini_set('session.cookie_samesite', 'None');
+    {
+        ini_set('session.cookie_samesite', 'None');
         ini_set('session.cookie_secure', true);
         parent::init();
     }
@@ -84,7 +85,6 @@ class FatchipComputopCreditcard extends FrontendController
     public function render()
     {
         return parent::render();
-
     }
 
     /**
@@ -96,9 +96,10 @@ class FatchipComputopCreditcard extends FrontendController
     public function getIframeUrl()
     {
         $redirectUrl = $this->fatchipComputopSession->getVariable('FatchipComputopIFrameURL');
-        if ($redirectUrl) {
+        if (!empty($redirectUrl)) {
             return $redirectUrl;
         }
+        return false;
     }
 
 }

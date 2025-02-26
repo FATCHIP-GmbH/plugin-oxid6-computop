@@ -166,21 +166,22 @@ class CTPaymentService extends Encryption
         // Set special Custom Params (Oxid Session id and TransId)
         $response = new CTResponse($requestArray);
         if (!empty($customArray)) {
-            $response->setShopTransId($customArray['transid']);
-            $response->setSessionId(($customArray['session']));
-            $response->setDelAdress(($customArray['delAdress']));
-            $response->setStoken(($customArray['stoken']));
-            $response->setInfoText(($customArray['paymentid']));
+            $response->setShopTransId($customArray['transid'] ?? '');
+            $response->setSessionId($customArray['session'] ?? '');
+            $response->setStoken($customArray['stoken'] ?? '');
+            $response->setInfoText($customArray['paymentid'] ?? '');
+            if (!empty($customArray['delAdress'])) {
+                $response->setDelAdress($customArray['delAdress']);
+            }
         } else {
-            $response->setShopTransId($rawRequest['TransId']);
-            $response->setSessionId(($rawRequest['SessionId']));
-            $response->setStoken(($rawRequest['Stoken']));
-            $response->setType($requestArray['Type']);
-            $response->setDelAdress(($rawRequest['delAdress']));
-
+            $response->setShopTransId($rawRequest['TransId'] ?? '');
+            $response->setSessionId($rawRequest['SessionId'] ?? '');
+            $response->setStoken($rawRequest['Stoken'] ?? '');
+            $response->setType($requestArray['Type'] ?? '');
+            if (!empty($rawRequest['delAdress'])) {
+                $response->setDelAdress($rawRequest['delAdress']);
+            }
         }
-
-
         return $response;
     }
 
@@ -254,10 +255,10 @@ class CTPaymentService extends Encryption
         $redirectRequest = $this->fatchipComputopSession->getVariable(
             Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams'
         );
-       $directSilent =  $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
-       if ($directSilent) {
-           $redirectRequest = $directSilent;
-       }
+        $directSilent =  $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+        if ($directSilent) {
+            $redirectRequest = $directSilent;
+        }
 
         $this->fatchipComputopLogger->logRequestResponse(
             $redirectRequest,
@@ -265,17 +266,17 @@ class CTPaymentService extends Encryption
             'REDIRECT',
             $response
         );
-       if ( Registry::getSession()->getUser()) {
-           $encodedDeliveryAdress =  Registry::getSession()->getUser()->getEncodedDeliveryAddress();
+        if ( Registry::getSession()->getUser()) {
+            $encodedDeliveryAdress =  Registry::getSession()->getUser()->getEncodedDeliveryAddress();
 
-       }
+        }
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
-            $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
-                . 'index.php?cl=order&fnc=execute&action=result&stoken='
-                . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
+                $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
+                    . 'index.php?cl=order&fnc=execute&action=result&stoken='
+                    . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
                 break;
             case CTEnumStatus::FAILED:
                 $this->fatchipComputopSession->setVariable('FatchipComputopErrorCode', $response->getCode());
