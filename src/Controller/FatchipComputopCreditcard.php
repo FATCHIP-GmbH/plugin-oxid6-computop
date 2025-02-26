@@ -41,6 +41,12 @@ class FatchipComputopCreditcard extends FrontendController
      * @var string
      */
     protected $_sThisTemplate = 'fatchip_computop_iframe.tpl';
+
+    /**
+     * Flag if current view is an order view
+     *
+     * @var bool
+     */
     protected $_blIsOrderStep = true;
 
     protected $fatchipComputopConfig;
@@ -59,6 +65,7 @@ class FatchipComputopCreditcard extends FrontendController
         ini_set('session.cookie_secure', true);
         parent::init();
     }
+
     /**
      * Class constructor, sets all required parameters for requests.
      */
@@ -74,7 +81,6 @@ class FatchipComputopCreditcard extends FrontendController
         $this->fatchipComputopLogger = new Logger();
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
     }
-
 
     /**
      * The controller renderer
@@ -101,5 +107,4 @@ class FatchipComputopCreditcard extends FrontendController
         }
         return false;
     }
-
 }
