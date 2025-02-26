@@ -818,7 +818,6 @@ class Order extends Order_parent
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
             $this->fatchipComputopPaymentClass = 'CreditCard';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-
                 $response = $payment->getHTTPGetURL($params);
                 $response .= '&template='.$template;
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
@@ -1139,7 +1138,7 @@ class Order extends Order_parent
             null,
             null,
             null,
-            $urlParams['UrlCancel']
+            $urlParams['UrlCancel'] ?? null
         );
         return $payment;
     }
