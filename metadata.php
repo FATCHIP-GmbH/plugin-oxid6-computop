@@ -122,6 +122,11 @@ $aModule = [
             'block' => 'checkout_basketcontents_summary',
             'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'
         ],
+        [
+            'template' => 'widget/minibasket/minibasket.tpl',
+            'block' => 'widget_minibasket_total',
+            'file' => 'views/tpl/extensions/widget/minibasket/minibasket.tpl'
+        ],
     ],
     'settings' => [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
@@ -159,6 +164,7 @@ $aModule = [
         'fatchip_computop_iframe_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe_return.tpl',
         'fatchip_computop_redirect_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_redirect_return.tpl',
         'fatchip_computop_paypalbutton.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_paypalbutton.tpl',
+        'fatchip_computop_paypalbutton_minibasket.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_paypalbutton_minibasket.tpl',
     ],
     'events' => [
         'onActivate' => 'Fatchip\ComputopPayments\Core\Events::onActivate',
