@@ -1,2 +1,2 @@
 ### 1.0.0
-* Initial OXID 7 Release
+* Initial OXID 6 Release
