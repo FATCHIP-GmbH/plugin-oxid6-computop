@@ -103,6 +103,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
                 'FatchipComputopLen'  => $len,
                 'FatchipComputopData' => $data,
                 'stoken'              => $stoken,
+                'ord_agb'             => '1',
                 'sid'                 => $sid,
                 'sDeliveryAddressMD5' => $delAddr,
             ];
@@ -139,6 +140,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
                 'FatchipComputopLen'  => $len,
                 'FatchipComputopData' => $data,
                 'stoken'              => $stoken,
+                'ord_agb'             => '1',
             ];
         }
 
