@@ -1,3 +1,7 @@
+### 1.0.2
+* Added payment methods Ratepay direct debit and Ratepay invoice
+* Save cc data from notify call in order db table
+
 ### 1.0.1
 * Fixed AGB checkbox bug
 
