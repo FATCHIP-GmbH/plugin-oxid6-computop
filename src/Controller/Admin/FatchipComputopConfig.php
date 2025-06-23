@@ -66,11 +66,13 @@ class FatchipComputopConfig extends AdminController
         $creditCardFormFields = array_merge(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardTextElements);
         $payPalFormFields = CTPaymentConfigForms::formPayPalSelectElements;
         $payPalExpressFormFields = array_merge(CTPaymentConfigForms::formPayPalExpressSelectElementTestMode,CTPaymentConfigForms::formPayPalExpressSelectElements,CTPaymentConfigForms::formPayPalExpressTextElementClientID,CTPaymentConfigForms::formPayPalExpressTextElementMerchantID,CTPaymentConfigForms::formPayPalExpressTextElementPartnerAttributionID);
+        $ratepayFormFields = CTPaymentConfigForms::formRatePayDirectDebitSelectElementBic;
         $mergedFormFields = array_replace_recursive(
             $generalFormFields,
             $creditCardFormFields,
             $payPalFormFields,
             $payPalExpressFormFields,
+            $ratepayFormFields,
             $configArr
         );
 
@@ -87,6 +89,7 @@ class FatchipComputopConfig extends AdminController
         $this->addTplParam('creditCardFormFields', $creditCardFormFields);
         $this->addTplParam('payPalFormFields', $payPalFormFields);
         $this->addTplParam('payPalExpressFormFields', $payPalExpressFormFields);
+        $this->addTplParam('ratepayFormFields', $ratepayFormFields);
         $this->addTplParam('config', $mergedFormFields);
         $thisTemplate = parent::render();
 

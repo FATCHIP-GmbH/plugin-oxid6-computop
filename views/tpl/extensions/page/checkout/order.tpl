@@ -2,7 +2,7 @@
     [{assign var="creditcardMode" value=$oView->getFatchipComputopShopCreditcardMode()}]
 
     [{if $payment->oxpayments__oxid->value == 'fatchip_computop_creditcard' && $creditcardMode == 'SILENT'}]
-    [{$fatchipComputopConfig.creditCardMode}]
+        [{$fatchipComputopConfig.creditCardMode}]
 
         [{include file="fatchip_computop_creditcard_silentmode.tpl"}]
     [{else}]

@@ -43,13 +43,6 @@ class FatchipComputopPayments extends FrontendController
     protected $_sThisTemplate = '';
 
     protected $fatchipComputopConfig;
-    protected $fatchipComputopSession;
-    protected $fatchipComputopShopConfig;
-    protected $fatchipComputopPaymentId;
-    protected $fatchipComputopPaymentClass;
-    protected $fatchipComputopShopUtils;
-    protected $fatchipComputopLogger;
-    public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
 
     /**
@@ -62,8 +55,6 @@ class FatchipComputopPayments extends FrontendController
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
         $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
-        $this->fatchipComputopLogger = new Logger();
-        $this->fatchipComputopSession = Registry::getSession();
     }
 
     /**
@@ -76,8 +67,8 @@ class FatchipComputopPayments extends FrontendController
     {
         $response = $this->fatchipComputopPaymentService->getRequest();
         if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$response);
+            Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
+            Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$response);
         }
         if ($response) {
             $this->fatchipComputopPaymentService->handleRedirectResponse($response);

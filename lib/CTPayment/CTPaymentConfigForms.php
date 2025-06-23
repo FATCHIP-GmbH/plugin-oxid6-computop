@@ -499,4 +499,26 @@ class CTPaymentConfigForms
         ]
     ];
 
+    const formRatePayDirectDebitSelectElementBic = [
+        'ratepayDirectDebitRequestBic' => [
+            'name' => 'ratepayDirectDebitRequestBic',
+            'type' => 'select',
+            'value' => 'Aus',
+            'label' => 'BIC abfragen',
+            'required' => false,
+            'editable' => false,
+            'store' =>
+                [
+                    ['An', [
+                        'de_DE' => 'An',
+                        'en_GB' => 'active',
+                    ]],
+                    ['Aus', [
+                        'de_DE' => 'Aus',
+                        'en_GB' => 'inactive',
+                    ]],
+                ],
+        ],
+    ];
+
 }

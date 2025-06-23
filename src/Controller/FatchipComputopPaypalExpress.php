@@ -58,13 +58,6 @@ class FatchipComputopPayPalExpress extends FrontendController
     protected $_sThisTemplate = 'fatchip_computop_paypalexpress.tpl';
 
     protected $fatchipComputopConfig;
-    protected $fatchipComputopSession;
-    protected $fatchipComputopShopConfig;
-    protected $fatchipComputopPaymentId;
-    protected $fatchipComputopPaymentClass;
-    protected $fatchipComputopShopUtils;
-    protected $fatchipComputopLogger;
-    public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
 
     public function init()
@@ -83,10 +76,6 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopSession = Registry::getSession();
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopShopUtils = Registry::getUtils();
-        $this->fatchipComputopLogger = new Logger();
         $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
     }
 
@@ -131,7 +120,7 @@ class FatchipComputopPayPalExpress extends FrontendController
      */
     public function getPayPalExpressUrl()
     {
-        $redirectUrl = $this->fatchipComputopSession->getVariable('FatchipComputopPayPalExpressURL');
+        $redirectUrl = Registry::getSession()->getVariable('FatchipComputopPayPalExpressURL');
         if ($redirectUrl) {
             return $redirectUrl;
         }
@@ -166,7 +155,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                 'Data' => $sData,
             ]);
 
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$oResponse);
+            Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$oResponse);
 
             $aResponseLog['raw'] = $oResponse->toArray();
             $aLog['trans_id'] = $oResponse->getTransID();
@@ -266,7 +255,7 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oApiLog->save();
 
         Registry::getUtilsView()->addErrorToDisplay($sErrorString);
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $sShopUrl = Registry::getConfig()->getShopUrl();
         $returnUrl = $sShopUrl . 'index.php?cl=payment';
 
         Registry::getUtils()->redirect($returnUrl, false, 301);
@@ -479,7 +468,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
 
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $sShopUrl = Registry::getConfig()->getShopUrl();
         $stoken = $response->getRefNr();
         $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
             . '&stoken=' . $stoken;
@@ -550,7 +539,7 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
-            Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
+            Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
         }
         $isLoaded = $oUser->loadActiveUser();
         //load user in case one is logged in
@@ -629,11 +618,11 @@ class FatchipComputopPayPalExpress extends FrontendController
                     die($aResponse['response']);
                 } else {
                     Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
-                    Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
+                    Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
                 }
             } else {
                 Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
-                Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
+                Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
             }
 
         } catch (OutOfStockException $oEx) {

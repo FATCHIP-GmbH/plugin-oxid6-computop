@@ -37,6 +37,7 @@ $aModule = [
         // Models
         \OxidEsales\Eshop\Application\Model\PaymentGateway::class => \Fatchip\ComputopPayments\Model\PaymentGateway::class,
         \OxidEsales\Eshop\Application\Model\Order::class => \Fatchip\ComputopPayments\Model\Order::class,
+        \OxidEsales\Eshop\Application\Model\Payment::class => \Fatchip\ComputopPayments\Model\Payment::class,
         \OxidEsales\Eshop\Core\ViewConfig::class => \Fatchip\ComputopPayments\Core\ViewConfig::class,
         \OxidEsales\Eshop\Core\Session::class => \Fatchip\ComputopPayments\Core\FatchipComputopSession::class,
     ],
@@ -61,72 +62,23 @@ $aModule = [
         'fatchip_computop_redirect'             => \Fatchip\ComputopPayments\Controller\FatchipComputopRedirect::class
     ],
     'blocks' => [
-        // Admin backend
-        [
-            'template' => 'headitem.tpl',
-            'block' => 'admin_headitem_inccss',
-            'file' => 'views/tpl/admin/blocks/headitem.tpl'
-        ],
-        [
-            'template' => 'layout/base.tpl',
-            'block' => 'base_js',
-            'file' => 'views/tpl/extensions/layout/base.tpl'
-        ],
-        [
-            'template' => 'summary_sidebar.tpl',
-            'block' => 'checkout_basketcontents_summary',
-            'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'
-        ],
-        [
-            'template' => 'page/checkout/order.tpl',
-            'block' => 'checkout_order_btn_confirm_bottom',
-            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
-        ],
-        [
-            'template' => 'page/checkout/order.tpl',
-            'block' => 'checkout_order_payment_method',
-            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
-        ],
-        [
-            'template' => 'page/checkout/order.tpl',
-            'block' => 'checkout_order_next_step_side',
-            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
-        ],
-        [
-            'template' => 'page/checkout/order.tpl',
-            'block' => 'checkout_order_billing_address_button',
-            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
-        ],
-        [
-            'template' => 'page/checkout/order.tpl',
-            'block' => 'checkout_order_shipping_address_button',
-            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
-        ],
-        [
-            'template' => 'page/checkout/order.tpl',
-            'block' => 'checkout_order_shipping_carrier_button',
-            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
-        ],
-        [
-            'template' => 'page/checkout/order.tpl',
-            'block' => 'checkout_order_payment_method_button',
-            'file' => 'views/tpl/extensions/page/checkout/order.tpl'
-        ],
-        [
-            'template' => 'page/checkout/payment.tpl',
-            'block' => 'select_payment',
-            'file' => 'views/tpl/extensions/page/checkout/payment.tpl'
-        ],
-        [
-            'template' => 'page/checkout/inc/basketcontents.tpl',
-            'block' => 'checkout_basketcontents_summary',
-            'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'
-        ],
-        [
-            'template' => 'widget/minibasket/minibasket.tpl',
-            'block' => 'widget_minibasket_total',
-            'file' => 'views/tpl/extensions/widget/minibasket/minibasket.tpl'
-        ],
+        // Admin blocks
+        ['template' => 'headitem.tpl',                          'block' => 'admin_headitem_inccss',                     'file' => 'views/tpl/admin/blocks/headitem.tpl'],
+
+        // Frontend blocks
+        ['template' => 'layout/base.tpl',                       'block' => 'base_js',                                   'file' => 'views/tpl/extensions/layout/base.tpl'],
+        ['template' => 'summary_sidebar.tpl',                   'block' => 'checkout_basketcontents_summary',           'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'],
+        ['template' => 'page/checkout/order.tpl',               'block' => 'checkout_order_btn_confirm_bottom',         'file' => 'views/tpl/extensions/page/checkout/order.tpl'],
+        ['template' => 'page/checkout/order.tpl',               'block' => 'checkout_order_payment_method',             'file' => 'views/tpl/extensions/page/checkout/order.tpl'],
+        ['template' => 'page/checkout/order.tpl',               'block' => 'checkout_order_next_step_side',             'file' => 'views/tpl/extensions/page/checkout/order.tpl'],
+        ['template' => 'page/checkout/order.tpl',               'block' => 'checkout_order_billing_address_button',     'file' => 'views/tpl/extensions/page/checkout/order.tpl'],
+        ['template' => 'page/checkout/order.tpl',               'block' => 'checkout_order_shipping_address_button',    'file' => 'views/tpl/extensions/page/checkout/order.tpl'],
+        ['template' => 'page/checkout/order.tpl',               'block' => 'checkout_order_shipping_carrier_button',    'file' => 'views/tpl/extensions/page/checkout/order.tpl'],
+        ['template' => 'page/checkout/order.tpl',               'block' => 'checkout_order_payment_method_button',      'file' => 'views/tpl/extensions/page/checkout/order.tpl'],
+        ['template' => 'page/checkout/payment.tpl',             'block' => 'select_payment',                            'file' => 'views/tpl/extensions/page/checkout/payment.tpl'],
+        ['template' => 'page/checkout/inc/payment_other.tpl',   'block' => 'checkout_payment_longdesc',                 'file' => 'views/tpl/extensions/page/checkout/inc/payment_other.tpl'],
+        ['template' => 'page/checkout/inc/basketcontents.tpl',  'block' => 'checkout_basketcontents_summary',           'file' => 'views/tpl/extensions/page/checkout/inc/summary_sidebar.tpl'],
+        ['template' => 'widget/minibasket/minibasket.tpl',      'block' => 'widget_minibasket_total',                   'file' => 'views/tpl/extensions/widget/minibasket/minibasket.tpl'],
     ],
     'settings' => [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
@@ -148,6 +100,7 @@ $aModule = [
         ['name' => 'paypalExpressMerchantID', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressPartnerAttributionID', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressTestMode', 'type' => 'str', 'value' => '', 'group' => null],
+        ['name' => 'ratepayDirectDebitRequestBic', 'type' => 'str', 'value' => '', 'group' => null],
     ],
     'templates' => [
         'accordion_section.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/accordion_section.tpl',
@@ -165,6 +118,8 @@ $aModule = [
         'fatchip_computop_redirect_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_redirect_return.tpl',
         'fatchip_computop_paypalbutton.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_paypalbutton.tpl',
         'fatchip_computop_paypalbutton_minibasket.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_paypalbutton_minibasket.tpl',
+        'fatchip_computop_ratepay_directdebit.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_ratepay_directdebit.tpl',
+        'fatchip_computop_ratepay_invoice.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/fatchip_computop/fatchip_computop_ratepay_invoice.tpl',
     ],
     'events' => [
         'onActivate' => 'Fatchip\ComputopPayments\Core\Events::onActivate',

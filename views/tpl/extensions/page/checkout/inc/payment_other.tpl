@@ -1,0 +1,7 @@
+[{if method_exists($paymentmethod, 'isComputopPaymentMethod') && $paymentmethod->isComputopPaymentMethod() === true}]
+    [{assign var="paymentModel" value=$paymentmethod->computopGetPaymentModel()}]
+    [{if $paymentModel && $paymentModel->getCustomFrontendTemplate() !== false}]
+        [{include file=$paymentModel->getCustomFrontendTemplate()}]
+    [{/if}]
+[{/if}]
+[{$smarty.block.parent}]

@@ -1,0 +1,11 @@
+.form-group .ctBirthday, .form-group .ctBirthmonth, .form-group .ctBirthyear {
+    padding-right: .25em;
+}
+
+.form-group .ctBirthmonth, .form-group .ctBirthyear, .form-group .ctBirthformat {
+    padding-left: .25em;
+}
+
+.form-group .ctBirthformat {
+    padding-top: .5em;
+}

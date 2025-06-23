@@ -46,7 +46,8 @@ class CTPaymentParams
         ];
 
     protected static $aURLBackWhitelist = [
-        'fatchip_computop_paypal',
+        'fatchip_computop_paypal_standard',
+        'fatchip_computop_paypal_express',
         'fatchip_computop_amazonpay',
         'fatchip_computop_easycredit',
     ];

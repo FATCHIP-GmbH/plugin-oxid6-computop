@@ -46,6 +46,9 @@ use Symfony\Component\String\UnicodeString;
  */
 class FatchipComputopPayment extends FatchipComputopPayment_parent
 {
+    /**
+     * @var array
+     */
     protected $fatchipComputopConfig;
 
     protected array $frontendHiddenPayments = [
@@ -168,7 +171,43 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
     public function showBirthdate(): bool
     {
         $oUser = $this->getUser();
-        return $oUser->getFieldData('oxbirthdate') === '0000-00-00';
+        if (!empty($oUser->getFieldData('oxcompany'))) {
+            return false; // B2B order needs no birthday
+        }
+
+        if (empty($oUser->getFieldData('oxbirthdate')) || $oUser->getFieldData('oxbirthdate') === '0000-00-00') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Template getter which checks if bic input has to be rendered
+     */
+    public function isBicNeeded(): bool
+    {
+        if ($this->fatchipComputopConfig['ratepayDirectDebitRequestBic'] === 'An') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function ctGetTelephoneNumber()
+    {
+        $oUser = $this->getUser();
+        if (!empty($oUser->getFieldData('oxmobfon'))) {
+            return $oUser->getFieldData('oxmobfon');
+        }
+        if (!empty($oUser->getFieldData('oxprivfon'))) {
+            return $oUser->getFieldData('oxprivfon');
+        }
+        if (!empty($oUser->getFieldData('oxfon'))) {
+            return $oUser->getFieldData('oxfon');
+        }
+        return "";
     }
 
     /**
