@@ -74,6 +74,8 @@ class Config
 
     protected $paypalExpressTestMode = null;
 
+    protected $ratepayDirectDebitRequestBic = null;
+
 
 
     /**
@@ -515,6 +517,26 @@ class Config
         $moduleSettingBridge->save('paypalExpressTestMode', $paypalExpressTestMode, FatchipComputopModule::MODULE_ID);
     }
 
+    public function getRatepayDirectDebitRequestBic()
+    {
+        $moduleSettingBridge
+            = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $value = $moduleSettingBridge->get('ratepayDirectDebitRequestBic', FatchipComputopModule::MODULE_ID);
+        return $value;
+    }
+
+    /**
+     * @param null $paypalExpressTestMode
+     */
+    public function setRatepayDirectDebitRequestBic($ratepayDirectDebitRequestBic): void
+    {
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $moduleSettingBridge->save('ratepayDirectDebitRequestBic', $ratepayDirectDebitRequestBic, FatchipComputopModule::MODULE_ID);
+    }
 
     /**
      * @return null

@@ -52,5 +52,26 @@ class CTPaymentMethods
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],
 
+            [
+                'name' => 'fatchip_computop_ratepay_debit',
+                'shortname' => 'Ratepay Lastschrift',
+                'description' => 'Computop Ratepay Lastschrift',
+                'action' => 'FatchipCTRatepayDirectDebit',
+                'template' => '',
+                'additionalDescription' => '',
+                'className' => 'RatepayDirectDebit',
+                //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
+            ],
+            [
+                'name' => 'fatchip_computop_ratepay_invoice',
+                'shortname' => 'Ratepay Rechnung',
+                'description' => 'Computop Ratepay Rechnung',
+                'action' => 'FatchipCTRatepayInvoice',
+                'template' => '',
+                'additionalDescription' => '',
+                'className' => 'RatepayInvoice',
+                //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
+            ],
+
         ];
 }

@@ -10,20 +10,6 @@ class FatchipComputopSession extends FatchipComputopSession_parent
 {
     protected $fatchipComputopConfig;
 
-    protected $fatchipComputopSession;
-
-    protected $fatchipComputopShopConfig;
-
-    protected $fatchipComputopPaymentId;
-
-    protected $fatchipComputopPaymentClass;
-
-    protected $fatchipComputopShopUtils;
-
-    protected $fatchipComputopLogger;
-
-    public $fatchipComputopSilentParams;
-
     protected $fatchipComputopPaymentService;
 
     protected $errorCode;

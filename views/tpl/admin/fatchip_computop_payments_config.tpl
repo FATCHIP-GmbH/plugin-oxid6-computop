@@ -58,6 +58,12 @@
         [{include file="accordion_section.tpl" headingId='headingPayPalExpress' collapseId='collapsePayPalExpress'
         title=$FATCHIP_COMPUTOP_PAYPAL_SETTINGS
         formFields=$payPalExpressFormFields currentBlock='paypalExpress' }]
+
+        [{* Ratepay Direct Debit Settings *}]
+        [{capture assign="FATCHIP_COMPUTOP_RATEPAYDIRECTDEBIT_SETTINGS"}][{oxmultilang ident="FATCHIP_COMPUTOP_RATEPAYDIRECTDEBIT_SETTINGS"}][{/capture}]
+        [{include file="accordion_section.tpl" headingId='headingRatepayDirectDebit' collapseId='collapseRatepayDirectDebit'
+        title=$FATCHIP_COMPUTOP_RATEPAYDIRECTDEBIT_SETTINGS
+        formFields=$ratepayFormFields currentBlock='ratepayDirectDebit' }]
         <br />
         <div class="form-group row mt-3">
             <div class="col-md-12 text-center">

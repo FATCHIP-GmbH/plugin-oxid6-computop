@@ -21,5 +21,23 @@ $aLang = [
     'FATCHIP_COMPUTOP_EASYCREDIT_INFORMATION' => 'Easycredit Konditionen',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR' => 'Hoppla, da ist etwas schiefgelaufen.',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR' => 'Hoppla, da ist etwas schiefgelaufen.',
-    'FATCHIP_COMPUTOP_BIRTHDAY_PLEASE_ENTER' => 'Bitte Geburtstag angeben'
+    'FATCHIP_COMPUTOP_BIRTHDAY_PLEASE_ENTER' => 'Bitte Geburtstag angeben',
+
+    'FATCHIP_COMPUTOP_LANGUAGE' => 'de',
+
+    'FATCHIP_COMPUTOP_SHIPPINGCOST' => "Versandkosten",
+    'FATCHIP_COMPUTOP_PAYMENTTYPESURCHARGE' => "Zahlungsart-Aufschlag",
+    'FATCHIP_COMPUTOP_WRAPPING' => "Geschenkverpackung",
+    'FATCHIP_COMPUTOP_GIFTCARD' => "Grußkarte",
+    'FATCHIP_COMPUTOPE_VOUCHER' => 'Gutschein',
+    'FATCHIP_COMPUTOP_DISCOUNT' => 'Rabatt',
+
+    'FATCHIP_COMPUTOP_BANK_ACCOUNT_HOLDER' => 'Kontoinhaber',
+    'FATCHIP_COMPUTOP_IBAN' => 'IBAN',
+    'FATCHIP_COMPUTOP_BIC' => 'BIC',
+    'FATCHIP_COMPUTOP_TELEPHONE' => 'Telefonnummer',
+    'FATCHIP_COMPUTOP_BIRTHDAY' => 'Geburtsdatum',
+    'FATCHIP_COMPUTOP_DAY_OF_BIRTH' => 'Tag',
+    'FATCHIP_COMPUTOP_MONTH_OF_BIRTH' => 'Monat',
+    'FATCHIP_COMPUTOP_YEAR_OF_BIRTH' => 'Jahr',
 ];

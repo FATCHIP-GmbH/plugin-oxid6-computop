@@ -18,23 +18,7 @@ class ViewConfig extends ViewConfig_parent
 
     protected $fatchipComputopConfig;
 
-    protected $fatchipComputopBasket;
-
-    protected $fatchipComputopSession;
-
-    protected $fatchipComputopShopConfig;
-
-    protected $fatchipComputopPaymentId;
-
-    protected $fatchipComputopPaymentClass;
-
-    protected $fatchipComputopShopUtils;
-
-    protected $fatchipComputopLogger;
-
     protected $fatchipComputopPaymentService;
-
-    public $fatchipComputopSilentParams;
 
     public $signature = '';
 
@@ -51,12 +35,6 @@ class ViewConfig extends ViewConfig_parent
 
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopSession = Registry::getSession();
-        $this->fatchipComputopBasket = $this->fatchipComputopSession->getBasket();
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopPaymentId = $this->fatchipComputopBasket->getPaymentId() ?: '';
-        $this->fatchipComputopShopUtils = Registry::getUtils();
-        $this->fatchipComputopLogger = new Logger();
         $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
     }
 
@@ -102,15 +80,6 @@ class ViewConfig extends ViewConfig_parent
     }
 
     /**
-     * @param string $paymentId
-     * @return bool
-     */
-    public function isFatchipComputopOrder(string $paymentId): bool
-    {
-        return Constants::isFatchipComputopPayment($paymentId);
-    }
-
-    /**
      * Get webhook controller url
      *
      * @return string
@@ -118,16 +87,6 @@ class ViewConfig extends ViewConfig_parent
     public function getCancelAmazonPaymentUrl(): string
     {
         return $this->getSelfLink() . 'cl=fatchip_computop_amazonpay&fnc=cancelFatchipComputopAmazonPayment';
-    }
-
-    /**
-     * Template getter getAmazonPaymentId
-     *
-     * @return string
-     */
-    public function getAmazonPaymentId(): string
-    {
-        return Constants::amazonpayPaymentId;
     }
 
     /**
@@ -139,7 +98,7 @@ class ViewConfig extends ViewConfig_parent
     public function getPayload(): string
     {
         // Sicherstellen, dass wir eine gültige Antwort bekommen
-        $payload = $this->fatchipComputopSession->getVariable('FatchipComputopResponse');
+        $payload = Registry::getSession()->getVariable('FatchipComputopResponse');
         $signature = $payload->getButtonsignature();
         $payloadButton = $payload->getButtonpayload();
         $this->signature = $payload->getButtonsignature();
@@ -150,7 +109,7 @@ class ViewConfig extends ViewConfig_parent
 
     public function getButtonPubKey()
     {
-        $payload = $this->fatchipComputopSession->getVariable('FatchipComputopResponse');
+        $payload = Registry::getSession()->getVariable('FatchipComputopResponse');
         $buttonPublicKey = $payload->getButtonpublickeyid();
         return $buttonPublicKey;
     }

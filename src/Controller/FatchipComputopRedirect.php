@@ -25,10 +25,6 @@ class FatchipComputopRedirect extends FatchipComputopPayments
 
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopSession = Registry::getSession();
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopShopUtils = Registry::getUtils();
-        $this->fatchipComputopLogger = new Logger();
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
     }
 
@@ -78,11 +74,11 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         }
 
         if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX."DirectResponse", $response);
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX."RedirectResponse", $response);
+            Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX."DirectResponse", $response);
+            Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX."RedirectResponse", $response);
         }
 
-        $shopUrl    = $this->fatchipComputopShopConfig->getShopUrl();
+        $shopUrl  = Registry::getConfig()->getShopUrl();
         $stoken   = ($response && $response->getStoken()) ? $response->getStoken() : ($custom ? $custom->getStoken() : '');
         $sid      = ($custom && $custom->getSessionId()) ? $custom->getSessionId() : '';
         $delAddr  = ($custom && $custom->getDelAdress()) ? $custom->getDelAdress() : '';
@@ -124,7 +120,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $sShopUrl = Registry::getConfig()->getShopUrl();
         $stoken = $response->getRefNr();
         if (!is_object($response) || $response->getStatus() === 'FAILED') {
             $queryParams = [

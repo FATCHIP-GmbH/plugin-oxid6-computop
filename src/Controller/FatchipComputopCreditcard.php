@@ -28,6 +28,7 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
@@ -50,13 +51,6 @@ class FatchipComputopCreditcard extends FrontendController
     protected $_blIsOrderStep = true;
 
     protected $fatchipComputopConfig;
-    protected $fatchipComputopSession;
-    protected $fatchipComputopShopConfig;
-    protected $fatchipComputopPaymentId;
-    protected $fatchipComputopPaymentClass;
-    protected $fatchipComputopShopUtils;
-    protected $fatchipComputopLogger;
-    public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
 
     public function init()
@@ -75,33 +69,17 @@ class FatchipComputopCreditcard extends FrontendController
 
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopSession = Registry::getSession();
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopShopUtils = Registry::getUtils();
-        $this->fatchipComputopLogger = new Logger();
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
-    }
-
-    /**
-     * The controller renderer
-     *
-     *
-     * @return string
-     */
-    public function render()
-    {
-        return parent::render();
     }
 
     /**
      * Returns iframe url or redirects directly to it
      *
-     *
      * @return mixed
      */
     public function getIframeUrl()
     {
-        $redirectUrl = $this->fatchipComputopSession->getVariable('FatchipComputopIFrameURL');
+        $redirectUrl = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'RedirectUrl');
         if (!empty($redirectUrl)) {
             return $redirectUrl;
         }

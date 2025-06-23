@@ -28,6 +28,7 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Exception;
+use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
@@ -61,11 +62,12 @@ class Logger extends AbstractLogger
     public function logRequestResponse($requestParams, $paymentName, $requestType, $response)
     {
         if ($paymentName === '' || $paymentName === null) {
-           $paymentName = Registry::getSession()->getVariable('paymentid');
-           if($paymentName !== null) {
-               $paymentName = Constants::getPaymentClassfromId($paymentName);
-           }
-         }
+            $paymentName = Registry::getSession()->getVariable('paymentid');
+            if($paymentName !== null) {
+                $ctPayment = Payment::getInstance()->getComputopPaymentModel($paymentName);
+                $paymentName = $ctPayment->getLibClassName();
+            }
+        }
         $logMessage = new ApiLog();
         if (!empty($response)) {
            // $logMessage->loadByTransId($response->getTransID());
