@@ -68,6 +68,10 @@ class Events
         self::updateFatchipComputopOrderAttributes();
         self::addFatchipComputopPayPalExpressSeoHooks();
 
+        if (self::isConfigConversionNeeded() === true) {
+            self::convertConfig();
+        }
+
         $dbMetaDataHandler = oxNew(DbMetaDataHandler::class);
         $dbMetaDataHandler->updateViews();
     }
@@ -298,5 +302,34 @@ class Events
             return true;
         }
         return false;
+    }
+
+    /**
+     * Determines if config has been converted from old format to new format yet
+     *
+     * @return bool
+     */
+    public static function isConfigConversionNeeded(): bool
+    {
+        $sType = DatabaseProvider::getDb()->getOne("SELECT oxvartype FROM oxconfig WHERE oxmodule = 'module:".FatchipComputopModule::MODULE_ID."' AND oxvarname = 'creditCardTestMode' LIMIT 1");
+        if ($sType === 'str') { // If type is still 'str' then config has not been converted yet
+            return true;
+        }
+        return false;
+    }
+
+    public static function convertConfig()
+    {
+        include __DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."metadata.php";
+        if (isset($aModule) && !empty($aModule['settings'])) {
+            foreach ($aModule['settings'] as $aSetting) {
+                if ($aSetting['type'] == "bool") {
+
+                }
+
+                // Convert oxvartype to correct new type
+                DatabaseProvider::getDb()->Execute("UPDATE oxconfig SET oxvartype = '".$aSetting['type']."' WHERE oxmodule = 'module:".FatchipComputopModule::MODULE_ID."' AND oxvarname = '".$aSetting['name']."'");
+            }
+        }
     }
 }

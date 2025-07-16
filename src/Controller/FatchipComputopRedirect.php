@@ -2,9 +2,9 @@
 
 namespace Fatchip\ComputopPayments\Controller;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Core\Registry;
 
@@ -23,9 +23,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
     {
         parent::__construct();
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService =  new CTPaymentService(Config::getInstance()->getConnectionConfig());
     }
 
     public function render()
@@ -45,7 +43,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         }
         if (is_object($response)) {
             if ($response->getInfoText() === 'fatchip_computop_creditcard') {
-                $ccmode = $this->fatchipComputopConfig['creditCardMode'] ?? '';
+                $ccmode = Config::getInstance()->getConfigParam('creditCardMode') ?? '';
                 if ($ccmode === 'IFRAME') {
                     $this->_sThisTemplate = ($response !== null)
                         ? 'fatchip_computop_iframe_return.tpl'
@@ -73,7 +71,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
             $custom   = $this->fatchipComputopPaymentService->getRequest();
         }
 
-        if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
+        if (Config::getInstance()->getConfigParam('creditCardMode') === 'SILENT') {
             Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX."DirectResponse", $response);
             Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX."RedirectResponse", $response);
         }

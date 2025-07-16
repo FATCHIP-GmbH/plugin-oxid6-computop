@@ -1,0 +1,10 @@
+[{assign var="payment" value=$oView->getPayment()}]
+[{assign var="creditcardMode" value=$oView->getFatchipComputopShopCreditcardMode()}]
+
+[{if $payment->oxpayments__oxid->value == 'fatchip_computop_creditcard' && $creditcardMode == 'SILENT'}]
+    [{include file="fatchip_computop_creditcard_silentmode.tpl"}]
+[{elseif $payment->oxpayments__oxid->value == 'fatchip_computop_amazonpay'}]
+    [{include file="fatchip_computop_amazonpay.tpl"}]
+[{else}]
+    [{$smarty.block.parent}]
+[{/if}]

@@ -18,6 +18,13 @@ abstract class Base extends ServerToServerPayment
     const DEBIT_PAY_TYPE_BANK_TRANSFER = 'BANK_TRANSFER';
 
     /**
+     * Defines where API requests are sent to at the Comutop API
+     *
+     * @var string
+     */
+    protected $apiEndpoint = "ratepay.aspx";
+
+    /**
      * Determines if auth requests adds billing address parameters to the request
      *
      * @var bool
@@ -205,13 +212,13 @@ abstract class Base extends ServerToServerPayment
      * @param  Order|null $order
      * @return array
      */
-    public function getPaymentSpecificParameters(Order $order, $dynValue, $ctOrder = false)
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
         $baseParams = [
             'RPMethod' => $this->rpMethod,
             'DebitPayType' => $this->rpDebitPayType,
             'Email' => $order->oxorder__oxbillemail->value,
-            'Phone' => $this->getTelephoneNumber($order, $dynValue),
+            'Phone' => $this->getTelephoneNumber($dynValue),
             'shoppingBasket' => Api::getInstance()->encodeArray($this->getShoppingBasket($order)),
             'IPAddr' => Registry::getUtilsServer()->getRemoteAddress(),
             'Language' => Registry::getLang()->translateString('FATCHIP_COMPUTOP_LANGUAGE'),

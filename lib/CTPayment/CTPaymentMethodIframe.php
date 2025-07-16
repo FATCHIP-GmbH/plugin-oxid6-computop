@@ -27,9 +27,9 @@
 
 namespace Fatchip\CTPayment;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\CTPayment\CTEnums\CTEnumLanguages;
 use Fatchip\CTPayment\CTOrder;
+use OxidEsales\Eshop\Core\Registry;
 
 /**
  * Class CTPaymentMethodIframe
@@ -192,7 +192,7 @@ abstract class CTPaymentMethodIframe extends CTPaymentMethod
         $this->setOrderDesc($orderDesc);
         $this->setUserData($userData);
         $this->setEtiId($userData);
-        $this->setIPAddr(Config::getRemoteAddress());
+        $this->setIPAddr(Registry::getUtilsServer()->getRemoteAddress());
         if ($order->getShippingAddress()) {
             $this->setSdZip($order->getShippingAddress()->getZip());
         }

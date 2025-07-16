@@ -19,12 +19,19 @@ class PayPal extends RedirectPayment
     protected $libClassName = 'PaypalStandard';
 
     /**
+     * Defines where API requests are sent to at the Comutop API
+     *
+     * @var string
+     */
+    protected $apiEndpoint = "ExternalServices/paypalorders.aspx";
+
+    /**
      * Return parameters specific to this payment type
      *
      * @param  Order|null $order
      * @return array
      */
-    public function getPaymentSpecificParameters(Order $order, $dynValue, $ctOrder = false)
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
         $params = [
             'TxType' => 'Auth',

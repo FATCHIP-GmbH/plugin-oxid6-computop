@@ -17,17 +17,15 @@
                value="[{$dynvalue.fatchip_computop_ratepay_debit_iban}]">
     </div>
 </div>
-[{if $oView->isBicNeeded() }]
-    <div class="form-group">
-        <label class="req control-label col-lg-3">[{oxmultilang ident="FATCHIP_COMPUTOP_BIC"}]:</label>
-        <div class="col-lg-9">
-            <input class="form-control" autocomplete="off" type="text" size="20" maxlength="64" required
-                   placeholder="[{oxmultilang ident="FATCHIP_COMPUTOP_BIC"}]"
-                   name="dynvalue[[{$sPaymentID}]_bic]"
-                   value="[{$dynvalue.fatchip_computop_ratepay_debit_bic}]">
-        </div>
+<div class="form-group">
+    <label class="req control-label col-lg-3">[{oxmultilang ident="FATCHIP_COMPUTOP_BIC"}]:</label>
+    <div class="col-lg-9">
+        <input class="form-control" autocomplete="off" type="text" size="20" maxlength="64" required
+               placeholder="[{oxmultilang ident="FATCHIP_COMPUTOP_BIC"}]"
+               name="dynvalue[[{$sPaymentID}]_bic]"
+               value="[{$dynvalue.fatchip_computop_ratepay_debit_bic}]">
     </div>
-[{/if}]
+</div>
 <div class="form-group">
     <label class="req control-label col-lg-3">[{oxmultilang ident="FATCHIP_COMPUTOP_TELEPHONE"}]:</label>
     <div class="col-lg-9">

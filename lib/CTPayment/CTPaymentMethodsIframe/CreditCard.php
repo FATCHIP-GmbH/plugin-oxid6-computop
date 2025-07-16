@@ -26,6 +26,7 @@
 
 namespace Fatchip\CTPayment\CTPaymentMethodsIframe;
 
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
@@ -241,10 +242,10 @@ class CreditCard extends CTPaymentMethodIframe
         $this->setMsgVer('2.0');
         $this->setUserData(base64_encode($userData));
 
-        if($config['creditCardTestMode']) {
+        // FCRM_TODO Eliminate config usage in lib
+        if(Config::getInstance()->getConfigParam('creditCardTestMode')) {
             $this->setOrderDesc('Test:0000');
-        }
-        else {
+        } else {
             $this->setOrderDesc($orderDesc);
         }
 

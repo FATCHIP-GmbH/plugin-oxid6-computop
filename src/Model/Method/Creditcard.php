@@ -2,6 +2,7 @@
 
 namespace Fatchip\ComputopPayments\Model\Method;
 
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Registry;
@@ -21,11 +22,43 @@ class Creditcard extends RedirectPayment
     protected $libClassName = 'CreditCard';
 
     /**
+     * Defines where API requests are sent to at the Comutop API
+     *
+     * @var string
+     */
+    protected $apiEndpoint = "payssl.aspx"; // endpoint for iframe and payment page mode
+
+    /**
+     * @var bool
+     */
+    protected $addLanguageToUrl = true;
+
+    /**
+     * Determines if auth requests adds address parameters to the request
+     *
+     * @var bool
+     */
+    protected $sendAddressData = true;
+
+    /**
      * @return string
      */
     public function getRequestType()
     {
-        return parent::getRequestType()."-".$this->getComputopConfig()->getCreditCardMode();
+        return parent::getRequestType()."-".Config::getInstance()->getConfigParam('creditCardMode');
+    }
+
+    /**
+     * Returns the API endpoint
+     *
+     * @return string
+     */
+    public function getApiEndpoint()
+    {
+        if (Config::getInstance()->getConfigParam('creditCardMode') == 'SILENT') {
+            $this->apiEndpoint = "paynow.aspx"; // endpoint for silent mode
+        }
+        return parent::getApiEndpoint();
     }
 
     /**
@@ -34,7 +67,7 @@ class Creditcard extends RedirectPayment
      * @param  Order|null $order
      * @return array
      */
-    public function getPaymentSpecificParameters(Order $order, $dynValue, $ctOrder = false)
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
         return [
             'RefNr' => Registry::getSession()->getSessionChallengeToken(),

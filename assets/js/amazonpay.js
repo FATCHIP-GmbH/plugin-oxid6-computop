@@ -22,10 +22,6 @@ const FatchipComputopAmazonPayButtonComponent = {
         }
 
         this.amazonPayButton = amazonPayButton;
-        console.log('payloadJSON: Registering Events',payloadJSON);
-        console.log('payloadJSON as String:', JSON.stringify(payloadJSON));
-
-        console.log('publicKeyId (button):',publicKeyId);
         this.payloadJSON = payloadJSON;
         this.signature = signature;
         this.publicKeyId = publicKeyId;
@@ -35,7 +31,6 @@ const FatchipComputopAmazonPayButtonComponent = {
     },
 
     registerEvents: function () {
-        console.log('FatchipComputopAmazonPayButtonComponent: Registering Events');
         this.amazonPayButton.onClick(() => {
             this.payButtonClickHandler();
         });

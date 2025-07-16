@@ -28,9 +28,9 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\PayPalExpress;
@@ -57,7 +57,6 @@ class FatchipComputopPayPalExpress extends FrontendController
      */
     protected $_sThisTemplate = 'fatchip_computop_paypalexpress.tpl';
 
-    protected $fatchipComputopConfig;
     protected $fatchipComputopPaymentService;
 
     public function init()
@@ -74,9 +73,7 @@ class FatchipComputopPayPalExpress extends FrontendController
     {
         parent::__construct();
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
     }
 
     /**
@@ -590,7 +587,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                 //$oCTOrder->setPayId($oOrder->oxorder__oxpaymentid->value);
                 //$aLog['pay_id'] = $oCTOrder->getPayId();
 
-                $aFrontendRequestParams = $oPaypalExpressPaypment->generateFrontendRequestParams($oCTOrder);
+                $aFrontendRequestParams = $oPaypalExpressPaypment->generateFrontendRequestParams($oCTOrder, Config::getInstance()->getConnectionConfig());
 
                 $aLog['request'] = 'CREATEORDER_ACTION';
                 $aLog['request_details'] = json_encode($aFrontendRequestParams);

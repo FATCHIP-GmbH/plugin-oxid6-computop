@@ -20,17 +20,47 @@ class CTPaymentMethods
                 'className' => 'CreditCard',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],
-           /* [
-                'name' => 'fatchip_computop_twint',
-                'shortname' => 'Twint',
-                'description' => 'Computop Twint',
+            [
+                'name' => 'fatchip_computop_ideal',
+                'shortname' => 'iDEAL',
+                'description' => 'Computop iDEAL',
                 'action' => 'FatchipCTIdeal',
                 'template' => 'fatchip_computopideal.tpl',
                 'additionalDescription' => '',
-                'className' => 'Twint',
+                'className' => 'Ideal',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
-            ],*/
+            ],
+            /* [
+                 'name' => 'fatchip_computop_twint',
+                 'shortname' => 'Twint',
+                 'description' => 'Computop Twint',
+                 'action' => 'FatchipCTIdeal',
+                 'template' => 'fatchip_computopideal.tpl',
+                 'additionalDescription' => '',
+                 'className' => 'Twint',
+                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
+             ],*/
 
+            [
+                'name' => 'fatchip_computop_klarna',
+                'shortname' => 'Klarna',
+                'description' => 'Computop Klarna',
+                'action' => 'FatchipCTKlarnaPayments',
+                'template' => 'fatchip_computopklarna_direct_debit.tpl',
+                'additionalDescription' => '',
+                'className' => 'KlarnaPayments',
+                //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
+            ],
+            [
+                'name' => 'fatchip_computop_lastschrift',
+                'shortname' => 'Lastschrift',
+                'description' => 'Computop Lastschrift',
+                'action' => 'FatchipCTLastschrift',
+                'template' => 'fatchip_computoplastschrift.tpl',
+                'additionalDescription' => '',
+                'className' => 'Lastschrift',
+                //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
+            ],
             [
                 'name' => 'fatchip_computop_paypal_standard',
                 'shortname' => 'PayPal',
@@ -52,6 +82,16 @@ class CTPaymentMethods
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],
 
+            [
+                'name' => 'fatchip_computop_amazonpay',
+                'shortname' => 'AmazonPay',
+                'description' => 'Computop AmazonPay',
+                'action' => 'FatchipCTAmazon',
+                'template' => '',
+                'additionalDescription' => '',
+                'className' => 'AmazonPay',
+                //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
+            ],
             [
                 'name' => 'fatchip_computop_ratepay_debit',
                 'shortname' => 'Ratepay Lastschrift',

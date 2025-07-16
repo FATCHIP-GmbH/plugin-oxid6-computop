@@ -21,6 +21,13 @@ class Easycredit extends ServerToServerPayment
     protected $libClassName = 'EasyCredit';
 
     /**
+     * Defines where API requests are sent to at the Comutop API
+     *
+     * @var string
+     */
+    protected $apiEndpoint = "easyCredit.aspx";
+
+    /**
      * Determines if auth requests adds billing address parameters to the request
      *
      * @var bool
@@ -40,7 +47,7 @@ class Easycredit extends ServerToServerPayment
      * @param  Order|null $order
      * @return array
      */
-    public function getPaymentSpecificParameters(Order $order, $dynValue, $ctOrder = false)
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
         $params = [];
 

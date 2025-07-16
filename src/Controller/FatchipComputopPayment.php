@@ -27,7 +27,6 @@
 
 namespace Fatchip\ComputopPayments\Controller;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
 use Fatchip\ComputopPayments\Service\ModuleSettings;
@@ -46,11 +45,6 @@ use Symfony\Component\String\UnicodeString;
  */
 class FatchipComputopPayment extends FatchipComputopPayment_parent
 {
-    /**
-     * @var array
-     */
-    protected $fatchipComputopConfig;
-
     protected array $frontendHiddenPayments = [
         'fatchip_computop_paypal_express'
     ];
@@ -98,13 +92,6 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
 
     // -----------------> START CUSTOM MODULE FUNCTIONS <-----------------
     // @TODO: They ALL need a module function name prefix to not cross paths with other modules
-
-    public function getFatchipComputopConfig()
-    {
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        return $this->fatchipComputopConfig;
-    }
 
     /**
      * Returns an array with range of given numbers as pad formatted string
@@ -176,17 +163,6 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         }
 
         if (empty($oUser->getFieldData('oxbirthdate')) || $oUser->getFieldData('oxbirthdate') === '0000-00-00') {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Template getter which checks if bic input has to be rendered
-     */
-    public function isBicNeeded(): bool
-    {
-        if ($this->fatchipComputopConfig['ratepayDirectDebitRequestBic'] === 'An') {
             return true;
         }
         return false;

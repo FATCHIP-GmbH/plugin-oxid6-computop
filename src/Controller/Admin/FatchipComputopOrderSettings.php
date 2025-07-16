@@ -3,9 +3,9 @@
 namespace Fatchip\ComputopPayments\Controller\Admin;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -265,11 +265,10 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     public function refundOrderArticles($amount = false)
     {
         try {
-            $configCT = new Config();
             $config = Registry::getConfig();
-            $paymentService = new CTPaymentService($configCT->toArray());
+            $paymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
             $oOrder = $this->getOrder();
-            $ctOrder = $this->createCTOrder($oOrder, $config);
+            $ctOrder = $this->createCTOrder($oOrder);
             if ($amount === false) {
                 $amount = $this->getAmountForComputop( $oOrder->getTotalOrderSum());
             }
@@ -277,7 +276,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             $transId = $oOrder->getFieldData('fatchip_computop_transid');
             $currency = $oOrder->getOrderCurrency()->name;
             $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' ' . $config->getActiveShop()->oxshops__oxversion->value;
-            if($configCT->getCreditCardTestMode()) {
+            if(Config::getInstance()->getConfigParam('creditCardTestMode')) {
                 $ctOrder->setOrderDesc('Test:0000');
             } else {
                 $ctOrder->setOrderDesc($orderDesc);
@@ -287,7 +286,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
 
             $ctPayment = Payment::getInstance()->getComputopPaymentModel($oOrder->getFieldData('oxpaymenttype'));
             if($ctPayment->isIframeLibMethod() === true) {
-                $payment = $paymentService->getIframePaymentClass($ctPayment->getLibClassName(), $configCT->toArray(), $ctOrder);
+                $payment = $paymentService->getIframePaymentClass($ctPayment->getLibClassName(), Config::getInstance()->getConnectionConfig(), $ctOrder);
             } else {
                 $payment = $paymentService->getPaymentClass($ctPayment->getLibClassName());
             }
@@ -320,7 +319,6 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $ctOrder = new CTOrder();
         $config = Registry::getConfig();
         $oUser = $oOrder->getUser();
-        $configCT = oxNew(Config::class);
 
         $ctOrder->setAmount((int)(round($oOrder->getFieldData('oxtotalordersum') * 100)));
         $ctOrder->setCurrency($oOrder->getFieldData('oxcurrency'));
@@ -336,7 +334,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $ctOrder->setEmail($oUser->oxuser__oxusername->value);
         $ctOrder->setCustomerID($oUser->oxuser__oxcustnr->value);
         $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' ' . $config->getActiveShop()->oxshops__oxversion->value;
-        if($configCT->getCreditCardTestMode()) {
+        if(Config::getInstance()->getConfigParam('creditCardTestMode')) {
             $ctOrder->setOrderDesc('Test:0000');
         } else {
             $ctOrder->setOrderDesc($orderDesc);
