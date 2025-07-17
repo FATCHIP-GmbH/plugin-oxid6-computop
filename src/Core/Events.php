@@ -268,6 +268,21 @@ class Events
         $fromDb = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
     }
 
+    /**
+     * @return bool
+     */
+    protected static function canDeactivateModule()
+    {
+        $oRequest = Registry::getRequest();
+        if ($oRequest->getRequestParameter('cl') == 'module_config' && $oRequest->getRequestParameter('fnc') == 'save') {
+            return false; // Dont deactivate payment methods when changing config in admin ( this triggers module deactivation )
+        }
+
+        if(Registry::getConfig()->isAdmin() === false) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Execute action on deactivate event
@@ -276,8 +291,10 @@ class Events
      */
     public static function onDeactivate()
     {
-        foreach (CTPaymentMethods::paymentMethods as $paymentMethod) {
-            self::deactivatePaymentMethod($paymentMethod['name']);
+        if(self::canDeactivateModule() === true) {
+            foreach (CTPaymentMethods::paymentMethods as $paymentMethod) {
+                self::deactivatePaymentMethod($paymentMethod['name']);
+            }
         }
     }
 

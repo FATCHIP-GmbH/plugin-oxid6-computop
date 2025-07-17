@@ -28,6 +28,7 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
 use Fatchip\ComputopPayments\Service\ModuleSettings;
 use OxidEsales\Eshop\Application\Controller\PaymentController;
@@ -151,7 +152,6 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         return $sReturn;
     }
 
-
     /**
      * Template getter which checks if requesting birthdate is needed
      */
@@ -163,6 +163,19 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         }
 
         if (empty($oUser->getFieldData('oxbirthdate')) || $oUser->getFieldData('oxbirthdate') === '0000-00-00') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Show bic input in payment list
+     *
+     * @return bool
+     */
+    public function showBICInput(): bool
+    {
+        if ((bool)Config::getInstance()->getConfigParam('ratepayDirectDebitRequestBic') === true) {
             return true;
         }
         return false;
