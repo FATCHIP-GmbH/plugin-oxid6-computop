@@ -1,3 +1,7 @@
+### 1.1.0
+* Added payment methods Direct Debit, Klarna, Ideal and  AmazonPay
+* Refactoring of configuration to oxid standard
+
 ### 1.0.2
 * Added payment methods Ratepay direct debit and Ratepay invoice
 * Save cc data from notify call in order db table
