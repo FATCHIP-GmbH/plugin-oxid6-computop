@@ -39,6 +39,8 @@ use Fatchip\CTPayment\CTPaymentMethods;
 
 class Events
 {
+    const CT_CONFIG_CONVERTED = "ct_config_converted";
+
     public static $sQueryAlterOxorderTransid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_transid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
     public static $sQueryAlterOxorderPayid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_payid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '0' NOT NULL;";
     public static $sQueryAlterOxorderXid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_xid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
@@ -321,6 +323,18 @@ class Events
         return false;
     }
 
+    protected static function fetchMerchantIdFromApiLog()
+    {
+        $sResponse = DatabaseProvider::getDb()->getOne("SELECT response_details FROM `fatchip_computop_api_log` WHERE response_details LIKE '%\"MID\":%' ORDER BY creation_date DESC LIMIT 1;");
+        if (!empty($sResponse)) {
+            $aResponse = json_decode($sResponse, true);
+            if (!empty($aResponse['MID'])) {
+                return $aResponse['MID'];
+            }
+        }
+        return null;
+    }
+
     /**
      * Determines if config has been converted from old format to new format yet
      *
@@ -328,8 +342,8 @@ class Events
      */
     public static function isConfigConversionNeeded(): bool
     {
-        $sType = DatabaseProvider::getDb()->getOne("SELECT oxvartype FROM oxconfig WHERE oxmodule = 'module:".FatchipComputopModule::MODULE_ID."' AND oxvarname = 'creditCardTestMode' LIMIT 1");
-        if ($sType === 'str') { // If type is still 'str' then config has not been converted yet
+        $isConfigConverted = DatabaseProvider::getDb()->getOne("SELECT oxid FROM `oxconfig` WHERE oxvarname = '".self::CT_CONFIG_CONVERTED."' LIMIT 1;");
+        if (empty($isConfigConverted)) {
             return true;
         }
         return false;
@@ -340,13 +354,29 @@ class Events
         include __DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."metadata.php";
         if (isset($aModule) && !empty($aModule['settings'])) {
             foreach ($aModule['settings'] as $aSetting) {
+                $value = \Fatchip\ComputopPayments\Helper\Config::getInstance()->getConfigParam($aSetting['name']);
                 if ($aSetting['type'] == "bool") {
-
+                    if (strtolower($value) == 'an') {
+                        \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam($aSetting['name'], 1);
+                    }
+                    if (strtolower($value) == 'aus') {
+                        \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam($aSetting['name'], 0);
+                    }
                 }
 
                 // Convert oxvartype to correct new type
                 DatabaseProvider::getDb()->Execute("UPDATE oxconfig SET oxvartype = '".$aSetting['type']."' WHERE oxmodule = 'module:".FatchipComputopModule::MODULE_ID."' AND oxvarname = '".$aSetting['name']."'");
             }
+
+            $merchantId = \Fatchip\ComputopPayments\Helper\Config::getInstance()->getConfigParam('merchantID');
+            if (empty($merchantId)) {
+                $merchantId = self::fetchMerchantIdFromApiLog();
+                if (!empty($merchantId)) {
+                    \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam('merchantID', $merchantId);
+                    \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam('encryption', "aes"); // set to aes, since only aes was working in older versions
+                }
+            }
         }
+        DatabaseProvider::getDb()->Execute("INSERT INTO oxconfig (oxid, oxshopid, oxvarname, oxvartype) VALUES ('".hash("md5", self::CT_CONFIG_CONVERTED.rand(0, 9999))."', 1, '".self::CT_CONFIG_CONVERTED."', 'str')");
     }
 }
