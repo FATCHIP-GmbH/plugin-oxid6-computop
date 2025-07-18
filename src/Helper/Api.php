@@ -2,10 +2,18 @@
 
 namespace Fatchip\ComputopPayments\Helper;
 
+use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\CTPayment\CTResponse;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ShopConfigurationDaoBridgeInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Exception\ModuleConfigurationNotFoundException;
+use OxidEsales\Eshop\Core\Registry;
+
 class Api
 {
     /**
-     * @var Payment
+     * @var Api
      */
     protected static $instance = null;
 
@@ -48,6 +56,50 @@ class Api
     }
 
     /**
+     * Generates a request id
+     * Doc says: To avoid double payments or actions (e.g. by ETM), enter an alphanumeric value which identifies your transaction and may be assigned only once.
+     * If the transaction or action is submitted again with the same ReqID, Computop Paygate will not carry out the payment or new action,
+     * but will just return the status of the original transaction or action.
+     *
+     * @return string
+     */
+    public function getRequestId()
+    {
+        mt_srand(intval(microtime(true) * 1000000));
+        $reqID = (string)mt_rand();
+        $reqID .= date('yzGis');
+        return $reqID;
+    }
+
+    /**
+     * Get identification string for requests
+     *
+     * @return string
+     */
+    public function getIdentString()
+    {
+        $moduleVersion = '';
+
+        try {
+            $shopConfig =  ContainerFactory::getInstance()->getContainer()->get(ShopConfigurationDaoBridgeInterface::class)->get();
+            try {
+                $moduleConfig = $shopConfig->getModuleConfiguration(Constants::MODULE_ID);
+                $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
+            } catch (ModuleConfigurationNotFoundException $e) {
+                Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
+            }
+        } catch (Exception $e) {
+            Registry::getLogger()->error('ModuleConfig fetch error: ' . $e->getMessage());
+        }
+
+        $activeShop = Registry::getConfig()->getActiveShop();
+        $shopName = $activeShop->oxshops__oxname->value;
+        $shopVersion = $activeShop->oxshops__oxversion->value;
+
+        return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
+    }
+
+    /**
      * Formats amount for API
      * Docs say: Amount in the smallest currency unit (e.g. EUR Cent)
      *
@@ -73,5 +125,15 @@ class Api
     public function encodeArray($array)
     {
         return base64_encode(json_encode($array));
+    }
+
+    public function addLogEntry($request, $response, $paymentName, $requestType)
+    {
+        if (!$response instanceof CTResponse) {
+            $response = new CTResponse($response);
+        }
+
+        $logger = new Logger();
+        $logger->logRequestResponse($request, $paymentName, $requestType, $response);
     }
 }

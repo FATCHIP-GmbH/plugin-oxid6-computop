@@ -27,9 +27,9 @@
 namespace Fatchip\ComputopPayments\Model;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\Method\AmazonPay;
 use Fatchip\ComputopPayments\Model\Method\Creditcard;
@@ -75,8 +75,6 @@ use function date;
  */
 class Order extends Order_parent
 {
-    protected $fatchipComputopConfig;
-
     protected $fatchipComputopLogger;
 
     protected $fatchipComputopPaymentService;
@@ -108,10 +106,8 @@ class Order extends Order_parent
     {
         parent::__construct();
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
         $this->fatchipComputopLogger = new Logger();
-        $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
     }
 
     /**
@@ -325,7 +321,7 @@ class Order extends Order_parent
 
         $ctPayment = $this->computopGetPaymentModel();
         if($ctPayment->isIframeLibMethod() === true) {
-            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($ctPayment->getLibClassName(), $this->fatchipComputopConfig, $ctOrder);
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($ctPayment->getLibClassName(), Config::getInstance()->getConnectionConfig(), $ctOrder);
         } else {
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($ctPayment->getLibClassName());
         }
@@ -388,6 +384,7 @@ class Order extends Order_parent
 
     public function isAutoCaptureEnabled()
     {
+        //FCRM_REFACTOR put into payment model
         $autoCaptureConfigKey = false;
         $autoCaptureValue = null;
 
@@ -414,7 +411,7 @@ class Order extends Order_parent
         }
 
         if ($autoCaptureConfigKey !== false) {
-            $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
+            $autoCaptureValue = Config::getInstance()->getConfigParam($autoCaptureConfigKey);
         }
         return ($autoCaptureValue === 'AUTO');
     }
@@ -446,7 +443,7 @@ class Order extends Order_parent
 
     private function logDebug(string $message, array $data = [], $oUser = null)  // Added $oUser parameter
     {
-        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
+        if (Config::getInstance()->getConfigParam('debuglog') === 'extended') {
             if ($oUser === null) {
                 $oUser = $this->getUser();
             }
@@ -497,8 +494,8 @@ class Order extends Order_parent
         $orderNumber = $this->getFieldData('oxordernr');
         $whitelist = '/[^a-zA-Z0-9]/';
         // make sure only 4 chars are used for pre and suffix
-        $orderPrefix = preg_replace($whitelist, '', substr($this->fatchipComputopConfig['prefixOrdernumber'], 0, 4));
-        $orderSuffix = preg_replace($whitelist, '', substr($this->fatchipComputopConfig['suffixOrdernumber'], 0, 4));
+        $orderPrefix = preg_replace($whitelist, '', substr(Config::getInstance()->getConfigParam('prefixOrdernumber'), 0, 4));
+        $orderSuffix = preg_replace($whitelist, '', substr(Config::getInstance()->getConfigParam('suffixOrdernumber'), 0, 4));
         $orderNumberLength = 11 - (strlen($orderPrefix) + strlen($orderSuffix));
         $orderNumberCut = substr($orderNumber, 0, $orderNumberLength);
         $newOrdernumber = $orderPrefix.$orderNumberCut.$orderSuffix;
@@ -537,7 +534,7 @@ class Order extends Order_parent
 
         $ctPayment = $this->computopGetPaymentModel();
         if ($ctPayment->isIframeLibMethod() === true) {
-            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($ctPayment->getLibClassName(), $this->fatchipComputopConfig, $ctOrder);
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($ctPayment->getLibClassName(), Config::getInstance()->getConnectionConfig(), $ctOrder);
         } else {
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($ctPayment->getLibClassName());
         }
@@ -676,7 +673,7 @@ class Order extends Order_parent
         $ctOrder = $this->createCTOrder();
         $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
             $ctPayment->getLibClassName(),
-            $this->fatchipComputopConfig,
+            Config::getInstance()->getConnectionConfig(),
             $ctOrder,
             $urlParams['UrlSuccess'],
             $urlParams['UrlFailure'],
@@ -727,7 +724,7 @@ class Order extends Order_parent
 
         $dynValue = Registry::getSession()->getVariable('dynvalue');
         $payment = $this->getPaymentClassForGatewayAction();
-        $UrlParams = CTPaymentParams::getUrlParams($ctPayment->getPaymentId(),$this->fatchipComputopConfig);
+        $UrlParams = CTPaymentParams::getUrlParams($ctPayment->getPaymentId());
 
         $ctOrder = $this->createCTOrder();
 
@@ -748,8 +745,9 @@ class Order extends Order_parent
         $response = $payment->getHTTPGetURL($params);
 
         if ($ctPayment instanceof Creditcard) {
-            if (in_array($this->fatchipComputopConfig['creditCardMode'], ['IFRAME', 'PAYMENTPAGE'])) {
-                $template = $this->fatchipComputopConfig['creditCardTemplate'] ?? 'ct_responsive';
+            if (in_array(Config::getInstance()->getConfigParam('creditCardMode'), ['IFRAME', 'PAYMENTPAGE'])) {
+                $template = Config::getInstance()->getConfigParam('creditCardTemplate') ?? 'ct_responsive';
+
                 $response .= '&template='.$template;
             }
 
@@ -757,7 +755,7 @@ class Order extends Order_parent
 
             Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
 
-            if ($ctPayment->getComputopConfig()->getCreditCardMode() === 'IFRAME') {
+            if (Config::getInstance()->getConfigParam('creditCardMode') === 'IFRAME') {
                 $response = 'index.php?cl='.$ctPayment->getPaymentId().'&stoken='.Registry::getSession()->getSessionChallengeToken();
             }
 
@@ -788,7 +786,6 @@ class Order extends Order_parent
     {
         $ctOrder = new CTOrder();
         $oUser = $this->getUser();
-        $config = oxNew(Config::class);
         $ctOrder->setAmount((int)(round($this->getFieldData('oxtotalordersum') * 100)));
         $ctOrder->setCurrency($this->getFieldData('oxcurrency'));
         // try catch in case Address Splitter returns exceptions
@@ -810,7 +807,7 @@ class Order extends Order_parent
 
         // Mandatory for paypalStandard
         $orderDesc = $shop->oxshops__oxname->value.' '.$shop->oxshops__oxversion->value;
-        if($config->getCreditCardTestMode()) {
+        if((bool)Config::getInstance()->getConfigParam('creditCardTestMode') === true) {
             $ctOrder->setOrderDesc('Test:0000');
         } else {
             $ctOrder->setOrderDesc($orderDesc);
@@ -962,7 +959,7 @@ class Order extends Order_parent
         $ctOrder = $this->createCTOrder();
         $ctPayment = $this->computopGetPaymentModel();
 
-        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
+        if (Config::getInstance()->getConfigParam('debuglog') === 'extended') {
             $order = var_export($ctOrder, true);
             $this->fatchipComputopLogger->log(
                 'DEBUG',
@@ -978,10 +975,10 @@ class Order extends Order_parent
 
         $shop = Registry::getConfig()->getActiveShop();
 
-        $urlParams =  CTPaymentParams::getUrlParams($ctPayment->getPaymentId(), $this->fatchipComputopConfig);
+        $urlParams =  CTPaymentParams::getUrlParams($ctPayment->getPaymentId());
         $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
             $ctPayment->getLibClassName(),
-            $this->fatchipComputopConfig,
+            Config::getInstance()->getConnectionConfig(),
             $ctOrder,
             $urlParams['UrlSuccess'],
             $urlParams['UrlFailure'],
@@ -1027,13 +1024,5 @@ class Order extends Order_parent
         }else{
             return $this->load($aResult[0]['OXID']);
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function ctGetComputopConfig()
-    {
-        return $this->fatchipComputopConfig;
     }
 }

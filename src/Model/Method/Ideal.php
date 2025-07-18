@@ -2,6 +2,7 @@
 
 namespace Fatchip\ComputopPayments\Model\Method;
 
+use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Application\Model\Order;
 
 class Ideal extends RedirectPayment
@@ -19,15 +20,21 @@ class Ideal extends RedirectPayment
     protected $libClassName = 'Ideal';
 
     /**
+     * Defines where API requests are sent to at the Comutop API
+     *
+     * @var string
+     */
+    protected $apiEndpoint = "ideal.aspx";
+
+    /**
      * Return parameters specific to this payment type
      *
      * @param  Order|null $order
      * @return array
      */
-    public function getPaymentSpecificParameters(Order $order, $dynValue, $ctOrder = false)
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
-        $computopConfig = $order->ctGetComputopConfig();
-        if ($computopConfig['idealDirektOderUeberSofort'] === 'PPRO') {
+        if (Config::getInstance()->getConfigParam('idealDirektOderUeberSofort') === 'PPRO') {
             return [];
         }
         return [];

@@ -32,6 +32,7 @@ $aLang = [
     'FATCHIP_COMPUTOPE_VOUCHER' => 'Gutschein',
     'FATCHIP_COMPUTOP_DISCOUNT' => 'Rabatt',
 
+    'FATCHIP_COMPUTOP_BANKNAME' => 'Bankname',
     'FATCHIP_COMPUTOP_BANK_ACCOUNT_HOLDER' => 'Kontoinhaber',
     'FATCHIP_COMPUTOP_IBAN' => 'IBAN',
     'FATCHIP_COMPUTOP_BIC' => 'BIC',

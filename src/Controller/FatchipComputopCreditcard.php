@@ -27,9 +27,9 @@
 
 namespace Fatchip\ComputopPayments\Controller;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Core\Registry;
@@ -50,7 +50,6 @@ class FatchipComputopCreditcard extends FrontendController
      */
     protected $_blIsOrderStep = true;
 
-    protected $fatchipComputopConfig;
     protected $fatchipComputopPaymentService;
 
     public function init()
@@ -67,9 +66,7 @@ class FatchipComputopCreditcard extends FrontendController
     {
         parent::__construct();
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService =  new CTPaymentService(Config::getInstance()->getConnectionConfig());
     }
 
     /**

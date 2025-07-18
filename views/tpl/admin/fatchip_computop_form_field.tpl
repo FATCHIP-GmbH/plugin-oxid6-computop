@@ -1,8 +1,8 @@
 [{if $value.name == 'creditCardMode'}]
     [{assign var="currentBlock" value="creditcard"}]
-    [{elseif $value.name == 'creditCardTemplate'}]
+[{elseif $value.name == 'creditCardTemplate'}]
     [{assign var="currentBlock" value="general"}]
-    [{/if}]
+[{/if}]
 
 <div id="[{$value.name }]_block" class="form-group row mb-3 [{if $currentBlock == 'creditcard'}]creditcard-block[{else}]general-block[{/if}]">
     <div class="col-md-4">

@@ -3,6 +3,10 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Exception;
+use Fatchip\ComputopPayments\Helper\Config;
+use Fatchip\ComputopPayments\Helper\Payment;
+use Fatchip\ComputopPayments\Model\Api\Encryption\AES;
+use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
 use Fatchip\CTPayment\CTPaymentMethods;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Core\Registry;
@@ -15,8 +19,6 @@ use OxidEsales\Eshop\Core\Registry;
 class ViewConfig extends ViewConfig_parent
 {
     private $b = [];
-
-    protected $fatchipComputopConfig;
 
     protected $fatchipComputopPaymentService;
 
@@ -33,23 +35,13 @@ class ViewConfig extends ViewConfig_parent
     {
         parent::__construct();
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
     }
 
     // -----------------> END OXID CORE MODULE EXTENSIONS <-----------------
 
     // -----------------> START CUSTOM MODULE FUNCTIONS <-----------------
     // @TODO: They ALL need a module function name prefix to not cross paths with other module
-
-    /**
-     * @return Config
-     */
-    public function getFatchipComputopConfig(): array
-    {
-        return $this->fatchipComputopConfig;
-    }
 
     /**
      * @return bool
@@ -77,16 +69,6 @@ class ViewConfig extends ViewConfig_parent
     public function isPaymentCheckoutStep(): bool
     {
         return $this->getTopActionClassName() === 'payment';
-    }
-
-    /**
-     * Get webhook controller url
-     *
-     * @return string
-     */
-    public function getCancelAmazonPaymentUrl(): string
-    {
-        return $this->getSelfLink() . 'cl=fatchip_computop_amazonpay&fnc=cancelFatchipComputopAmazonPayment';
     }
 
     /**
@@ -153,9 +135,9 @@ class ViewConfig extends ViewConfig_parent
 
     public function getPayPalExpressConfig(): array
     {
-        /** @var CTPaymentMethods\PaypalExpress $oPaypalExpressPaypment */
-        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
-        return $oPaypalExpressPaypment->getPayPalExpressConfig();
+        /** @var PayPalExpress $paymentModel */
+        $paymentModel = Payment::getInstance()->getComputopPaymentModel(PayPalExpress::ID);
+        return $paymentModel->getPayPalExpressConfig();
     }
 
     public function isPaypalActive(): bool

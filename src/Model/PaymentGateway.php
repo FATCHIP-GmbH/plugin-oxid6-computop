@@ -26,7 +26,7 @@
 
 namespace Fatchip\ComputopPayments\Model;
 
-use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\Method\AmazonPay;
 use Fatchip\ComputopPayments\Model\Method\DirectDebit;
@@ -102,9 +102,7 @@ class PaymentGateway extends PaymentGateway_parent
     protected function fcctIsSilentCCRequest()
     {
         $silentCCRequest = Registry::getSession()->getVariable('FatchipComputopDirectRequest');
-        $config = new Config();
-        $configArray =  $config->toArray();
-        if ($configArray['creditCardMode'] === 'SILENT' && $silentCCRequest) {
+        if (Config::getInstance()->getConfigParam('creditCardMode') === 'SILENT' && $silentCCRequest) {
             return true;
         }
         return false;

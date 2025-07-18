@@ -127,7 +127,8 @@ class CTAPITestService extends Encryption
 
         $this->checkOpenSSLSupport();
 
-        $data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        #$data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($request, $len);
 
         if (!$data) {
             throw new Exception('Failed Encrypting Data. ');
@@ -233,8 +234,9 @@ class CTAPITestService extends Encryption
 
         $respArray = [];
         parse_str($resp, $respArray);
-        $decryptedRequest = $this->ctDecrypt($respArray['Data'], $respArray['Len'], $this->blowfishPassword);
-        $decryptedArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        #$decryptedRequest = $this->ctDecrypt($respArray['Data'], $respArray['Len'], $this->blowfishPassword);
+        #$decryptedArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        $decryptedArray = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->decrypt($respArray['Data'], $respArray['Len']);
         $stringissuerList = $decryptedArray['IdealIssuerList'];
         $issuerList = explode('|', $stringissuerList);
         $issuers = [];
@@ -311,7 +313,8 @@ class CTAPITestService extends Encryption
         $request = join('&', $requestParams);
         $len = mb_strlen($request);  // Length of the plain text string
 
-        $data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        #$data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($request, $len);
 
         if (!$data) {
             throw new Exception('Failed Encrypting Data. ');

@@ -19,12 +19,24 @@ class DirectDebit extends ServerToServerPayment
     protected $libClassName = 'LastschriftDirekt';
 
     /**
+     * Defines where API requests are sent to at the Comutop API
+     *
+     * @var string
+     */
+    protected $apiEndpoint = "edddirect.aspx";
+
+    /**
+     * @var string|false
+     */
+    protected $customFrontendTemplate = 'fatchip_computop_directdebit.tpl';
+
+    /**
      * Return parameters specific to this payment type
      *
      * @param  Order|null $order
      * @return array
      */
-    public function getPaymentSpecificParameters(Order $order, $dynValue, $ctOrder = false)
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
         return [
             'AccBank' => $dynValue['fatchip_computop_lastschrift_bankname'],

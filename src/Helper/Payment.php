@@ -32,11 +32,11 @@ class Payment
         PayPalExpress::ID   => array('title' => 'PayPalExpress',        'model' => \Fatchip\ComputopPayments\Model\Method\PayPalExpress::class),
         RPDirectDebit::ID   => array('title' => 'Ratepay Lastschrift',  'model' => \Fatchip\ComputopPayments\Model\Method\Ratepay\DirectDebit::class),
         Invoice::ID         => array('title' => 'Ratepay Rechnung',     'model' => \Fatchip\ComputopPayments\Model\Method\Ratepay\Invoice::class),
-        #DirectDebit::ID     => array('title' => 'Lastschrift',          'model' => \Fatchip\ComputopPayments\Model\Method\DirectDebit::class),
-        #Ideal::ID           => array('title' => 'iDEAL',                'model' => \Fatchip\ComputopPayments\Model\Method\Ideal::class),
-        #Klarna::ID          => array('title' => 'Klarna',               'model' => \Fatchip\ComputopPayments\Model\Method\Klarna::class),
+        DirectDebit::ID     => array('title' => 'Lastschrift',          'model' => \Fatchip\ComputopPayments\Model\Method\DirectDebit::class),
+        Ideal::ID           => array('title' => 'iDEAL',                'model' => \Fatchip\ComputopPayments\Model\Method\Ideal::class),
+        Klarna::ID          => array('title' => 'Klarna',               'model' => \Fatchip\ComputopPayments\Model\Method\Klarna::class),
         #Easycredit::ID      => array('title' => 'Easycredit',           'model' => \Fatchip\ComputopPayments\Model\Method\Easycredit::class),
-        #AmazonPay::ID       => array('title' => 'AmazonPay',            'model' => \Fatchip\ComputopPayments\Model\Method\AmazonPay::class),
+        AmazonPay::ID       => array('title' => 'AmazonPay',            'model' => \Fatchip\ComputopPayments\Model\Method\AmazonPay::class),
     );
 
     /**
@@ -95,5 +95,28 @@ class Payment
         }
 
         return oxNew($this->paymentMethods[$paymentId]['model']);
+    }
+
+    /**
+     * Generates random transaction id for TransID parameter
+     * Taken from library-computop generateTransID() method
+     *
+     * @param  int $digitCount
+     * @return string
+     */
+    public function getTransactionId($digitCount = 12)
+    {
+        mt_srand(intval(microtime(true) * 1000000));
+
+        $transID = (string)mt_rand();
+        // y: 2 digits for year
+        // m: 2 digits for month
+        // d: 2 digits for day of month
+        // H: 2 digits for hour
+        // i: 2 digits for minute
+        // s: 2 digits for second
+        $transID .= date('ymdHis');
+        // $transID = md5($transID);
+        return substr($transID, 0, $digitCount);
     }
 }

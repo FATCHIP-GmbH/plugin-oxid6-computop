@@ -27,8 +27,8 @@
 
 namespace Fatchip\ComputopPayments\Controller;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
 use Fatchip\ComputopPayments\Service\ModuleSettings;
 use OxidEsales\Eshop\Application\Controller\PaymentController;
@@ -46,11 +46,6 @@ use Symfony\Component\String\UnicodeString;
  */
 class FatchipComputopPayment extends FatchipComputopPayment_parent
 {
-    /**
-     * @var array
-     */
-    protected $fatchipComputopConfig;
-
     protected array $frontendHiddenPayments = [
         'fatchip_computop_paypal_express'
     ];
@@ -98,13 +93,6 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
 
     // -----------------> START CUSTOM MODULE FUNCTIONS <-----------------
     // @TODO: They ALL need a module function name prefix to not cross paths with other modules
-
-    public function getFatchipComputopConfig()
-    {
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        return $this->fatchipComputopConfig;
-    }
 
     /**
      * Returns an array with range of given numbers as pad formatted string
@@ -164,7 +152,6 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         return $sReturn;
     }
 
-
     /**
      * Template getter which checks if requesting birthdate is needed
      */
@@ -182,11 +169,13 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
     }
 
     /**
-     * Template getter which checks if bic input has to be rendered
+     * Show bic input in payment list
+     *
+     * @return bool
      */
-    public function isBicNeeded(): bool
+    public function showBICInput(): bool
     {
-        if ($this->fatchipComputopConfig['ratepayDirectDebitRequestBic'] === 'An') {
+        if ((bool)Config::getInstance()->getConfigParam('ratepayDirectDebitRequestBic') === true) {
             return true;
         }
         return false;

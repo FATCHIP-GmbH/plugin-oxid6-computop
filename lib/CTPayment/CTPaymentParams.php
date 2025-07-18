@@ -4,6 +4,7 @@ namespace Fatchip\CTPayment;
 
 use Exception;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ShopConfigurationDaoBridgeInterface;
@@ -52,7 +53,7 @@ class CTPaymentParams
         'fatchip_computop_easycredit',
     ];
 
-    public static function getUrlParams($paymentId = false, $config = false)
+    public static function getUrlParams($paymentId = false)
     {
         $shopUrl = rtrim(Registry::getConfig()->getShopUrl(), '/') . '/';
         $sessionId = Registry::getSession()->getId();
@@ -69,7 +70,7 @@ class CTPaymentParams
             'UrlNotify'  => self::buildUrl($shopUrl, Constants::GENERAL_PREFIX . 'notify', $sessionId),
         ];
 
-        if ($config['creditCardMode'] === 'PAYMENTPAGE') { // don't send urlcancel/back in IFRAME mode, since iframe breakout does not work currently and user can use shop navigation to leave iframe
+        if (Config::getInstance()->getConfigParam('creditCardMode') === 'PAYMENTPAGE') { // don't send urlcancel/back in IFRAME mode, since iframe breakout does not work currently and user can use shop navigation to leave iframe
             self::$aURLBackWhitelist[] = 'fatchip_computop_creditcard';
         }
 
@@ -133,7 +134,6 @@ class CTPaymentParams
         $moduleVersion = '';
 
         try {
-
             $shopConfig =  ContainerFactory::getInstance()
                 ->getContainer()
                 ->get(ShopConfigurationDaoBridgeInterface::class)->get();

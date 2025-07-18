@@ -27,7 +27,6 @@
 
 namespace Fatchip\CTPayment;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
@@ -40,7 +39,6 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class CTPaymentService extends Encryption
 {
-    protected $fatchipComputopConfig;
     protected $fatchipComputopPaymentClass;
     protected $fatchipComputopLogger;
 
@@ -55,8 +53,6 @@ class CTPaymentService extends Encryption
         $this->blowfishPassword = $config['blowfishPassword'];
         $this->mac = $config['mac'];
         $this->encryption = $config['encryption'];
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
         $this->fatchipComputopLogger = new Logger();
     }
 
@@ -146,8 +142,10 @@ class CTPaymentService extends Encryption
      */
     public function getDecryptedResponse(array $rawRequest)
     {
-        $decryptedRequest = $this->ctDecrypt($rawRequest['Data'], $rawRequest['Len'], $this->blowfishPassword);
-        $requestArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        #$decryptedRequest = $this->ctDecrypt($rawRequest['Data'], $rawRequest['Len'], $this->blowfishPassword);
+        #$requestArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        $requestArray = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->decrypt($rawRequest['Data'], $rawRequest['Len']);
+
         if (isset($rawRequest['Custom'])) {
             $decodedCustom = base64_decode($rawRequest['Custom']);
             $customArray = $this->ctSplit(explode('&', $decodedCustom), '=');

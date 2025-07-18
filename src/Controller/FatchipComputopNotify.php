@@ -27,9 +27,9 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\Method\AmazonPay;
 use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
@@ -49,7 +49,6 @@ use OxidEsales\Eshop\Application\Model\Order;
  */
 class FatchipComputopNotify extends FrontendController
 {
-    protected $fatchipComputopConfig;
     protected $paymentClass;
     protected $paymentService;
     protected $fatchipComputopLogger;
@@ -62,9 +61,7 @@ class FatchipComputopNotify extends FrontendController
      */
     public function init()
     {
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->paymentService = new CTPaymentService($this->fatchipComputopConfig);
+        $this->paymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
         $this->fatchipComputopLogger = new Logger();
 
         parent::init();
@@ -163,7 +160,7 @@ class FatchipComputopNotify extends FrontendController
 
         $ctPayment = Payment::getInstance()->getComputopPaymentModel($order->getFieldData('oxpaymenttype'));
         if ($ctPayment->isIframeLibMethod() === true) {
-            $payment = $this->paymentService->getIframePaymentClass($ctPayment->getLibClassName(), $this->fatchipComputopConfig, $ctOrder);
+            $payment = $this->paymentService->getIframePaymentClass($ctPayment->getLibClassName(), Config::getInstance()->getConnectionConfig(), $ctOrder);
         } else {
             $payment = $this->paymentService->getPaymentClass($ctPayment->getLibClassName());
         }
@@ -184,7 +181,6 @@ class FatchipComputopNotify extends FrontendController
     protected function createCTOrder($oOrder)
     {
         $ctOrder = new CTOrder();
-        $configCt = oxNew(Config::class);
         $config = Registry::getConfig();
         $oUser = $oOrder->getUser();
 
@@ -207,7 +203,7 @@ class FatchipComputopNotify extends FrontendController
         // Mandatory for paypalStandard
         $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' '
             . $config->getActiveShop()->oxshops__oxversion->value;
-        if($configCt->getCreditCardTestMode()) {
+        if(Config::getInstance()->getConfigParam('creditCardTestMode')) {
             $ctOrder->setOrderDesc('Test:0000');
         } else {
             $ctOrder->setOrderDesc($orderDesc);

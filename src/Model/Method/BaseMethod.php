@@ -2,9 +2,10 @@
 
 namespace Fatchip\ComputopPayments\Model\Method;
 
-use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\Computop\Model\ComputopConfig;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Model\Order;
+use OxidEsales\Eshop\Core\Registry;
 
 abstract class BaseMethod
 {
@@ -17,6 +18,11 @@ abstract class BaseMethod
      * @var string
      */
     protected $libClassName;
+
+    /**
+     * @var string
+     */
+    protected $apiEndpoint;
 
     /**
      * @var string
@@ -48,9 +54,21 @@ abstract class BaseMethod
     protected $addShippingAddressData = false;
 
     /**
+     * Determines if auth requests adds address parameters to the request
+     *
+     * @var bool
+     */
+    protected $sendAddressData = false;
+
+    /**
      * @var Config|null
      */
     protected $config = null;
+
+    /**
+     * @var bool
+     */
+    protected $addLanguageToUrl = false;
 
     /**
      * Get oxid payment id of this payment method
@@ -70,6 +88,16 @@ abstract class BaseMethod
     public function getLibClassName()
     {
         return $this->libClassName;
+    }
+
+    /**
+     * Returns the API endpoint
+     *
+     * @return string
+     */
+    public function getApiEndpoint()
+    {
+        return $this->apiEndpoint;
     }
 
     /**
@@ -123,18 +151,17 @@ abstract class BaseMethod
     }
 
     /**
-     * @param Order $order
      * @param array $dynValue
      * @return string
      */
-    protected function getTelephoneNumber(Order $order, $dynValue)
+    protected function getTelephoneNumber($dynValue)
     {
         $dynValueTelephone = $this->getDynValue($dynValue, "telephone");
         if (!empty($dynValueTelephone)) {
             return $dynValueTelephone;
         }
 
-        $user = $order->getUser();
+        $user = Registry::getSession()->getUser();
         if (!empty($user->oxuser__oxmobfon->value)) {
             return $user->oxuser__oxmobfon->value;
         }
@@ -153,9 +180,24 @@ abstract class BaseMethod
      * @param  Order|null $order
      * @return array
      */
-    public function getPaymentSpecificParameters(Order $order, $dynValue, $ctOrder = false)
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
         return []; // filled in child classes
+    }
+
+    /**
+     * Return parameters specific to this payment type that have to be added to the unencrypted URL
+     *
+     * @param  Order|null $order
+     * @return array
+     */
+    public function getUnencryptedParameters(?Order $order = null)
+    {
+        $params = [];
+        if ($this->addLanguageToUrl === true) {
+            $params['language'] = strtolower(Registry::getLang()->translateString('FATCHIP_COMPUTOP_LANGUAGE'));
+        }
+        return $params;
     }
 
     /**
@@ -189,13 +231,77 @@ abstract class BaseMethod
     }
 
     /**
-     * @return Config|null
+     * Returns if address parameters have to be added in auth request
+     *
+     * @return bool
      */
-    public function getComputopConfig()
+    public function isAddressDataNeeded()
     {
-        if ($this->config === null) {
-            $this->config = new Config();
-        }
-        return $this->config;
+        return $this->sendAddressData;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getShopUrl()
+    {
+        return rtrim(Registry::getConfig()->getShopUrl(), '/') . '/';
+    }
+
+    /**
+     * @param $url
+     * @return mixed
+     */
+    protected function buildReturnUrl($url)
+    {
+        return $url."&sid=".Registry::getSession()->getId();
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemporaryRefNr()
+    {
+        return 'tmp_'.rand(10000000, 99999999).date('his');
+    }
+
+    /**
+     * Returns redirect url for success case
+     *
+     * @return string|null
+     */
+    public function getSuccessUrl()
+    {
+        return $this->buildReturnUrl($this->getShopUrl().'index.php?cl=fatchip_computop_redirect');
+    }
+
+    /**
+     * Returns redirect url for failure case
+     *
+     * @return string|null
+     */
+    public function getFailureUrl()
+    {
+        return $this->buildReturnUrl($this->getShopUrl().'index.php?cl=fatchip_computop_redirect');
+    }
+
+    /**
+     * Returns redirect url for cancel case
+     *
+     * @return string|null
+     */
+    public function getCancelUrl()
+    {
+        return $this->buildReturnUrl($this->getShopUrl().'index.php?cl=fatchip_computop_redirect');
+    }
+
+    /**
+     * Returns URL for notify controller
+     *
+     * @return string|null
+     */
+    public function getNotifyUrl()
+    {
+        return $this->getShopUrl().'index.php?cl=fatchip_computop_notify';
     }
 }

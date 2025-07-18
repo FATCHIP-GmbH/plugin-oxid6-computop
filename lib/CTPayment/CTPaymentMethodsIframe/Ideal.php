@@ -27,6 +27,7 @@
  */
 namespace Fatchip\CTPayment\CTPaymentMethodsIframe;
 
+use Fatchip\ComputopPayments\Helper\Encryption;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
 
@@ -158,7 +159,8 @@ class Ideal extends CTPaymentMethodIframe
         $query = join("&", $queryarray);
 
         $Len = strlen($query);  // Length of the plain text string
-        $data = $this->ctEncrypt($query, $Len, $this->getBlowfishPassword(), $this->encryption);
+        #$data = $this->ctEncrypt($query, $Len, $this->getBlowfishPassword(), $this->encryption);
+        $data = Encryption::getInstance()->encrypt($query, $Len);
 
         return 'https://www.computop-paygate.com/idealIssuerList.aspx' .  '?merchantID=' . $this->getMerchantID() . '&Len=' . $Len . "&Data=" . $data;
     }

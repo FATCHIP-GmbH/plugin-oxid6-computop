@@ -17,7 +17,7 @@
                value="[{$dynvalue.fatchip_computop_ratepay_debit_iban}]">
     </div>
 </div>
-[{if $oView->isBicNeeded() }]
+[{if $oView->showBICInput() }]
     <div class="form-group">
         <label class="req control-label col-lg-3">[{oxmultilang ident="FATCHIP_COMPUTOP_BIC"}]:</label>
         <div class="col-lg-9">
