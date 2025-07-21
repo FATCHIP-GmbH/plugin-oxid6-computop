@@ -874,9 +874,10 @@ class Order extends Order_parent
             $params = array_merge($params, $this->getAddressParameters($billingAsDeliveryAddress, 'sd'));
         }
 
-        if (!empty($this->oxorder__oxordernr->value)) {
-            $params['RefNr'] = $this->oxorder__oxordernr->value;
-        }
+        // FCRM_TODO: Reimplement with refnr prefix
+        #if (!empty($this->oxorder__oxordernr->value)) {
+        #    $params['RefNr'] = $this->oxorder__oxordernr->value;
+        #}
 
         $params['orderDesc'] = $payment->getTransID();
 
