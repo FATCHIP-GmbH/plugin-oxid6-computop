@@ -53,6 +53,10 @@
     }
 </style>
 
+[{capture name="fatchip_computop_creditcard_shopurl"}]
+    var ctShopUrl = '[{$oViewConf->ctGetShopUrl()}]';
+[{/capture}]
+[{oxscript add=$smarty.capture.fatchip_computop_creditcard_shopurl}]
 [{oxscript include=$oViewConf->getModuleUrl('fatchip_computop_payments','assets/js/creditcard.js') priority=30 dynamic=$__oxid_include_dynamic}]
 
 <div class="credit-card-form">

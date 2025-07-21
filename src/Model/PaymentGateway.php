@@ -53,7 +53,6 @@ class PaymentGateway extends PaymentGateway_parent
      */
     protected $aSpecialHandlingMethods = [
         PayPalExpress::ID,
-        DirectDebit::ID,
         AmazonPay::ID,
     ];
 
@@ -81,6 +80,8 @@ class PaymentGateway extends PaymentGateway_parent
 
         $this->_iLastErrorNo = null;
         $this->_sLastError = null;
+
+        $oOrder->ctSetOrderNumber();
 
         if ($ctPayment instanceof ServerToServerPayment || $ctPayment instanceof Easycredit) {
             return $oOrder->handleAuthorization($dAmount);

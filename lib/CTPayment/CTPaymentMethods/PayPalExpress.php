@@ -219,6 +219,7 @@ class PayPalExpress extends CTPaymentMethod
         $params['Currency'] = $oOrder->getCurrency();
         $params['Amount'] = $this->formatAmount($oOrder->getAmount());
         $params['TransID'] = $oOrder->getTransID();
+        $params['orderDesc'] = $params['TransID'];
         $params['ReqId'] = $this->generateRequestId();
         $params['EtiID'] = $this->getEtiID();
         $params['TxType'] = 'Auth';
@@ -239,20 +240,7 @@ class PayPalExpress extends CTPaymentMethod
             'sid' => Registry::getSession()->getId(),
         ]);
 
-        $dataQuery = urldecode(http_build_query($params));
-        $length = mb_strlen($dataQuery);
-
-        $paymentService = new CTPaymentService($config);
-        #$data =  $paymentService->ctEncrypt($dataQuery, $length,$paymentService->blowfishPassword,$paymentService->encryption);
-        $data = Encryption::getInstance()->encrypt($dataQuery, $length);
-        $payload = [
-            'MerchantID' => $config['merchantID'],
-            'Len' => $length,
-            'Data' => $data,
-            'raw' => $dataQuery
-        ];
-
-        return $payload;
+        return $params;
     }
 
     public function generateRequestId(): string

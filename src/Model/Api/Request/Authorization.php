@@ -42,6 +42,8 @@ class Authorization extends Base
         $this->addParameter('URLNotify', $methodInstance->getNotifyUrl());
         $this->addParameter('Response', 'encrypt');
 
+        $this->addParameter('orderDesc', $this->getParameter('TransID'));
+
         $dynValue = Registry::getSession()->getVariable('dynvalue');
 
         $this->addParameters($methodInstance->getPaymentSpecificParameters($order, $dynValue));

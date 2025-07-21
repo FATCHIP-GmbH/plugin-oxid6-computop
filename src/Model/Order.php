@@ -687,7 +687,7 @@ class Order extends Order_parent
         );
 
         $classParams = $payment->getRedirectUrlParams();
-        $paymentParams = $this->getAuthorizationParameters($dynValue, $ctOrder);
+        $paymentParams = $this->getAuthorizationParameters($dynValue, $payment, $ctOrder);
         $customParam = CTPaymentParams::getCustomParam($payment->getTransID(), $ctPayment->getPaymentId());
         $params = array_merge($classParams, $paymentParams, $customParam);
 
@@ -733,7 +733,7 @@ class Order extends Order_parent
         if ($payment instanceof PaypalStandard) {
             $payment->setShippingAddress($ctOrder->getShippingAddress());
         }
-        $paymentParams = $this->getAuthorizationParameters($dynValue, $ctOrder);
+        $paymentParams = $this->getAuthorizationParameters($dynValue, $payment, $ctOrder);
         $paymentParams['billToCustomer'] = $payment->getBillToCustomer();
         $customParam = CTPaymentParams::getCustomParam($payment->getTransID(), $ctPayment->getPaymentId());
         $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
@@ -857,7 +857,7 @@ class Order extends Order_parent
         return $paymentModel->getPaymentSpecificParameters($this, $dynValue, $ctOrder);
     }
 
-    protected function getAuthorizationParameters($dynValue, $ctOrder = false)
+    protected function getAuthorizationParameters($dynValue, $payment, $ctOrder = false)
     {
         $params = [];
 
@@ -873,6 +873,13 @@ class Order extends Order_parent
             }
             $params = array_merge($params, $this->getAddressParameters($billingAsDeliveryAddress, 'sd'));
         }
+
+        if (!empty($this->oxorder__oxordernr->value)) {
+            $params['RefNr'] = $this->oxorder__oxordernr->value;
+        }
+
+        $params['orderDesc'] = $payment->getTransID();
+
         $params = array_merge($params, $this->getPaymentParams($dynValue, $ctOrder));
         return $params;
     }
@@ -1023,6 +1030,18 @@ class Order extends Order_parent
             return false;
         }else{
             return $this->load($aResult[0]['OXID']);
+        }
+    }
+
+    /**
+     * Used set ordernr a bit earlier than in Oxid core
+     *
+     * @return void
+     */
+    public function ctSetOrderNumber()
+    {
+        if (!$this->oxorder__oxordernr->value) {
+            $this->_setNumber();
         }
     }
 }

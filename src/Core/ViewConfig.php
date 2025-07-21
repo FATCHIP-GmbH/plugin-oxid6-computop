@@ -146,4 +146,9 @@ class ViewConfig extends ViewConfig_parent
         $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
         return $oPaypalExpressPaypment->isActive();
     }
+
+    public function ctGetShopUrl(): string
+    {
+        return Registry::getConfig()->getCurrentShopUrl();
+    }
 }

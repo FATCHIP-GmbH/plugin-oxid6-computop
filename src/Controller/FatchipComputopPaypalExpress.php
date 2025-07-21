@@ -31,6 +31,7 @@ use Exception;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\ComputopPayments\Helper\Config;
+use Fatchip\ComputopPayments\Helper\Encryption;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\PayPalExpress;
@@ -589,22 +590,28 @@ class FatchipComputopPayPalExpress extends FrontendController
 
                 $aFrontendRequestParams = $oPaypalExpressPaypment->generateFrontendRequestParams($oCTOrder, Config::getInstance()->getConnectionConfig());
 
-                $aLog['request'] = 'CREATEORDER_ACTION';
-                $aLog['request_details'] = json_encode($aFrontendRequestParams);
-                // raw used only for logging and therefor here will be removed.
-                unset($aFrontendRequestParams['raw']);
+                $dataQuery = urldecode(http_build_query($aFrontendRequestParams));
+                $length = mb_strlen($dataQuery);
 
-                $aResponse = $this->httpPost($oPaypalExpressPaypment::CREATE_ORDER_URL, $aFrontendRequestParams);
+                $data = Encryption::getInstance()->encrypt($dataQuery, $length);
+                $payload = [
+                    'MerchantID' => Config::getInstance()->getConfigParam('merchantID'),
+                    'Len' => $length,
+                    'Data' => $data,
+                ];
+
+                $aResponse = $this->httpPost($oPaypalExpressPaypment::CREATE_ORDER_URL, $payload);
                 if (!empty($aResponse['response'])) {
                     parse_str($aResponse['response'], $parsedResponse);
-                    $aResponse['raw'] = $parsedResponse;
-                    $oOrder->oxorder__fatchip_computop_transid = new Field($aResponse['raw']['TransID'] ?? '');
-                    $oOrder->oxorder__fatchip_computop_payid = new Field($aResponse['raw']['PayID'] ?? '');
-                    $aLog['pay_id'] = $aResponse['raw']['PayID'] ?? '';
+                    $oOrder->oxorder__fatchip_computop_transid = new Field($parsedResponse['TransID'] ?? '');
+                    $oOrder->oxorder__fatchip_computop_payid = new Field($parsedResponse['PayID'] ?? '');
+                    $aLog['pay_id'] = $parsedResponse['PayID'] ?? '';
                     $oOrder->save();
                 }
 
-                $aLog['response_details'] = json_encode($aResponse);
+                $aLog['request'] = 'CREATEORDER_ACTION';
+                $aLog['request_details'] = json_encode($aFrontendRequestParams);
+                $aLog['response_details'] = json_encode($parsedResponse);
                 $oApiLog->assign($aLog);
 
                 if (!$oApiLog->save()) {

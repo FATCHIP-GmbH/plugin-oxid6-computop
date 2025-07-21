@@ -146,12 +146,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
         $ret = null;
 
-        if (($ctPayment instanceof RedirectPayment && !$ctPayment instanceof PayPalExpress) || $ctPayment instanceof DirectDebit) {
-            $lastschrift = false;
-            if ($ctPayment instanceof DirectDebit) { // ??? DirectDebit is not a RedirectPayment type
-                $lastschrift = true;
-                $response = $this->lastschriftAction();
-            }
+        if (($ctPayment instanceof RedirectPayment && !$ctPayment instanceof PayPalExpress)) {
             if ($ctPayment instanceof AmazonPay) {
                 // FCRM_REFACTOR - directly manipulating $_POST variable is bad practise
                 $_POST['stoken'] = Registry::getSession()->getSessionChallengeToken();
@@ -165,16 +160,11 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             // if order is validated and finalized complete Order on thankyou
             if ($ret === 'thankyou' || $ret === 'thankyou?mailerror=1') {
                 Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectUrl');
-                if ($lastschrift === false){
-                    $response = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
-                    Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectResponse');
-                }
+
+                $response = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+                Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectResponse');
                 if (!empty($response)) {
-                    if ($lastschrift === true || $paymentId === 'fatchip_computop_paypal_express'){
-                        $orderOxId = Registry::getSession()->getVariable('sess_challenge');
-                    } else {
-                        $orderOxId = $response->getSessionId();
-                    }
+                    $orderOxId = $response->getSessionId();
                     $order = oxNew(Order::class);
                     $oUser = $this->getUser();
                     if ($order->load($orderOxId)) {

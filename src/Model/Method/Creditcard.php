@@ -69,10 +69,14 @@ class Creditcard extends RedirectPayment
      */
     public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
-        return [
+        $params = [
             'RefNr' => Registry::getSession()->getSessionChallengeToken(),
             'UserData' => Registry::getSession()->getId()
         ];
+        if ((bool)Config::getInstance()->getConfigParam('creditCardMode') === true) {
+            $params['orderDesc'] = 'Test:0000';
+        }
+        return $params;
     }
 
     /**
