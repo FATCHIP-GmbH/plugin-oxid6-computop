@@ -24,6 +24,8 @@ $aLang = [
     'SHOP_MODULE_encryption'                                => 'Verschlüsselung',
     'SHOP_MODULE_encryption_blowfish'                       => 'Blowfish Verschlüsselung (Standard)',
     'SHOP_MODULE_encryption_aes'                            => 'AES Verschlüsselung',
+    'SHOP_MODULE_refnr_prefix'                              => 'Referenznummer Pr&auml;fix',
+    'SHOP_MODULE_refnr_suffix'                              => 'Referenznummer Suffix',
 
     'SHOP_MODULE_creditCardMode'                            => 'Kreditkarte - Modus',
     'SHOP_MODULE_creditCardMode_IFRAME'                     => 'IFrame',

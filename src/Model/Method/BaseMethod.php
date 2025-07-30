@@ -71,6 +71,11 @@ abstract class BaseMethod
     protected $addLanguageToUrl = false;
 
     /**
+     * @var bool
+     */
+    protected $refNrUpdateNeeded = false;
+
+    /**
      * Get oxid payment id of this payment method
      *
      * @return string
@@ -135,6 +140,16 @@ abstract class BaseMethod
     public function isShippingAddressDataNeeded()
     {
         return $this->addShippingAddressData;
+    }
+
+    /**
+     * Returns if refnr has to be updated after order is finished
+     *
+     * @return bool
+     */
+    public function isRefNrUpdateNeeded()
+    {
+        return $this->refNrUpdateNeeded;
     }
 
     /**

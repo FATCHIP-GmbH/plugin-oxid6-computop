@@ -849,7 +849,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $payment->setTransID($order->getFieldData('fatchip_computop_transid'));
         }
 
-        $RefNrChangeParams = $payment->getRefNrChangeParams($order->getFieldData('fatchip_computop_payid'), $order->getFieldData('oxordernr'));
+        $RefNrChangeParams = $payment->getRefNrChangeParams($order->getFieldData('fatchip_computop_payid'), Api::getInstance()->getReferenceNumber($order->getFieldData('oxordernr')));
         $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
 
         return $this->callComputopService(

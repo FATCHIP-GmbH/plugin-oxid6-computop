@@ -249,12 +249,14 @@ class CreditCard extends CTPaymentMethodIframe
             $this->setOrderDesc($orderDesc);
         }
 
-        $this->setBillingAddress($order->getBillingAddress());
-        $this->setShippingAddress($order->getShippingAddress());
-        if ($config['creditCardAcquirer'] === 'CAPN') {
-            $this->setAmountAuth($order->getAmount());
-            $this->setBillToCustomer($order);
-            $this->setShipToCustomer($order);
+        if (!empty($order)) {
+            $this->setBillingAddress($order->getBillingAddress());
+            $this->setShippingAddress($order->getShippingAddress());
+            if ($config['creditCardAcquirer'] === 'CAPN') {
+                $this->setAmountAuth($order->getAmount());
+                $this->setBillToCustomer($order);
+                $this->setShipToCustomer($order);
+            }
         }
 
         //we will handle all captures manually

@@ -80,6 +80,8 @@ $aModule = [
         ['group' => 'COMPUTOP_GENERAL',            'name' => 'blowfishPassword',                  'type' => 'str',      'value' => '',              'position' => 30],
         ['group' => 'COMPUTOP_GENERAL',            'name' => 'debuglog',                          'type' => 'select',   'value' => 'inactive',      'position' => 40,  'constraints' => 'inactive|active|extended'],
         ['group' => 'COMPUTOP_GENERAL',            'name' => 'encryption',                        'type' => 'select',   'value' => 'blowfish',      'position' => 50,  'constraints' => 'blowfish|aes'],
+        ['group' => 'COMPUTOP_GENERAL',            'name' => 'refnr_prefix',                      'type' => 'str',      'value' => '',              'position' => 60],
+        ['group' => 'COMPUTOP_GENERAL',            'name' => 'refnr_suffix',                      'type' => 'str',      'value' => '',              'position' => 70],
 
         ['group' => 'COMPUTOP_CREDITCARD',         'name' => 'creditCardMode',                    'type' => 'select',   'value' => 'IFRAME',        'position' => 100, 'constraints' => 'IFRAME|SILENT|PAYMENTPAGE'],
         ['group' => 'COMPUTOP_CREDITCARD',         'name' => 'creditCardTestMode',                'type' => 'bool',     'value' => '0',             'position' => 110],

@@ -29,6 +29,7 @@ namespace Fatchip\ComputopPayments\Model;
 use Exception;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Api;
 use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\Method\AmazonPay;
@@ -36,6 +37,7 @@ use Fatchip\ComputopPayments\Model\Method\Creditcard;
 use Fatchip\ComputopPayments\Model\Method\DirectDebit;
 use Fatchip\ComputopPayments\Model\Method\Easycredit;
 use Fatchip\ComputopPayments\Model\Method\Ideal;
+use Fatchip\ComputopPayments\Model\Method\Klarna;
 use Fatchip\ComputopPayments\Model\Method\PayPal;
 use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
 use Fatchip\ComputopPayments\Model\Method\Ratepay\Base;
@@ -180,11 +182,51 @@ class Order extends Order_parent
 
             // $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
+
+            if ($ctPayment->isRefNrUpdateNeeded() === true) {
+                $this->updateRefNrWithComputop();
+            }
+
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
             $this->autocapture($oUser, false);
         }
 
         return $ret;
+    }
+
+    /**
+     * The RefNr for Computop has to be equal to the ordernumber.
+     * Because the ordernumber is only known after successful payments
+     * and successful saveOrder() call update the RefNr AFTER order creation
+     *
+     * @param Order $order Oxid order
+     * @param string $paymentClass name of the payment class
+     *
+     * @return CTResponse
+     * @throws Exception
+     */
+    public function updateRefNrWithComputop()
+    {
+        $ctPayment = $this->computopGetPaymentModel();
+        if ($ctPayment->isIframeLibMethod() === true) {
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($ctPayment->getLibClassName(), Config::getInstance()->getConnectionConfig(), );
+        } else {
+            $payment = $this->fatchipComputopPaymentService->getPaymentClass($ctPayment->getLibClassName());
+        }
+
+        if ($ctPayment instanceof Klarna) {
+            $payment->setTransID($this->getFieldData('fatchip_computop_transid'));
+        }
+
+        $RefNrChangeParams = $payment->getRefNrChangeParams($this->getFieldData('fatchip_computop_payid'), Api::getInstance()->getReferenceNumber($this->getFieldData('oxordernr')));
+        $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
+
+        return $this->callComputopService(
+            $RefNrChangeParams,
+            $payment,
+            'REFNRCHANGE',
+            $payment->getCTRefNrChangeURL()
+        );
     }
 
     /**
@@ -358,7 +400,7 @@ class Order extends Order_parent
 
 
         $ctPayment = $this->computopGetPaymentModel();
-        if ($ctPayment instanceof Ideal) { // Skip Auto Capture if its iDEAL
+        if ($ctPayment instanceof Ideal || $ctPayment instanceof AmazonPay) { // Skip Auto Capture for these types TODO: Add property to paymentModel
             $this->logDebug('autoCapture: skipping for '.$ctPayment->getPaymentId());
             return;
         }
@@ -874,10 +916,9 @@ class Order extends Order_parent
             $params = array_merge($params, $this->getAddressParameters($billingAsDeliveryAddress, 'sd'));
         }
 
-        // FCRM_TODO: Reimplement with refnr prefix
-        #if (!empty($this->oxorder__oxordernr->value)) {
-        #    $params['RefNr'] = $this->oxorder__oxordernr->value;
-        #}
+        if (!empty($this->oxorder__oxordernr->value)) {
+            $params['RefNr'] = Api::getInstance()->getReferenceNumber($this->oxorder__oxordernr->value);
+        }
 
         $params['orderDesc'] = $payment->getTransID();
 

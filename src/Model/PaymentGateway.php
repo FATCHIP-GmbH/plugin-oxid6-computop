@@ -81,8 +81,7 @@ class PaymentGateway extends PaymentGateway_parent
         $this->_iLastErrorNo = null;
         $this->_sLastError = null;
 
-        // FCRM_TODO: Reimplement with refnr prefix
-        #$oOrder->ctSetOrderNumber();
+        $oOrder->ctSetOrderNumber();
 
         if ($ctPayment instanceof ServerToServerPayment || $ctPayment instanceof Easycredit) {
             return $oOrder->handleAuthorization($dAmount);

@@ -41,6 +41,11 @@ class AmazonPay extends RedirectPayment
      */
     protected $addShippingAddressData = true;
 
+    /**
+     * @var bool
+     */
+    protected $refNrUpdateNeeded = true;
+
     protected function getAmazonAuthResponse()
     {
         $authResponse = Registry::getSession()->getVariable("ctAmazonAuthResponse");

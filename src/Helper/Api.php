@@ -136,4 +136,15 @@ class Api
         $logger = new Logger();
         $logger->logRequestResponse($request, $paymentName, $requestType, $response);
     }
+
+    /**
+     * Returns reference number
+     *
+     * @param  string $orderNr
+     * @return string
+     */
+    public function getReferenceNumber($orderNr)
+    {
+        return trim(Config::getInstance()->getConfigParam('refnr_prefix') ?? '').$orderNr.trim(Config::getInstance()->getConfigParam('refnr_suffix') ?? '');
+    }
 }

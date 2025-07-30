@@ -41,6 +41,11 @@ class Creditcard extends RedirectPayment
     protected $sendAddressData = true;
 
     /**
+     * @var bool
+     */
+    protected $refNrUpdateNeeded = true;
+
+    /**
      * @return string
      */
     public function getRequestType()
@@ -70,7 +75,7 @@ class Creditcard extends RedirectPayment
     public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
     {
         $params = [
-            'RefNr' => Registry::getSession()->getSessionChallengeToken(),
+            'RefNr' => Registry::getSession()->getSessionChallengeToken(), // FCRM_TODO: RefNr is misused here to secure session for reentry from iframe payment... Repair it to use correct refNr
             'UserData' => Registry::getSession()->getId()
         ];
         if ((bool)Config::getInstance()->getConfigParam('creditCardMode') === true) {
