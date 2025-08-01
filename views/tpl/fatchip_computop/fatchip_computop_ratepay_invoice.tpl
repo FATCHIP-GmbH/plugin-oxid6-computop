@@ -33,3 +33,6 @@
         </div>
     </div>
 [{/if}]
+<div class="desc ctRatepayLegalText">
+    [{oxmultilang ident="FATCHIP_COMPUTOP_RATEPAY_POLICY"}]
+</div>

@@ -41,4 +41,10 @@ $aLang = [
     'FATCHIP_COMPUTOP_DAY_OF_BIRTH' => 'Tag',
     'FATCHIP_COMPUTOP_MONTH_OF_BIRTH' => 'Monat',
     'FATCHIP_COMPUTOP_YEAR_OF_BIRTH' => 'Jahr',
+
+    'FATCHIP_COMPUTOP_RATEPAY_POLICY' => "Mit der Auswahl dieser Zahlungsart erkl&auml;ren Sie sich mit den <a href='//www.ratepay.com/legal-payment-terms' title='Legal terms - Ratepay' target='_blank' style='text-decoration: underline; cursor: pointer'>Zahlungsbedingungen unseres Zahlungspartners</a> sowie mit der Durchf&uuml;hrung einer <a href='//www.ratepay.com/legal-payment-dataprivacy' title='Legal data privacy - Ratepay' target='_blank' style='text-decoration: underline; cursor: pointer'>Risikopr&uuml;fung durch unseren Zahlungspartner</a> einverstanden.",
+    'FATCHIP_COMPUTOP_RATEPAY_MANDATE_ACCEPT' => "Ich akzeptiere das",
+    'FATCHIP_COMPUTOP_RATEPAY_MANDATE_UNFOLD_TEXT' => "SEPA-Lastschriftmandat (Anklicken zum Einblenden)",
+    'FATCHIP_COMPUTOP_RATEPAY_MANDATE_TEXT' => "Indem Sie dem SEPA-Lastschriftmandat zustimmen, erm&auml;chtigen Sie die Ratepay GmbH, Zahlungen von Ihrem Konto mittels Lastschrift einzuziehen. Gleichzeitig weisen Sie Ihr Kreditinstitut an, die von der Ratepay GmbH auf Ihr Konto gezogenen Lastschriften einzul&ouml;sen. Hinweis: Sie k&ouml;nnen innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit Ihrem Kreditinstitut vereinbarten Bedingungen. Die Mandatsreferenz und Gl&auml;ubiger-Identifkationsnummer werden Ihnen separat mitgeteilt.",
+    'FATCHIP_COMPUTOP_RATEPAY_ACCEPT_MANDATE_ERROR' => 'Sie m&uuml;ssen das SEPA-Lastschriftmandat akzeptieren um diese Zahlart nutzen zu k&ouml;nnen.',
 ];
