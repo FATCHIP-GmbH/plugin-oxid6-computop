@@ -400,7 +400,7 @@ class Order extends Order_parent
 
 
         $ctPayment = $this->computopGetPaymentModel();
-        if ($ctPayment instanceof Ideal || $ctPayment instanceof AmazonPay) { // Skip Auto Capture for these types TODO: Add property to paymentModel
+        if ($ctPayment instanceof Ideal) { // Skip Auto Capture for these types TODO: Add property to paymentModel
             $this->logDebug('autoCapture: skipping for '.$ctPayment->getPaymentId());
             return;
         }
@@ -434,7 +434,7 @@ class Order extends Order_parent
 
         switch ($ctPayment->getPaymentId()) {
             case AmazonPay::ID:
-                $autoCaptureConfigKey = 'amazonCaptureType';
+                $autoCaptureValue = "MANUAL"; // Amazon Pay does a real autocapture, no fake autocapture needed
                 break;
             case Creditcard::ID:
                 $autoCaptureConfigKey = 'creditCardCaption';
