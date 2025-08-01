@@ -305,7 +305,7 @@ class Order extends Order_parent
     public function updateComputopFatchipOrderStatus(string $orderStatus, array $data = [])
     {
         switch ($orderStatus) {
-            case "FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID":
+            case Constants::PAYMENTSTATUSPAID:
                 $this->_setFieldData('oxfolder', 'ORDERFOLDER_NEW');
                 $this->_setFieldData('oxpaid', date('Y-m-d H:i:s'));
                 $this->_setFieldData('oxtransstatus', 'OK');
@@ -315,12 +315,12 @@ class Order extends Order_parent
                 }
                 $this->save();
                 break;
-            case "FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED":
+            case Constants::PAYMENTSTATUSNOTCAPTURED:
                 $this->_setFieldData('oxfolder', 'ORDERFOLDER_NEW');
                 $this->_setFieldData('oxtransstatus', 'OK');
                 $this->save();
                 break;
-            case "FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED":
+            case Constants::PAYMENTSTATUSRESERVED:
                 $this->_setFieldData('oxfolder', 'ORDERFOLDER_NEW');
                 $this->_setFieldData('oxtransstatus', 'OK');
                 if (!empty($data)) {
@@ -328,7 +328,7 @@ class Order extends Order_parent
                 }
                 $this->save();
                 break;
-            case "FATCHIP_COMPUTOP_PAYMENTSTATUS_REVIEW_NECESSARY":
+            case Constants::PAYMENTSTATUSREVIEWNECESSARY:
                 $this->_setFieldData('oxtransstatus', 'NOT_FINISHED');
                 $this->_setFieldData('oxfolder', 'ORDERFOLDER_PROBLEMS');
                 if (!empty($data)) {
@@ -408,9 +408,15 @@ class Order extends Order_parent
         // Check if auto-capture is enabled for the payment method
         if (!$force && !$this->isAutoCaptureEnabled()) {
             if ($ctPayment instanceof DirectDebit) {
-                $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED');
+                $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSNOTCAPTURED);
             }
             $this->logDebug('autoCapture: skipping for '.$ctPayment->getLibClassName());
+            return;
+        }
+
+        if ($ctPayment->isRealAutoCaptureMethod() === true && $this->isAutoCaptureEnabled() === true) {
+            // Order has already been captured
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSPAID);
             return;
         }
 
@@ -434,7 +440,7 @@ class Order extends Order_parent
 
         switch ($ctPayment->getPaymentId()) {
             case AmazonPay::ID:
-                $autoCaptureValue = "MANUAL"; // Amazon Pay does a real autocapture, no fake autocapture needed
+                $autoCaptureConfigKey = "amazonCaptureType"; // Amazon Pay does a real autocapture, no fake autocapture needed
                 break;
             case Creditcard::ID:
                 $autoCaptureConfigKey = 'creditCardCaption';
@@ -467,10 +473,7 @@ class Order extends Order_parent
             $amount = $captureResponse->getAmountCap();
         }
         if ($status === 'OK') {
-            $this->updateComputopFatchipOrderStatus(
-                Constants::PAYMENTSTATUSPAID,
-                ['captureAmount' => $amount]
-            );
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSPAID, ['captureAmount' => $amount]);
         } elseif ($status === 'FAILED') {
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSREVIEWNECESSARY,
                 $data = [

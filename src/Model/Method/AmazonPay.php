@@ -46,6 +46,11 @@ class AmazonPay extends RedirectPayment
      */
     protected $refNrUpdateNeeded = true;
 
+    /**
+     * @var bool
+     */
+    protected $isRealAutoCaptureMethod = true;
+
     protected function getAmazonAuthResponse()
     {
         $authResponse = Registry::getSession()->getVariable("ctAmazonAuthResponse");

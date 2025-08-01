@@ -76,6 +76,11 @@ abstract class BaseMethod
     protected $refNrUpdateNeeded = false;
 
     /**
+     * @var bool
+     */
+    protected $isRealAutoCaptureMethod = false;
+
+    /**
      * Get oxid payment id of this payment method
      *
      * @return string
@@ -150,6 +155,16 @@ abstract class BaseMethod
     public function isRefNrUpdateNeeded()
     {
         return $this->refNrUpdateNeeded;
+    }
+
+    /**
+     * Returns true if capture is done directly by Computop
+     *
+     * @return bool
+     */
+    public function isRealAutoCaptureMethod()
+    {
+        return $this->isRealAutoCaptureMethod;
     }
 
     /**
