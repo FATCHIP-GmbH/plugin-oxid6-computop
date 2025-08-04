@@ -753,6 +753,9 @@ class Order extends Order_parent
         $success = $this->handleAuthorizationResponse($response);
         if ($success === true) {
             $this->updateOrderAttributes($response);
+
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
+            $this->autocapture($this->getUser(), false);
         }
 
         return $success;
