@@ -1,3 +1,7 @@
+### 1.1.1
+* Fixed Ratepay payments
+* Fixed problem with order finalization in certain situations
+
 ### 1.1.0
 * Added payment methods Direct Debit, Klarna, Ideal and  AmazonPay
 * Refactoring of configuration to oxid standard
