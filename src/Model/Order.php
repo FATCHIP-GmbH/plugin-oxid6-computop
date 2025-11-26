@@ -188,7 +188,7 @@ class Order extends Order_parent
             }
 
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-            $this->autocapture($oUser, false);
+            $this->autoCapture($oUser, false);
         }
 
         return $ret;
@@ -772,7 +772,7 @@ class Order extends Order_parent
             $this->updateOrderAttributes($response);
 
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-            $this->autocapture($this->getUser(), false);
+            $this->autoCapture($this->getUser(), false);
         }
 
         return $success;
