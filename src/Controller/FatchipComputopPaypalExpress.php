@@ -261,6 +261,7 @@ class FatchipComputopPayPalExpress extends FrontendController
 
     public function notify()
     {
+        //FCRM: WHY? Why have an extra notify hook? Why not use the existing notify hook?
         $iLen = Registry::getRequest()->getRequestParameter('Len');
         $sData = Registry::getRequest()->getRequestParameter('Data');
 

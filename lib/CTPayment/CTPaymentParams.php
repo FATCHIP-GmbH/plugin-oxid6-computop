@@ -67,7 +67,7 @@ class CTPaymentParams
         $params = [
             'UrlSuccess' => self::buildUrl($shopUrl, $successController, $sessionId),
             'UrlFailure' => self::buildUrl($shopUrl, $failureController, $sessionId),
-            'UrlNotify'  => self::buildUrl($shopUrl, Constants::GENERAL_PREFIX . 'notify', $sessionId),
+            'UrlNotify'  => self::buildUrl($shopUrl, Constants::GENERAL_PREFIX . 'notify'),
         ];
 
         if (Config::getInstance()->getConfigParam('creditCardMode') === 'PAYMENTPAGE') { // don't send urlcancel/back in IFRAME mode, since iframe breakout does not work currently and user can use shop navigation to leave iframe
@@ -92,12 +92,12 @@ class CTPaymentParams
      *
      * @return string The constructed URL.
      */
-    protected static function buildUrl($shopUrl, $cl, $sessionId, array $params = [])
+    protected static function buildUrl($shopUrl, $cl, $sessionId = null, array $params = [])
     {
-        $baseParams = [
-            'cl'  => $cl,
-            'sid' => $sessionId,
-        ];
+        $baseParams = ['cl'  => $cl];
+        if (!empty($sessionId)) {
+            $baseParams['sid'] = $sessionId;
+        }
 
         $queryString = http_build_query(array_merge($baseParams, $params));
 
@@ -114,8 +114,9 @@ class CTPaymentParams
         $orderOxId = Registry::getSession()->getVariable('sess_challenge');
         $deliveryAddressMd5 = Registry::getRequest()->getRequestParameter('sDeliveryAddressMD5');
         $params = [
-            'session'   => $orderOxId,
+            'session'   => Registry::getSession()->getId(),
             'transid'   => $transid,
+            'orderid'   => $orderOxId,
             'stoken'    => Registry::getSession()->getSessionChallengeToken(),
             'delAdressMd5' => $deliveryAddressMd5
         ];
