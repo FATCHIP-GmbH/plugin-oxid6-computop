@@ -25,7 +25,7 @@ $aModule = [
                 <p><b>Support</b><br><br>Personal support via e-mail to <a href="mailto:helpdesk@computop.com">helpdesk@computop.com</a></p>',
     ],
     'thumbnail' => 'assets/img/computop_logo.png',
-    'version' => '1.1.1',
+    'version' => '1.1.2',
     'author' => 'Fatchip-GmbH',
     'url' => 'https://www.fatchip.de/',
     'email' => '',
