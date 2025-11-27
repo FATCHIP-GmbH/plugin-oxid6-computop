@@ -5,6 +5,7 @@ namespace Fatchip\ComputopPayments\Helper;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTResponse;
+use OxidEsales\EshopCommunity\Core\ShopVersion;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ShopConfigurationDaoBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Exception\ModuleConfigurationNotFoundException;
@@ -92,9 +93,8 @@ class Api
             Registry::getLogger()->error('ModuleConfig fetch error: ' . $e->getMessage());
         }
 
-        $activeShop = Registry::getConfig()->getActiveShop();
-        $shopName = $activeShop->oxshops__oxname->value;
-        $shopVersion = $activeShop->oxshops__oxversion->value;
+        $shopName = "Oxid ".Registry::getConfig()->getEdition();
+        $shopVersion = ShopVersion::getVersion();
 
         return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
     }

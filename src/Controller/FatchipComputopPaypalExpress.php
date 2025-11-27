@@ -261,6 +261,7 @@ class FatchipComputopPayPalExpress extends FrontendController
 
     public function notify()
     {
+        //FCRM: WHY? Why have an extra notify hook? Why not use the existing notify hook?
         $iLen = Registry::getRequest()->getRequestParameter('Len');
         $sData = Registry::getRequest()->getRequestParameter('Data');
 
@@ -528,6 +529,8 @@ class FatchipComputopPayPalExpress extends FrontendController
             'trans_id' => $sTransId
         ];
         $oOrder = oxNew(Order::class);
+        $oOrder->setComputopIsPPEInit(true);
+
         $oUser = oxNew(User::class);
         $oSession = Registry::getSession();
         $oBasket = $oSession->getBasket();
