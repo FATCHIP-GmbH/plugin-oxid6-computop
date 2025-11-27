@@ -81,6 +81,11 @@ class Order extends Order_parent
 
     protected $fatchipComputopPaymentService;
 
+    /**
+     * @var bool
+     */
+    protected $blComputopIsPPEInit = false;
+
     public $oxorder__fatchip_computop_transid;
 
     public $oxorder__fatchip_computop_payid;
@@ -1109,5 +1114,41 @@ class Order extends Order_parent
         if (!$this->oxorder__oxordernr->value) {
             $this->_setNumber();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function getComputopIsPPEInit()
+    {
+        return $this->blComputopIsPPEInit;
+    }
+
+    /**
+     * @param  bool $blComputopIsPPEInit
+     * @return void
+     */
+    public function setComputopIsPPEInit($blComputopIsPPEInit)
+    {
+        $this->blComputopIsPPEInit = $blComputopIsPPEInit;
+    }
+
+    /**
+     * Send order to shop owner and user
+     *
+     * @param \OxidEsales\Eshop\Application\Model\User        $oUser    order user
+     * @param \OxidEsales\Eshop\Application\Model\Basket      $oBasket  current order basket
+     * @param \OxidEsales\Eshop\Application\Model\UserPayment $oPayment order payment
+     *
+     * @return bool
+     * @deprecated underscore prefix violates PSR12, will be renamed to "sendOrderByEmail" in next major
+     */
+    protected function _sendOrderByEmail($oUser = null, $oBasket = null, $oPayment = null) // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
+    {
+        if ($this->getComputopIsPPEInit() === true) {
+            // Dont send emails in PPE init mode
+            return self::ORDER_STATE_OK;
+        }
+        return parent::_sendOrderByEmail($oUser, $oBasket, $oPayment);
     }
 }
