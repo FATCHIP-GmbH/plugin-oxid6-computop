@@ -1,3 +1,8 @@
+### 1.1.4
+* security hardening
+* Fixed multiclick problem
+* Fixed AmazonPay problem
+
 ### 1.1.3
 * set selected language in CTPaymentMethodIframe
 
