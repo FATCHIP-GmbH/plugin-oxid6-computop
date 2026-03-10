@@ -37,14 +37,6 @@
                       form.style.display = 'none';
                       document.body.appendChild(form);
                       form.submit();
-                      /**
-                       let onApproveParams = new URLSearchParams([
-                       ['merchantId', mid],
-                       ['payId', payid],
-                       ['orderId', data.orderID]
-                       ]);
-                       await fetch('[{ $aPaypalConfig.computop.actions.urls.onApprove nofilter }]&' + onApproveParams.toString());
-                       **/
                   },
                   onCancel: function (data, actions) {
                       var rd = "MerchantId=" + mid + "&PayId=" + payid + "&OrderId=" + data.orderID;

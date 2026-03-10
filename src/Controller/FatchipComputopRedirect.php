@@ -41,6 +41,9 @@ class FatchipComputopRedirect extends FatchipComputopPayments
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($postParams);
         }
+
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
+
         if (is_object($response)) {
             if ($response->getInfoText() === 'fatchip_computop_creditcard') {
                 $ccmode = Config::getInstance()->getConfigParam('creditCardMode') ?? '';
@@ -93,7 +96,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         } else {
             $queryParams = [
                 'cl'                  => 'order',
-                'fnc'                 => 'execute',
+                'fnc'                 => 'ctReentry',
                 'FatchipComputopLen'  => $len,
                 'FatchipComputopData' => $data,
                 'stoken'              => $stoken,
@@ -133,7 +136,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         } else {
             $queryParams = [
                 'cl'                  => 'order',
-                'fnc'                 => 'execute',
+                'fnc'                 => 'ctReentry',
                 'FatchipComputopLen'  => $len,
                 'FatchipComputopData' => $data,
                 'stoken'              => $stoken,
