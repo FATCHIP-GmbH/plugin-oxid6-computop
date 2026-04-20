@@ -79,8 +79,9 @@
             <label for="card-brand">Card Brand</label>
             <select id="card-brand" name="brand" class="form-control" required>
                 <option value="">Select Card Brand</option>
-                <option value="VISA">Visa</option>
-                <option value="MasterCard">Mastercard</option>
+                [{foreach from=$oViewConf->ctGetSilentModeCCTypes() key=sKey item=sLabel}]
+                    <option value="[{$sKey}]">[{$sLabel}]</option>
+                [{/foreach}]
             </select>
         </div>
 
