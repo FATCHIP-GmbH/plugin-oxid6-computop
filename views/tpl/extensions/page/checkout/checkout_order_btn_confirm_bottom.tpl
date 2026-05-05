@@ -6,5 +6,8 @@
 [{elseif $payment->oxpayments__oxid->value == 'fatchip_computop_amazonpay'}]
     [{include file="fatchip_computop_amazonpay.tpl"}]
 [{else}]
+    [{if $payment->oxpayments__oxid->value == 'fatchip_computop_ratepay_invoice' || $payment->oxpayments__oxid->value == 'fatchip_computop_ratepay_debit'}]
+        [{oxid_include_dynamic file="fatchip_computop_ratepay.tpl" type="computop"}]
+    [{/if}]
     [{$smarty.block.parent}]
 [{/if}]

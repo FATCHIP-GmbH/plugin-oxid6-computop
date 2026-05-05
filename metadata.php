@@ -112,7 +112,9 @@ $aModule = [
 
         ['group' => 'COMPUTOP_IDEAL',              'name' => 'idealDirektOderUeberSofort',        'type' => 'select',   'value' => 'DIREKT',        'position' => 700, 'constraints' => 'DIREKT|PPRO'],
 
-        ['group' => 'COMPUTOP_RATEPAYDIRECTDEBIT', 'name' => 'ratepayDirectDebitRequestBic',      'type' => 'bool',     'value' => '0',             'position' => 800],
+        ['group' => 'COMPUTOP_RATEPAY',            'name' => 'ratepaySnippetId',                  'type' => 'str',      'value' => '',              'position' => 800],
+
+        ['group' => 'COMPUTOP_RATEPAYDIRECTDEBIT', 'name' => 'ratepayDirectDebitRequestBic',      'type' => 'bool',     'value' => '0',             'position' => 900],
     ],
     'templates' => [
         'accordion_section.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/admin/accordion_section.tpl',
@@ -126,6 +128,7 @@ $aModule = [
         'fatchip_computop_creditcard_iframe.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_creditcard_iframe.tpl',
         'fatchip_computop_creditcard_silentmode.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_creditcard_silentmode.tpl',
         'fatchip_computop_amazonpay.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_amazonpay.tpl',
+        'fatchip_computop_ratepay.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_ratepay.tpl',
         'fatchip_computop_iframe.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe.tpl',
         'fatchip_computop_iframe_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_iframe_return.tpl',
         'fatchip_computop_redirect_return.tpl' => 'fatchip-gmbh/computop_payments/views/tpl/payments/fatchip_computop_redirect_return.tpl',
