@@ -61,13 +61,6 @@ class FatchipComputopPayPalExpress extends FrontendController
 
     protected $fatchipComputopPaymentService;
 
-    public function init()
-    {
-        ini_set('session.cookie_samesite', 'None');
-        ini_set('session.cookie_secure', true);
-        parent::init();
-    }
-
     /**
      * Class constructor, sets all required parameters for requests.
      */
