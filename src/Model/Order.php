@@ -232,7 +232,6 @@ class Order extends Order_parent
 
         $RefNrChangeParams = $payment->getRefNrChangeParams($this->getFieldData('fatchip_computop_payid'), Api::getInstance()->getReferenceNumber($this->getFieldData('oxordernr')));
         $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
-
         return $this->callComputopService(
             $RefNrChangeParams,
             $payment,
@@ -499,13 +498,14 @@ class Order extends Order_parent
 
     private function handleCaptureResponse($captureResponse, $oUser)
     {
-        $status = $captureResponse->getStatus();
         if ($captureResponse->getAmountCap() == "0") {
             $amount = $captureResponse->getAmountAuth();
         } else {
             $amount = $captureResponse->getAmountCap();
         }
-        if ($status === 'OK') {
+
+        $status = $captureResponse->getStatus();
+        if ($captureResponse->isSuccessStatus() === true) {
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSPAID, ['captureAmount' => $amount]);
         } elseif ($status === 'FAILED') {
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSREVIEWNECESSARY,
@@ -592,7 +592,6 @@ class Order extends Order_parent
         $schemeRefId = $response->getSchemeReferenceID();
         $mandateId = $response->getMandateid();
 
-
         $this->_setFieldData('fatchip_computop_payid', $payID);
         $this->_setFieldData('fatchip_computop_transid', $transID);
         $this->_setFieldData('fatchip_computop_xid', $xID);
@@ -639,7 +638,7 @@ class Order extends Order_parent
         );
 
         $response = $this->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
-        if ($response->getStatus() !== 'FAILED') {
+        if ($response->isSuccessStatus()) {
             $payId = $this->getFieldData('fatchip_computop_payid');
             $param = $payment->getInquireParams($payId);
 
@@ -783,7 +782,7 @@ class Order extends Order_parent
 
         $this->fatchipComputopLogger->logRequestResponse($params, $ctPayment->getLibClassName(), 'DIRECT', $response);
 
-        $success = $this->handleAuthorizationResponse($response);
+        $success = $response->isSuccessStatus();
         if ($success === true) {
             $this->updateOrderAttributes($response);
 
@@ -1010,33 +1009,13 @@ class Order extends Order_parent
         return $params;
     }
 
-    /**
-     * @param array $response
-     * @return bool
-     */
-    public function handleAuthorizationResponse($response)
-    {
-        switch ($response->getStatus()) {
-            case CTEnumStatus::OK:
-            case CTEnumStatus::AUTHORIZED:
-            case CTEnumStatus::AUTHORIZE_REQUEST:
-                // TODO check for Code 000000
-                return true;
-        }
-        return false;
-    }
-
     public function handleRedirectResponse($response)
     {
         if (gettype($response) === 'string') {
             Registry::getUtils()->redirect($response, false, 302);
         } else {
-            switch ($response->getStatus()) {
-                case CTEnumStatus::OK:
-                case CTEnumStatus::AUTHORIZED:
-                case CTEnumStatus::AUTHORIZE_REQUEST:
-                    // TODO check for Code 000000
-                    return true;
+            if ($response->isSuccessStatus() === true) {
+                return true;
             }
         }
         return false;

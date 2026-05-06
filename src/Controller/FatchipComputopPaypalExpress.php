@@ -161,7 +161,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             $aLog['pay_id'] = $oResponse->getPayID();
             $aLog['response_details'] = json_encode($aResponseLog);
 
-            if ($oResponse->getStatus() === 'OK') {
+            if ($oResponse->isSuccessStatus() === true) {
                 $sOrderTransId = $oResponse->getTransID();
                 $oOrder = oxNew(Order::class);
                 if ($oOrder->loadByTransId($sOrderTransId)) {
@@ -177,6 +177,7 @@ class FatchipComputopPayPalExpress extends FrontendController
 
                     $oApiLog->assign($aLog);
                     $oApiLog->save();
+
                     //set the sess_challenge is needed for the ThankYouController
                     Registry::getSession()->setVariable('sess_challenge', $oOrder->getId());
                     Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing', $oResponse->getTransID());
