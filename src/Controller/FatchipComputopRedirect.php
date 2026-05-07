@@ -12,13 +12,6 @@ class FatchipComputopRedirect extends FatchipComputopPayments
 {
     protected $_sThisTemplate = 'fatchip_computop_redirect_return.tpl';
 
-    public function init()
-    {
-        ini_set('session.cookie_samesite', 'None');
-        ini_set('session.cookie_secure', true);
-        parent::init();
-    }
-
     public function __construct()
     {
         parent::__construct();
@@ -85,7 +78,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $delAddr  = ($custom && $custom->getDelAdress()) ? $custom->getDelAdress() : '';
         $stoken   = $stoken ?: Registry::getSession()->getVariable('sess_stoken');
 
-        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+        if (!is_object($response) || $response->isSuccessStatus() === false) {
             $queryParams = [
                 'cl'                 => 'payment',
                 'FatchipComputopLen' => $len,
@@ -126,7 +119,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         }
         $sShopUrl = Registry::getConfig()->getShopUrl();
         $stoken = $response->getRefNr();
-        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+        if (!is_object($response) || $response->isSuccessStatus() === false) {
             $queryParams = [
                 'cl'                 => 'payment',
                 'FatchipComputopLen' => $len,
