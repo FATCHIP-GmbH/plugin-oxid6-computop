@@ -32,6 +32,7 @@ use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Helper\Encryption;
+use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\Api\Request\Authorization;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -48,6 +49,7 @@ use OxidEsales\Eshop\Core\Exception\NoArticleException;
 use OxidEsales\Eshop\Core\Exception\OutOfStockException;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Core\Price;
 use VIISON\AddressSplitter\AddressSplitter;
 
 class FatchipComputopPayPalExpress extends FrontendController
@@ -520,7 +522,18 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oSession = Registry::getSession();
         $oBasket = $oSession->getBasket();
         $oBasket->setPayment(\Fatchip\ComputopPayments\Model\Method\PayPalExpress::ID);
-        $oBasket->setShipping('oxidstandard'); //TODO: make it configuraable
+
+        // override PayPal Express deliveryCosts with admin configured value
+        $oBasket->setShipping('oxidstandard'); //TODO: make it configuraables
+        $oShippingPrice = oxNew(Price::class);
+        $oShippingPrice->setPrice($this->getPaypalExpressShippingCosts());
+        $oBasket->setDeliveryPrice($oShippingPrice);
+        $oOrder->oxorder__oxdelcost = new Field($this->getPaypalExpressShippingCosts());
+        
+        $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
+        // $oBasket->getPrice()->setPrice($flBasketWithShippingCosts);
+        // $oBasket->setBruttoSum($flBasketWithShippingCosts);
+        
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
@@ -567,10 +580,12 @@ class FatchipComputopPayPalExpress extends FrontendController
              */
             if ($iOrderfinalizationState === 0 || $iOrderfinalizationState === 1) {
                 $oOrder->oxorder__oxtransstatus = new Field('NOT_FINISHED');
+                $oOrder->oxorder__oxtotalordersum = new Field($flBasketWithShippingCosts);
+                $oOrder->oxorder__oxdelcost = new Field($this->getPaypalExpressShippingCosts());
                 $oOrder->save();
 
                 $authRequest = new Authorization();
-                $response = $authRequest->sendRequest($oOrder, $oBasket->getPrice()->getBruttoPrice());
+                $response = $authRequest->sendRequest($oOrder, $flBasketWithShippingCosts);
 
                 if (!empty($response)) {
                     $oOrder->oxorder__fatchip_computop_transid = new Field($response['TransID'] ?? '');
@@ -603,5 +618,14 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
 
         exit;
+    }
+
+    public function getPaypalExpressShippingCosts(): ?string
+    {
+        $sValue = str_replace(',', '.', Config::getInstance()->getConfigParam('paypalExpressShippingCosts'));
+        if (!empty($sValue) && is_numeric($sValue)) {
+            return floatval($sValue);
+        }
+        return 0.0;
     }
 }
