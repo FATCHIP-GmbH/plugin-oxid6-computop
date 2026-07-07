@@ -566,7 +566,9 @@ class FatchipComputopPayPalExpress extends FrontendController
             } else {
                 $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
                 $oDeliveryCost = oxNew('oxprice');
-                $oBasket->setDeliveryPrice($oDeliveryCost->setPrice($this->getPaypalExpressShippingCosts()));
+                $oDeliveryCost->setPrice($this->getPaypalExpressShippingCosts());
+                $oDeliveryCost->setVat($oOrder->oxorder__oxartvat1);
+                $oBasket->setDeliveryPrice($oDeliveryCost);
                 $oBasket->calculateBasket(true);
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
