@@ -186,13 +186,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     if ($oResponse) {
                         $oOrder = oxNew(Order::class);
                         if($oOrder->loadByTransID($oResponse->getTransID())){
-                            if (($oDeliveryCost = $this->getBasket()->getCosts('oxdelivery'))) {
-                                $oOrder->oxorder__oxdelcost = new \OxidEsales\Eshop\Core\Field($oDeliveryCost->getBruttoPrice(), \OxidEsales\Eshop\Core\Field::T_RAW);
-                                $oOrder->oxorder__oxdeltype = new \OxidEsales\Eshop\Core\Field($this->getBasket()->getShippingId(), \OxidEsales\Eshop\Core\Field::T_RAW);
-                                $oOrder->save();
-                                $oOrder->recalculateOrder();
-                                
-                            }
                             //    $oOrder->customizeOrdernumber($oResponse);
                             $oOrder->updateOrderAttributes($oResponse);
                             $oOrder->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
