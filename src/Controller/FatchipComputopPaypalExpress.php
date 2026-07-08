@@ -29,12 +29,9 @@ namespace Fatchip\ComputopPayments\Controller;
 
 use Exception;
 use Fatchip\ComputopPayments\Core\Constants;
-use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\ComputopPayments\Helper\Config;
-use Fatchip\ComputopPayments\Helper\Encryption;
 use Fatchip\ComputopPayments\Model\Api\Request\Authorization;
 use Fatchip\ComputopPayments\Model\ApiLog;
-use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\PayPalExpress;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
@@ -410,6 +407,7 @@ class FatchipComputopPayPalExpress extends FrontendController
         $basket->setUser($oUser);
         $basket->setPayment($paymentType->getFieldData("oxuserpayments__oxpaymentsid"));
         Registry::getSession()->setUser($oUser);
+        $oOrder->recalculateOrder();
         if ($oUser->hasAccount() === false) {
             $oUser->login($oResponse->getEMail(), '', true);
         }
@@ -520,7 +518,7 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oSession = Registry::getSession();
         $oBasket = $oSession->getBasket();
         $oBasket->setPayment(\Fatchip\ComputopPayments\Model\Method\PayPalExpress::ID);
-        $oBasket->setShipping('oxidstandard'); //TODO: make it configuraable
+         $oBasket->setShipping('oxidstandard'); //TODO: make it configuraable
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
@@ -553,10 +551,18 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
 
         try {
+            $flBasketWithShippingCosts = $oBasket->getPrice()->getBruttoPrice();
+            
             $encodedDeliveryAdress = $oUser->getEncodedDeliveryAddress();
             $oDeliveryAddress = $oOrder->getDelAddressInfo();
+            $oDeliveryCost = $oBasket->getCosts('oxdelivery');
             if ($oDeliveryAddress) {
                 $encodedDeliveryAdress .= $oDeliveryAddress->getEncodedDeliveryAddress();
+            }
+            if (($oDeliveryCost && $oDeliveryCost->getBruttoPrice() > 0)) {
+                // do nothing
+            } else {
+                $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
@@ -570,7 +576,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $oOrder->save();
 
                 $authRequest = new Authorization();
-                $response = $authRequest->sendRequest($oOrder, $oBasket->getPrice()->getBruttoPrice());
+                $response = $authRequest->sendRequest($oOrder, $flBasketWithShippingCosts);
 
                 if (!empty($response)) {
                     $oOrder->oxorder__fatchip_computop_transid = new Field($response['TransID'] ?? '');
@@ -603,5 +609,14 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
 
         exit;
+    }
+
+    public function getPaypalExpressShippingCosts(): ?string
+    {
+        $sValue = str_replace(',', '.', Config::getInstance()->getConfigParam('paypalExpressShippingCosts'));
+        if (!empty($sValue) && is_numeric($sValue)) {
+            return floatval($sValue);
+        }
+        return 0.0;
     }
 }
