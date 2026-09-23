@@ -1,0 +1,4 @@
+name: Computop module migration
+migrations_namespace: Fatchip\ComputopPayments\Migrations
+table_name: oxmigrations_computop
+migrations_directory: data

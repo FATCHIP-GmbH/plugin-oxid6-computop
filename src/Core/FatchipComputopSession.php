@@ -3,6 +3,7 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Fatchip\ComputopPayments\Helper\Config;
+use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Registry;
@@ -72,7 +73,10 @@ class FatchipComputopSession extends FatchipComputopSession_parent
 
         if ($orderId) {
             $oOrder = oxNew(Order::class);
-            $oOrder->delete($orderId);
+            $oOrder->load($orderId);
+            if ($oOrder->oxorder__oxpaymenttype->value === PayPalExpress::ID) {
+                $oOrder->delete($orderId);
+            }
         }
 
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
