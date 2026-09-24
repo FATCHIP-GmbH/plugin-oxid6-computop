@@ -72,7 +72,10 @@ class FatchipComputopSession extends FatchipComputopSession_parent
 
         if ($orderId) {
             $oOrder = oxNew(Order::class);
-            $oOrder->delete($orderId);
+            $oOrder->load($orderId);
+            if ($oOrder->oxorder__oxtransstatus->value != 'OK') {
+                $oOrder->delete($orderId);
+            }
         }
 
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
