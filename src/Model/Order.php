@@ -196,15 +196,20 @@ class Order extends Order_parent
             // $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
 
-            if ($ctPayment->isRefNrUpdateNeeded() === true) {
-                $this->updateRefNrWithComputop();
-            }
-
-            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-            $this->autoCapture($oUser, false);
+            $this->computopHandleUserReturning($oUser, $ctPayment);
         }
 
         return $ret;
+    }
+
+    protected function computopHandleUserReturning($oUser, $ctPayment)
+    {
+        if ($ctPayment->isRefNrUpdateNeeded() === true) {
+            $this->updateRefNrWithComputop();
+        }
+
+        $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
+        $this->autoCapture($oUser, false);
     }
 
     /**
@@ -389,7 +394,13 @@ class Order extends Order_parent
             $item->computopUnsetArticle();
         }
 
-        return $this->finalizeRedirectOrder($oBasket, $this->getOrderUser());
+        $oUser = $this->getOrderUser();
+
+        $iFinalizeReturn = $this->finalizeRedirectOrder($oBasket, $oUser);
+
+        $this->computopHandleUserReturning($oUser, $this->computopGetPaymentModel());
+
+        return $iFinalizeReturn;
     }
 
     /**
