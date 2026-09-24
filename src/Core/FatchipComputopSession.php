@@ -73,7 +73,7 @@ class FatchipComputopSession extends FatchipComputopSession_parent
         if ($orderId) {
             $oOrder = oxNew(Order::class);
             $oOrder->load($orderId);
-            if ($oOrder->oxorder__oxtransstatus->value != 'OK') {
+            if ($oOrder->oxorder__oxtransstatus->value != 'OK' || empty($oOrder->oxorder__fatchip_computop_transid->value)) {
                 $oOrder->delete($orderId);
             }
         }
