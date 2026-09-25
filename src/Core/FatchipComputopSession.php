@@ -5,6 +5,7 @@ namespace Fatchip\ComputopPayments\Core;
 use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Model\Order;
+use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
 use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopSession extends FatchipComputopSession_parent
@@ -73,7 +74,11 @@ class FatchipComputopSession extends FatchipComputopSession_parent
         if ($orderId) {
             $oOrder = oxNew(Order::class);
             $oOrder->load($orderId);
-            if ($oOrder->oxorder__oxtransstatus->value != 'OK' || empty($oOrder->oxorder__fatchip_computop_transid->value)) {
+            if (
+                ($oOrder->oxorder__oxtransstatus->value != 'OK' && empty($oOrder->oxorder__fatchip_computop_transid->value))
+                /* special case for PPe: older order attempts have to be deleted to ensure actual PPe Payment Session for Order */
+                || $oOrder->oxorder__oxpaymenttype->value === PayPalExpress::ID
+            ) {
                 $oOrder->delete($orderId);
             }
         }
