@@ -245,7 +245,7 @@
                                 <input type="hidden" name="capture_description" value="" class="capture_description">
                                 <input type="hidden" name="captureAmount" value="[{$order->oxorder__oxtotalordersum->value}]" class="listedit" readonly>
                                 <span>[{oxmultilang ident='GENERAL_SUMTOTAL'}]: [{$order->getFormattedTotalOrderSum()}] [{$edit->oxorder__oxcurrency->value}]</span><br>
-                                <input type="submit" value="[{oxmultilang ident='FATCHIP_COMPUTOP_CAPTURE_SUBMIT'}]">
+                                <input type="submit" value="[{oxmultilang ident='FATCHIP_COMPUTOP_CAPTURE_SUBMIT'}]" [{if $order->oxorder__oxtransstatus->value == 'NOT_FINISHED'}]disabled [{/if}]>
                             </form>
                         </span>
             </td>
