@@ -224,7 +224,9 @@ class FatchipComputopPayPalExpress extends FrontendController
             $aLog['response_details'] = json_encode($aRequestParams);
             $aLog['trans_id'] = $oResponse->getTransID();
             $aLog['pay_id'] = $oResponse->getPayID();
-            if ($oOrder->load($oResponse->getTransID()) || $oOrder->load(Registry::getSession()->getId())) {
+            if ($oOrder->loadByTransId((string)$oResponse->getTransID())
+                || $oOrder->load((string)Registry::getSession()->getVariable('sess_challenge'))
+            ) {
                 $oOrder->oxorder__oxstorno = new Field(1);
                 $oOrder->oxorder__oxtransstatus = new Field('ERROR');
                 $oOrder->save();
