@@ -156,7 +156,8 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $oOrder = oxNew(Order::class);
                 if ($oOrder->loadByTransId($sOrderTransId)) {
                     if (!$this->updateUserAndOrderInfo($oResponse, $oOrder)) {
-                        //TODO: handle in case it's required
+                        Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYPAL_EXPRESS_ERROR');
+                        Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=basket');
                     }
 
                     //  $oOrder->oxorder__oxtransstatus = new Field('OK');
@@ -320,6 +321,10 @@ class FatchipComputopPayPalExpress extends FrontendController
         if ($this->stringStartWith($oUser->oxuser__oxusername->value, 'PAYPAL_TMP_USER')) {
             $sResponseEmailId = $oUser->getIdByUserName($oResponse->getEMail());
             if (!empty($sResponseEmailId)) {
+                $oCheckUser = oxNew(User::class);
+                if ($oCheckUser->load($sResponseEmailId) && $oCheckUser->hasAccount()) {
+                    return false;
+                }
                 $oOrder->oxorder__oxuserid = new Field($sResponseEmailId);
                 $oUser->delete();
                 $oUser->load($sResponseEmailId);
@@ -567,10 +572,8 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
-            // reset leftovers of a previously finished PPE checkout in the same session
-            $oSession->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
-            $oSession->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished');
-            $oSession->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+            $oSession->cleanUpUnfinishedPpeOrder();
+            $oSession->setVariable('sess_challenge', Registry::getUtilsObject()->generateUId());
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
             //TODO: account for the possible error states
             /**
